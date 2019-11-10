@@ -7,6 +7,7 @@
 #include "sprites.h"
 
 unsigned short hOff;
+unsigned short tmphOff;
 int livesRemaining;
 PLAYER player;
 OBJ_ATTR shadowOAM[128];
@@ -20,6 +21,8 @@ void initGame() {
 }
 
 void dispBackground() {
+
+ 
     
    REG_DISPCTL =  MODE0 | BG1_ENABLE | BG0_ENABLE;
     DMANow(3, bg0SpacePal, PALETTE, 256);

@@ -7,6 +7,7 @@
 #include "moonArt.h"
 #include "bg0Space.h"
 #include "bg1Stars.h"
+#include "bg0SpacePause.h"
 
 
 
@@ -14,6 +15,8 @@ void initialize();
 
 unsigned short buttons;
 unsigned short oldButtons;
+
+unsigned short hOff;
 
 OBJ_ATTR shadowOAM[128];
 
@@ -76,10 +79,9 @@ void start(){
 		goToGame();
 	}
 	
-
 }
 void goToGame() {
-   
+    hOff = tmphOff;
 	state = GAME;
 }
 void game() {
@@ -90,15 +92,22 @@ void game() {
     waitForVBlank();
     DMANow(3, shadowOAM, OAM, 128*4);
     //lets the player win if all of the enemies have been killedenemiesRemaining == 0
-	if(BUTTON_PRESSED(BUTTON_A)) {
+	if(BUTTON_PRESSED(BUTTON_A)) { 
+        REG_BG0HOFF = 0;
+        REG_BG1HOFF = 0;
 		goToWin();
 	}
     //if the player has no lives lef then the player looses the game(livesRemaining == 0
-	if(BUTTON_PRESSED(BUTTON_A)) {
+	if(BUTTON_PRESSED(BUTTON_B)) {
+        REG_BG0HOFF = 0;
+        REG_BG1HOFF = 0;
 		goToLose();
 	}
     //player can pause the game at any time
 	if(BUTTON_PRESSED(BUTTON_START)) {
+        tmphOff = hOff;
+        REG_BG0HOFF = 0;
+        REG_BG1HOFF = 0;
 		goToPause();
 	}
 
@@ -110,25 +119,26 @@ void cutScene() {
 
 }
 void goToPause() {
-    
 	state = PAUSE;
 }
 //shows the pause screen
 void pause() {
     REG_DISPCTL =  MODE0 | BG0_ENABLE;
 
-	DMANow(3, bg1StarsPal, PALETTE, 256);
-    DMANow(3, bg1StarsTiles, &CHARBLOCK[0], bg1StarsTilesLen / 2);
-    DMANow(3, bg1StarsMap, &SCREENBLOCK[28], 1024 * 4);
+	DMANow(3, bg0SpacePausePal, PALETTE, 256);
+    DMANow(3, bg0SpacePauseTiles, &CHARBLOCK[0], bg0SpacePauseTilesLen / 2);
+    DMANow(3, bg0SpacePauseMap, &SCREENBLOCK[28], 1024 * 4);
 
     REG_BG0CNT = BG_CHARBLOCK(0) | BG_SCREENBLOCK(28) | BG_4BPP | BG_SIZE_LARGE;
     //player can return to the game at any time
 	if(BUTTON_PRESSED(BUTTON_START)) {
+       
 		dispBackground();
 		goToGame();
 	}
 }
 void goToWin() {
+    
     REG_DISPCTL =  MODE0 | BG0_ENABLE;
 	state = WIN;
 }

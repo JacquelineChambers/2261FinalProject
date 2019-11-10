@@ -44,7 +44,7 @@ void flipPage();
 
 
 extern unsigned short hOff;
-
+extern unsigned short tmphOff;
 
 
 
@@ -215,6 +215,7 @@ extern const unsigned short spritesPal[256];
 # 8 "game.c" 2
 
 unsigned short hOff;
+unsigned short tmphOff;
 int livesRemaining;
 PLAYER player;
 OBJ_ATTR shadowOAM[128];
@@ -228,6 +229,8 @@ void initGame() {
 }
 
 void dispBackground() {
+
+
 
    (*(unsigned short *)0x4000000) = 0 | (1<<9) | (1<<8);
     DMANow(3, bg0SpacePal, ((unsigned short *)0x5000000), 256);

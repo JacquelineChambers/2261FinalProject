@@ -113,7 +113,7 @@ void flipPage();
 // ============================== PARALLAX ===============================
 
 extern unsigned short hOff;
-
+extern unsigned short tmphOff;
 
 // ================================= SPRITES ==================================
 

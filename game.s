@@ -228,5 +228,6 @@ drawPlayer:
 	.comm	shadowOAM,1024,4
 	.comm	player,48,4
 	.comm	livesRemaining,4,4
+	.comm	tmphOff,2,2
 	.comm	hOff,2,2
 	.ident	"GCC: (devkitARM release 53) 9.1.0"

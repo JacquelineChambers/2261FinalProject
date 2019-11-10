@@ -44,7 +44,7 @@ void flipPage();
 
 
 extern unsigned short hOff;
-
+extern unsigned short tmphOff;
 
 
 

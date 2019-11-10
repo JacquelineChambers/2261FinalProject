@@ -45,7 +45,7 @@ void flipPage();
 
 
 extern unsigned short hOff;
-
+extern unsigned short tmphOff;
 
 
 
@@ -226,6 +226,16 @@ extern const unsigned short bg1StarsMap[1024];
 
 extern const unsigned short bg1StarsPal[256];
 # 10 "main.c" 2
+# 1 "bg0SpacePause.h" 1
+# 22 "bg0SpacePause.h"
+extern const unsigned short bg0SpacePauseTiles[2352];
+
+
+extern const unsigned short bg0SpacePauseMap[1024];
+
+
+extern const unsigned short bg0SpacePausePal[256];
+# 11 "main.c" 2
 
 
 
@@ -233,6 +243,8 @@ void initialize();
 
 unsigned short buttons;
 unsigned short oldButtons;
+
+unsigned short hOff;
 
 OBJ_ATTR shadowOAM[128];
 
@@ -298,7 +310,7 @@ void start(){
 
 }
 void goToGame() {
-
+    hOff = tmphOff;
  state = GAME;
 }
 void game() {
@@ -310,14 +322,21 @@ void game() {
     DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 128*4);
 
  if((!(~(oldButtons)&((1<<0))) && (~buttons & ((1<<0))))) {
+        (*(volatile unsigned short *)0x04000010) = 0;
+        (*(volatile unsigned short *)0x04000014) = 0;
   goToWin();
  }
 
- if((!(~(oldButtons)&((1<<0))) && (~buttons & ((1<<0))))) {
+ if((!(~(oldButtons)&((1<<1))) && (~buttons & ((1<<1))))) {
+        (*(volatile unsigned short *)0x04000010) = 0;
+        (*(volatile unsigned short *)0x04000014) = 0;
   goToLose();
  }
 
  if((!(~(oldButtons)&((1<<3))) && (~buttons & ((1<<3))))) {
+        tmphOff = hOff;
+        (*(volatile unsigned short *)0x04000010) = 0;
+        (*(volatile unsigned short *)0x04000014) = 0;
   goToPause();
  }
 
@@ -329,25 +348,26 @@ void cutScene() {
 
 }
 void goToPause() {
-
  state = PAUSE;
 }
 
 void pause() {
     (*(unsigned short *)0x4000000) = 0 | (1<<8);
 
- DMANow(3, bg1StarsPal, ((unsigned short *)0x5000000), 256);
-    DMANow(3, bg1StarsTiles, &((charblock *)0x6000000)[0], 1088 / 2);
-    DMANow(3, bg1StarsMap, &((screenblock *)0x6000000)[28], 1024 * 4);
+ DMANow(3, bg0SpacePausePal, ((unsigned short *)0x5000000), 256);
+    DMANow(3, bg0SpacePauseTiles, &((charblock *)0x6000000)[0], 4704 / 2);
+    DMANow(3, bg0SpacePauseMap, &((screenblock *)0x6000000)[28], 1024 * 4);
 
     (*(volatile unsigned short*)0x4000008) = ((0)<<2) | ((28)<<8) | (0<<7) | (3<<14);
 
  if((!(~(oldButtons)&((1<<3))) && (~buttons & ((1<<3))))) {
+
   dispBackground();
   goToGame();
  }
 }
 void goToWin() {
+
     (*(unsigned short *)0x4000000) = 0 | (1<<8);
  state = WIN;
 }
