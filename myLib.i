@@ -49,6 +49,7 @@ extern unsigned short tmphOff;
 
 
 
+
 typedef struct {
     unsigned short attr0;
     unsigned short attr1;
@@ -59,12 +60,12 @@ typedef struct {
 
 
 extern OBJ_ATTR shadowOAM[];
-# 162 "myLib.h"
+# 163 "myLib.h"
  void hideSprites();
-# 183 "myLib.h"
+# 184 "myLib.h"
 extern unsigned short oldButtons;
 extern unsigned short buttons;
-# 194 "myLib.h"
+# 195 "myLib.h"
 typedef volatile struct {
     volatile const void *src;
     volatile void *dst;
@@ -73,9 +74,9 @@ typedef volatile struct {
 
 
 extern DMA *dma;
-# 234 "myLib.h"
+# 235 "myLib.h"
 void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned int cnt);
-# 326 "myLib.h"
+# 327 "myLib.h"
 typedef struct{
     const unsigned char* data;
     int length;

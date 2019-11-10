@@ -100,7 +100,9 @@ start:
 	ldr	r3, .L15+32
 	mov	lr, pc
 	bx	r3
+	mov	r3, #4864
 	mov	r2, #1
+	strh	r3, [r5]	@ movhi
 	ldr	r3, .L15+36
 	ldr	r1, .L15+40
 	ldrh	r0, [r3]
@@ -136,7 +138,10 @@ goToGame:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	@ link register save eliminated.
+	mov	r3, #67108864
+	mov	r1, #4864
 	mov	r2, #1
+	strh	r1, [r3]	@ movhi
 	ldr	r3, .L18
 	ldr	r1, .L18+4
 	ldrh	r0, [r3]
@@ -351,7 +356,9 @@ pause:
 	ldr	r3, .L52+28
 	mov	lr, pc
 	bx	r3
+	mov	r3, #4864
 	mov	r2, #1
+	strh	r3, [r5]	@ movhi
 	ldr	r3, .L52+32
 	ldr	r1, .L52+36
 	ldrh	r0, [r3]
@@ -416,7 +423,7 @@ win:
 	ldr	r1, .L63+4
 	mov	lr, pc
 	bx	r4
-	mov	r3, #64
+	mov	r3, #608
 	mov	r2, #100663296
 	mov	r0, #3
 	ldr	r1, .L63+8
@@ -447,84 +454,14 @@ win:
 	.align	2
 .L63:
 	.word	DMANow
-	.word	bgTestPal
-	.word	bgTestTiles
+	.word	winScreenPal
+	.word	winScreenTiles
 	.word	100720640
-	.word	bgTestMap
+	.word	winScreenMap
 	.word	oldButtons
 	.word	buttons
 	.word	state
 	.size	win, .-win
-	.section	.text.startup,"ax",%progbits
-	.align	2
-	.global	main
-	.syntax unified
-	.arm
-	.fpu softvfp
-	.type	main, %function
-main:
-	@ Function supports interworking.
-	@ Volatile: function does not return.
-	@ args = 0, pretend = 0, frame = 0
-	@ frame_needed = 0, uses_anonymous_args = 0
-	mov	r3, #0
-	mov	r2, r3
-	ldr	r6, .L76
-	push	{r4, r7, fp, lr}
-	str	r3, [r6]
-	ldr	fp, .L76+4
-	ldr	r5, .L76+8
-	ldr	r10, .L76+12
-	ldr	r9, .L76+16
-	ldr	r8, .L76+20
-	ldr	r7, .L76+24
-	ldr	r4, .L76+28
-.L66:
-	ldrh	r3, [fp]
-.L67:
-	strh	r3, [r5]	@ movhi
-	ldrh	r3, [r4, #48]
-	strh	r3, [fp]	@ movhi
-	cmp	r2, #4
-	ldrls	pc, [pc, r2, asl #2]
-	b	.L67
-.L69:
-	.word	.L72
-	.word	.L71
-	.word	.L70
-	.word	.L68
-	.word	.L68
-.L68:
-	mov	lr, pc
-	bx	r7
-.L73:
-	ldr	r2, [r6]
-	b	.L66
-.L70:
-	mov	lr, pc
-	bx	r8
-	b	.L73
-.L71:
-	mov	lr, pc
-	bx	r9
-	b	.L73
-.L72:
-	mov	lr, pc
-	bx	r10
-	b	.L73
-.L77:
-	.align	2
-.L76:
-	.word	state
-	.word	buttons
-	.word	oldButtons
-	.word	start
-	.word	game
-	.word	pause
-	.word	win
-	.word	67109120
-	.size	main, .-main
-	.text
 	.align	2
 	.global	goToLose
 	.syntax unified
@@ -539,13 +476,13 @@ goToLose:
 	mov	r1, #67108864
 	mov	r0, #256
 	mov	r2, #4
-	ldr	r3, .L79
+	ldr	r3, .L66
 	strh	r0, [r1]	@ movhi
 	str	r2, [r3]
 	bx	lr
-.L80:
+.L67:
 	.align	2
-.L79:
+.L66:
 	.word	state
 	.size	goToLose, .-goToLose
 	.align	2
@@ -558,9 +495,128 @@ lose:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	@ link register save eliminated.
-	b	win
+	push	{r4, lr}
+	mov	r3, #256
+	ldr	r4, .L74
+	mov	r2, #83886080
+	mov	r0, #3
+	ldr	r1, .L74+4
+	mov	lr, pc
+	bx	r4
+	mov	r3, #720
+	mov	r2, #100663296
+	mov	r0, #3
+	ldr	r1, .L74+8
+	mov	lr, pc
+	bx	r4
+	mov	r3, #4096
+	ldr	r2, .L74+12
+	ldr	r1, .L74+16
+	mov	r0, #3
+	mov	lr, pc
+	bx	r4
+	mov	r2, #67108864
+	mov	r1, #56320
+	ldr	r3, .L74+20
+	strh	r1, [r2, #8]	@ movhi
+	ldrh	r3, [r3]
+	tst	r3, #8
+	beq	.L68
+	ldr	r3, .L74+24
+	ldrh	r3, [r3]
+	ands	r3, r3, #8
+	ldreq	r2, .L74+28
+	streq	r3, [r2]
+.L68:
+	pop	{r4, lr}
+	bx	lr
+.L75:
+	.align	2
+.L74:
+	.word	DMANow
+	.word	loseScreenPal
+	.word	loseScreenTiles
+	.word	100720640
+	.word	loseScreenMap
+	.word	oldButtons
+	.word	buttons
+	.word	state
 	.size	lose, .-lose
+	.section	.text.startup,"ax",%progbits
+	.align	2
+	.global	main
+	.syntax unified
+	.arm
+	.fpu softvfp
+	.type	main, %function
+main:
+	@ Function supports interworking.
+	@ Volatile: function does not return.
+	@ args = 0, pretend = 0, frame = 0
+	@ frame_needed = 0, uses_anonymous_args = 0
+	mov	r3, #0
+	mov	r2, r3
+	ldr	r6, .L88
+	push	{r4, r7, fp, lr}
+	str	r3, [r6]
+	ldr	r7, .L88+4
+	ldr	r5, .L88+8
+	ldr	fp, .L88+12
+	ldr	r10, .L88+16
+	ldr	r9, .L88+20
+	ldr	r8, .L88+24
+	ldr	r4, .L88+28
+.L77:
+	ldrh	r3, [r7]
+.L78:
+	strh	r3, [r5]	@ movhi
+	ldrh	r3, [r4, #48]
+	strh	r3, [r7]	@ movhi
+	cmp	r2, #4
+	ldrls	pc, [pc, r2, asl #2]
+	b	.L78
+.L80:
+	.word	.L84
+	.word	.L83
+	.word	.L82
+	.word	.L81
+	.word	.L79
+.L79:
+	ldr	r3, .L88+32
+	mov	lr, pc
+	bx	r3
+.L85:
+	ldr	r2, [r6]
+	b	.L77
+.L81:
+	mov	lr, pc
+	bx	r8
+	b	.L85
+.L82:
+	mov	lr, pc
+	bx	r9
+	b	.L85
+.L83:
+	mov	lr, pc
+	bx	r10
+	b	.L85
+.L84:
+	mov	lr, pc
+	bx	fp
+	b	.L85
+.L89:
+	.align	2
+.L88:
+	.word	state
+	.word	buttons
+	.word	oldButtons
+	.word	start
+	.word	game
+	.word	pause
+	.word	win
+	.word	67109120
+	.word	lose
+	.size	main, .-main
 	.comm	state,4,4
 	.comm	shadowOAM,1024,4
 	.comm	hOff,2,2

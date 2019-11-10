@@ -1,14 +1,15 @@
 
+//internal .h files
 #include "myLib.h"
 #include "game.h"
 
-//include sprite sheet .h
-#include "bgTest.h"
+//external .h files
+#include "loseScreen.h"
+#include "winScreen.h"
 #include "moonArt.h"
 #include "bg0Space.h"
 #include "bg1Stars.h"
 #include "bg0SpacePause.h"
-
 
 
 void initialize();
@@ -76,16 +77,17 @@ void start(){
     //allows the player to start the game
 	if (BUTTON_PRESSED(BUTTON_START)) {
 		initGame();
+        
 		goToGame();
 	}
 	
 }
 void goToGame() {
+    REG_DISPCTL =  MODE0 | BG1_ENABLE | BG0_ENABLE | SPRITE_ENABLE;
     hOff = tmphOff;
 	state = GAME;
 }
 void game() {
-	
     //updates, draws, and shows the games sprites
 	updateGame();
     drawGame();
@@ -144,9 +146,9 @@ void goToWin() {
 }
 //shows the win screen
 void win() {
-	DMANow(3, bgTestPal, PALETTE, 256);
-    DMANow(3, bgTestTiles, &CHARBLOCK[0], bgTestTilesLen / 2);
-    DMANow(3, bgTestMap, &SCREENBLOCK[28], 1024 * 4);
+	DMANow(3, winScreenPal, PALETTE, 256);
+    DMANow(3, winScreenTiles, &CHARBLOCK[0], winScreenTilesLen / 2);
+    DMANow(3, winScreenMap, &SCREENBLOCK[28], 1024 * 4);
 
     REG_BG0CNT = BG_CHARBLOCK(0) | BG_SCREENBLOCK(28) | BG_4BPP | BG_SIZE_LARGE;
     //allows the player to play the game again
@@ -160,9 +162,9 @@ void goToLose() {
 }
 //shows the lose screen
 void lose() {
-	DMANow(3, bgTestPal, PALETTE, 256);
-    DMANow(3, bgTestTiles, &CHARBLOCK[0], bgTestTilesLen / 2);
-    DMANow(3, bgTestMap, &SCREENBLOCK[28], 1024 * 4);
+	DMANow(3, loseScreenPal, PALETTE, 256);
+    DMANow(3, loseScreenTiles, &CHARBLOCK[0], loseScreenTilesLen / 2);
+    DMANow(3, loseScreenMap, &SCREENBLOCK[28], 1024 * 4);
 
     REG_BG0CNT = BG_CHARBLOCK(0) | BG_SCREENBLOCK(28) | BG_4BPP | BG_SIZE_LARGE;
     //allows the player to play the game again

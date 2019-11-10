@@ -22,16 +22,14 @@ dispBackground:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r4, r5, r6, lr}
-	mov	r2, #768
-	mov	r5, #67108864
-	ldr	r4, .L4
-	strh	r2, [r5]	@ movhi
 	mov	r3, #256
+	ldr	r4, .L4
 	mov	r2, #83886080
 	mov	r0, #3
 	ldr	r1, .L4+4
 	mov	lr, pc
 	bx	r4
+	mov	r5, #67108864
 	mov	r2, #7936
 	mov	r3, #1888
 	strh	r2, [r5, #10]	@ movhi
@@ -108,7 +106,7 @@ initPlayer:
 	mov	r1, #16
 	mov	r2, #1
 	mov	ip, #120
-	mov	r0, #50
+	mov	r0, #80
 	ldr	r3, .L8+20
 	str	lr, [r3]
 	ldr	r3, .L8+24
@@ -145,12 +143,17 @@ initGame:
 	ldr	r3, .L12
 	mov	lr, pc
 	bx	r3
+	bl	initPlayer
+	ldr	r3, .L12+4
+	mov	lr, pc
+	bx	r3
 	pop	{r4, lr}
-	b	initPlayer
+	bx	lr
 .L13:
 	.align	2
 .L12:
 	.word	initAliens
+	.word	hideSprites
 	.size	initGame, .-initGame
 	.align	2
 	.global	updateGame

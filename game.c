@@ -1,6 +1,7 @@
 #include "myLib.h"
 #include "game.h"
 #include "enemies.h"
+#include "movement.h"
 
 #include "bg0Space.h"
 #include "bg1Stars.h"
@@ -17,14 +18,12 @@ void initGame() {
      dispBackground();
      initAliens();
      initPlayer();
+     hideSprites();
     
 }
 
 void dispBackground() {
 
- 
-    
-   REG_DISPCTL =  MODE0 | BG1_ENABLE | BG0_ENABLE;
     DMANow(3, bg0SpacePal, PALETTE, 256);
 
     REG_BG1CNT = BG_CHARBLOCK(0) | BG_SCREENBLOCK(31) | BG_SIZE_SMALL;
@@ -50,7 +49,7 @@ void initPlayer() {
     player.cdel = 1;
     player.rdel = 1;
 	player.col = 120;
-	player.row = 50;
+	player.row = 80;
 }
 
 void updateGame() {
@@ -64,12 +63,16 @@ void updatePlayer() {
 
 void drawGame() {
     drawPlayer();
+
+    
 }
 
 void drawPlayer() {
-    shadowOAM[0].attr0 = player.row | ATTR0_4BPP | ATTR0_SQUARE;
+    shadowOAM[0].attr0 = player.row | ATTR0_4BPP | ATTR0_SQUARE | ATTR0_AFFINE;//big yellow sqaure is because of this affine
 	shadowOAM[0].attr1 = player.col | ATTR1_SMALL;
     shadowOAM[0].attr2 = ATTR2_PALROW(0) | ATTR2_TILEID(0,0);
+    
+ 
 }
 
 

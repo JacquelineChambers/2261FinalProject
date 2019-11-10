@@ -49,6 +49,7 @@ extern unsigned short tmphOff;
 
 
 
+
 typedef struct {
     unsigned short attr0;
     unsigned short attr1;
@@ -59,12 +60,12 @@ typedef struct {
 
 
 extern OBJ_ATTR shadowOAM[];
-# 162 "myLib.h"
+# 163 "myLib.h"
  void hideSprites();
-# 183 "myLib.h"
+# 184 "myLib.h"
 extern unsigned short oldButtons;
 extern unsigned short buttons;
-# 194 "myLib.h"
+# 195 "myLib.h"
 typedef volatile struct {
     volatile const void *src;
     volatile void *dst;
@@ -73,9 +74,9 @@ typedef volatile struct {
 
 
 extern DMA *dma;
-# 234 "myLib.h"
+# 235 "myLib.h"
 void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned int cnt);
-# 326 "myLib.h"
+# 327 "myLib.h"
 typedef struct{
     const unsigned char* data;
     int length;
@@ -185,6 +186,8 @@ int fireBullet(BULLET* bullet);
 # 3 "game.c" 2
 # 1 "enemies.h" 1
 # 4 "game.c" 2
+# 1 "movement.h" 1
+# 5 "game.c" 2
 
 # 1 "bg0Space.h" 1
 # 22 "bg0Space.h"
@@ -195,7 +198,7 @@ extern const unsigned short bg0SpaceMap[2048];
 
 
 extern const unsigned short bg0SpacePal[256];
-# 6 "game.c" 2
+# 7 "game.c" 2
 # 1 "bg1Stars.h" 1
 # 22 "bg1Stars.h"
 extern const unsigned short bg1StarsTiles[544];
@@ -205,14 +208,14 @@ extern const unsigned short bg1StarsMap[1024];
 
 
 extern const unsigned short bg1StarsPal[256];
-# 7 "game.c" 2
+# 8 "game.c" 2
 # 1 "sprites.h" 1
 # 21 "sprites.h"
 extern const unsigned short spritesTiles[16384];
 
 
 extern const unsigned short spritesPal[256];
-# 8 "game.c" 2
+# 9 "game.c" 2
 
 unsigned short hOff;
 unsigned short tmphOff;
@@ -225,14 +228,12 @@ void initGame() {
      dispBackground();
      initAliens();
      initPlayer();
+     hideSprites();
 
 }
 
 void dispBackground() {
 
-
-
-   (*(unsigned short *)0x4000000) = 0 | (1<<9) | (1<<8);
     DMANow(3, bg0SpacePal, ((unsigned short *)0x5000000), 256);
 
     (*(volatile unsigned short*)0x400000A) = ((0)<<2) | ((31)<<8) | (0<<14);
@@ -258,7 +259,7 @@ void initPlayer() {
     player.cdel = 1;
     player.rdel = 1;
  player.col = 120;
- player.row = 50;
+ player.row = 80;
 }
 
 void updateGame() {
@@ -272,10 +273,14 @@ void updatePlayer() {
 
 void drawGame() {
     drawPlayer();
+
+
 }
 
 void drawPlayer() {
-    shadowOAM[0].attr0 = player.row | (0<<13) | (0<<14);
+    shadowOAM[0].attr0 = player.row | (0<<13) | (0<<14) ;
  shadowOAM[0].attr1 = player.col | (1<<14);
     shadowOAM[0].attr2 = ((0)<<12) | ((0)*32+(0));
+
+
 }
