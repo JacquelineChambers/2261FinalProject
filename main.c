@@ -86,7 +86,7 @@ void game() {
 	
     //updates, draws, and shows the games sprites
 	updateGame();
-    //drawGame();
+    drawGame();
     waitForVBlank();
     DMANow(3, shadowOAM, OAM, 128*4);
     //lets the player win if all of the enemies have been killedenemiesRemaining == 0
@@ -152,11 +152,11 @@ void goToLose() {
 void lose() {
 	DMANow(3, bgTestPal, PALETTE, 256);
     DMANow(3, bgTestTiles, &CHARBLOCK[0], bgTestTilesLen / 2);
-    DMANow(3,  bgTestMap, &SCREENBLOCK[28], 1024 * 4);
+    DMANow(3, bgTestMap, &SCREENBLOCK[28], 1024 * 4);
 
     REG_BG0CNT = BG_CHARBLOCK(0) | BG_SCREENBLOCK(28) | BG_4BPP | BG_SIZE_LARGE;
     //allows the player to play the game again
     if (BUTTON_PRESSED(BUTTON_START)) {
-		//initialize();
+		initialize();
 	}
 }

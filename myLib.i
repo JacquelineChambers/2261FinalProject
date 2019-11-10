@@ -1169,8 +1169,6 @@ unsigned short *videoBuffer = (unsigned short *)0x6000000;
 DMA *dma = (DMA *)0x40000B0;
 
 
-
-
 void setPixel3(int col, int row, unsigned short color) {
     videoBuffer[((row)*(240)+(col))] = color;
 }

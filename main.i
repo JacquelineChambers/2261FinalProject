@@ -305,7 +305,7 @@ void game() {
 
 
  updateGame();
-
+    drawGame();
     waitForVBlank();
     DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 128*4);
 
@@ -376,6 +376,6 @@ void lose() {
     (*(volatile unsigned short*)0x4000008) = ((0)<<2) | ((28)<<8) | (0<<7) | (3<<14);
 
     if ((!(~(oldButtons)&((1<<3))) && (~buttons & ((1<<3))))) {
-
+  initialize();
  }
 }

@@ -81,6 +81,56 @@ dispBackground:
 	.word	hOff
 	.size	dispBackground, .-dispBackground
 	.align	2
+	.global	initPlayer
+	.syntax unified
+	.arm
+	.fpu softvfp
+	.type	initPlayer, %function
+initPlayer:
+	@ Function supports interworking.
+	@ args = 0, pretend = 0, frame = 0
+	@ frame_needed = 0, uses_anonymous_args = 0
+	push	{r4, lr}
+	mov	r3, #256
+	ldr	r4, .L8
+	mov	r0, #3
+	ldr	r2, .L8+4
+	ldr	r1, .L8+8
+	mov	lr, pc
+	bx	r4
+	mov	r3, #16384
+	mov	r0, #3
+	ldr	r2, .L8+12
+	ldr	r1, .L8+16
+	mov	lr, pc
+	bx	r4
+	mov	lr, #3
+	mov	r1, #16
+	mov	r2, #1
+	mov	ip, #120
+	mov	r0, #50
+	ldr	r3, .L8+20
+	str	lr, [r3]
+	ldr	r3, .L8+24
+	pop	{r4, lr}
+	stm	r3, {r0, ip}
+	str	r1, [r3, #16]
+	str	r1, [r3, #20]
+	str	r2, [r3, #12]
+	str	r2, [r3, #8]
+	bx	lr
+.L9:
+	.align	2
+.L8:
+	.word	DMANow
+	.word	83886592
+	.word	spritesPal
+	.word	100728832
+	.word	spritesTiles
+	.word	livesRemaining
+	.word	player
+	.size	initPlayer, .-initPlayer
+	.align	2
 	.global	initGame
 	.syntax unified
 	.arm
@@ -90,8 +140,17 @@ initGame:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	@ link register save eliminated.
-	b	dispBackground
+	push	{r4, lr}
+	bl	dispBackground
+	ldr	r3, .L12
+	mov	lr, pc
+	bx	r3
+	pop	{r4, lr}
+	b	initPlayer
+.L13:
+	.align	2
+.L12:
+	.word	initAliens
 	.size	initGame, .-initGame
 	.align	2
 	.global	updateGame
@@ -104,17 +163,70 @@ updateGame:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r4, lr}
-	ldr	r3, .L9
+	ldr	r3, .L16
 	mov	lr, pc
 	bx	r3
 	pop	{r4, lr}
 	bx	lr
-.L10:
+.L17:
 	.align	2
-.L9:
+.L16:
 	.word	parallax
 	.size	updateGame, .-updateGame
+	.align	2
+	.global	updatePlayer
+	.syntax unified
+	.arm
+	.fpu softvfp
+	.type	updatePlayer, %function
+updatePlayer:
+	@ Function supports interworking.
+	@ args = 0, pretend = 0, frame = 0
+	@ frame_needed = 0, uses_anonymous_args = 0
+	@ link register save eliminated.
+	bx	lr
+	.size	updatePlayer, .-updatePlayer
+	.align	2
+	.global	drawGame
+	.syntax unified
+	.arm
+	.fpu softvfp
+	.type	drawGame, %function
+drawGame:
+	@ Function supports interworking.
+	@ args = 0, pretend = 0, frame = 0
+	@ frame_needed = 0, uses_anonymous_args = 0
+	@ link register save eliminated.
+	mov	r1, #0
+	ldr	r3, .L20
+	ldm	r3, {r0, r2}
+	ldr	r3, .L20+4
+	orr	r2, r2, #16384
+	strh	r2, [r3, #2]	@ movhi
+	strh	r0, [r3]	@ movhi
+	strh	r1, [r3, #4]	@ movhi
+	bx	lr
+.L21:
+	.align	2
+.L20:
+	.word	player
+	.word	shadowOAM
+	.size	drawGame, .-drawGame
+	.align	2
+	.global	drawPlayer
+	.syntax unified
+	.arm
+	.fpu softvfp
+	.type	drawPlayer, %function
+drawPlayer:
+	@ Function supports interworking.
+	@ args = 0, pretend = 0, frame = 0
+	@ frame_needed = 0, uses_anonymous_args = 0
+	@ link register save eliminated.
+	b	drawGame
+	.size	drawPlayer, .-drawPlayer
 	.comm	shadowOAM,1024,4
-	.comm	hOff_2,2,2
+	.comm	player,48,4
+	.comm	livesRemaining,4,4
 	.comm	hOff,2,2
 	.ident	"GCC: (devkitARM release 53) 9.1.0"

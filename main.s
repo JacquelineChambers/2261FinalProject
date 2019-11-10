@@ -156,18 +156,21 @@ game:
 	ldr	r3, .L37+4
 	mov	lr, pc
 	bx	r3
-	ldr	r4, .L37+8
+	ldr	r3, .L37+8
+	mov	lr, pc
+	bx	r3
+	ldr	r4, .L37+12
 	mov	r3, #512
 	mov	r2, #117440512
 	mov	r0, #3
-	ldr	r1, .L37+12
+	ldr	r1, .L37+16
 	mov	lr, pc
 	bx	r4
-	ldr	r2, .L37+16
+	ldr	r2, .L37+20
 	ldrh	r3, [r2]
 	tst	r3, #1
 	beq	.L21
-	ldr	r1, .L37+20
+	ldr	r1, .L37+24
 	ldrh	r3, [r1]
 	tst	r3, #1
 	beq	.L36
@@ -176,11 +179,11 @@ game:
 .L21:
 	tst	r3, #8
 	beq	.L20
-	ldr	r3, .L37+20
+	ldr	r3, .L37+24
 	ldrh	r3, [r3]
 	tst	r3, #8
 	moveq	r2, #2
-	ldreq	r3, .L37+24
+	ldreq	r3, .L37+28
 	streq	r2, [r3]
 .L20:
 	pop	{r4, lr}
@@ -191,7 +194,7 @@ game:
 	mov	r4, #3
 	strh	lr, [ip]	@ movhi
 	ldrh	r3, [r2]
-	ldr	r0, .L37+24
+	ldr	r0, .L37+28
 	tst	r3, #1
 	str	r4, [r0]
 	beq	.L21
@@ -205,6 +208,7 @@ game:
 	.align	2
 .L37:
 	.word	updateGame
+	.word	drawGame
 	.word	waitForVBlank
 	.word	DMANow
 	.word	shadowOAM
@@ -412,73 +416,6 @@ win:
 	.word	buttons
 	.word	state
 	.size	win, .-win
-	.align	2
-	.global	goToLose
-	.syntax unified
-	.arm
-	.fpu softvfp
-	.type	goToLose, %function
-goToLose:
-	@ Function supports interworking.
-	@ args = 0, pretend = 0, frame = 0
-	@ frame_needed = 0, uses_anonymous_args = 0
-	@ link register save eliminated.
-	mov	r1, #67108864
-	mov	r0, #256
-	mov	r2, #4
-	ldr	r3, .L67
-	strh	r0, [r1]	@ movhi
-	str	r2, [r3]
-	bx	lr
-.L68:
-	.align	2
-.L67:
-	.word	state
-	.size	goToLose, .-goToLose
-	.align	2
-	.global	lose
-	.syntax unified
-	.arm
-	.fpu softvfp
-	.type	lose, %function
-lose:
-	@ Function supports interworking.
-	@ args = 0, pretend = 0, frame = 0
-	@ frame_needed = 0, uses_anonymous_args = 0
-	push	{r4, lr}
-	mov	r3, #256
-	ldr	r4, .L71
-	mov	r2, #83886080
-	mov	r0, #3
-	ldr	r1, .L71+4
-	mov	lr, pc
-	bx	r4
-	mov	r3, #64
-	mov	r2, #100663296
-	mov	r0, #3
-	ldr	r1, .L71+8
-	mov	lr, pc
-	bx	r4
-	mov	r3, #4096
-	ldr	r2, .L71+12
-	mov	r0, #3
-	ldr	r1, .L71+16
-	mov	lr, pc
-	bx	r4
-	mov	r3, #67108864
-	mov	r2, #56320
-	pop	{r4, lr}
-	strh	r2, [r3, #8]	@ movhi
-	bx	lr
-.L72:
-	.align	2
-.L71:
-	.word	DMANow
-	.word	bgTestPal
-	.word	bgTestTiles
-	.word	100720640
-	.word	bgTestMap
-	.size	lose, .-lose
 	.section	.text.startup,"ax",%progbits
 	.align	2
 	.global	main
@@ -493,57 +430,52 @@ main:
 	@ frame_needed = 0, uses_anonymous_args = 0
 	mov	r3, #0
 	mov	r2, r3
-	ldr	r6, .L85
+	ldr	r6, .L77
 	push	{r4, r7, fp, lr}
 	str	r3, [r6]
-	ldr	r7, .L85+4
-	ldr	r5, .L85+8
-	ldr	fp, .L85+12
-	ldr	r10, .L85+16
-	ldr	r9, .L85+20
-	ldr	r8, .L85+24
-	ldr	r4, .L85+28
-.L74:
-	ldrh	r3, [r7]
-.L75:
+	ldr	fp, .L77+4
+	ldr	r5, .L77+8
+	ldr	r10, .L77+12
+	ldr	r9, .L77+16
+	ldr	r8, .L77+20
+	ldr	r7, .L77+24
+	ldr	r4, .L77+28
+.L67:
+	ldrh	r3, [fp]
+.L68:
 	strh	r3, [r5]	@ movhi
 	ldrh	r3, [r4, #48]
-	strh	r3, [r7]	@ movhi
+	strh	r3, [fp]	@ movhi
 	cmp	r2, #4
 	ldrls	pc, [pc, r2, asl #2]
-	b	.L75
-.L77:
-	.word	.L81
-	.word	.L80
-	.word	.L79
-	.word	.L78
-	.word	.L76
-.L76:
-	ldr	r3, .L85+32
+	b	.L68
+.L70:
+	.word	.L73
+	.word	.L72
+	.word	.L71
+	.word	.L69
+	.word	.L69
+.L69:
 	mov	lr, pc
-	bx	r3
-.L82:
+	bx	r7
+.L74:
 	ldr	r2, [r6]
-	b	.L74
-.L78:
+	b	.L67
+.L71:
 	mov	lr, pc
 	bx	r8
-	b	.L82
-.L79:
+	b	.L74
+.L72:
 	mov	lr, pc
 	bx	r9
-	b	.L82
-.L80:
+	b	.L74
+.L73:
 	mov	lr, pc
 	bx	r10
-	b	.L82
-.L81:
-	mov	lr, pc
-	bx	fp
-	b	.L82
-.L86:
+	b	.L74
+.L78:
 	.align	2
-.L85:
+.L77:
 	.word	state
 	.word	buttons
 	.word	oldButtons
@@ -552,8 +484,44 @@ main:
 	.word	pause
 	.word	win
 	.word	67109120
-	.word	lose
 	.size	main, .-main
+	.text
+	.align	2
+	.global	goToLose
+	.syntax unified
+	.arm
+	.fpu softvfp
+	.type	goToLose, %function
+goToLose:
+	@ Function supports interworking.
+	@ args = 0, pretend = 0, frame = 0
+	@ frame_needed = 0, uses_anonymous_args = 0
+	@ link register save eliminated.
+	mov	r1, #67108864
+	mov	r0, #256
+	mov	r2, #4
+	ldr	r3, .L80
+	strh	r0, [r1]	@ movhi
+	str	r2, [r3]
+	bx	lr
+.L81:
+	.align	2
+.L80:
+	.word	state
+	.size	goToLose, .-goToLose
+	.align	2
+	.global	lose
+	.syntax unified
+	.arm
+	.fpu softvfp
+	.type	lose, %function
+lose:
+	@ Function supports interworking.
+	@ args = 0, pretend = 0, frame = 0
+	@ frame_needed = 0, uses_anonymous_args = 0
+	@ link register save eliminated.
+	b	win
+	.size	lose, .-lose
 	.comm	state,4,4
 	.comm	shadowOAM,1024,4
 	.comm	oldButtons,2,2

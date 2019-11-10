@@ -19,12 +19,11 @@ typedef struct {
 	int col;
 	int height;
 	int width;
-	int enemyType;
-	int enemyPal;
+	int alienType;
+	int alienPal;
 	int active;
 	int erased;
-	int num;
-	int enemyAni;
+	int alienAni;
 } ALIEN;
 
 typedef struct {
@@ -63,7 +62,7 @@ typedef struct {
 #define CARCOUNT 2
 
 extern ALIEN alien[ALIENCOUNT];
-extern ENEMYBULLET enemyLaser[ENEMYLASERCOUNT];
+extern ALIENLASER alienLaser[ALIENLASERCOUNT];
 extern ASTEROID asteroid[ASTEROIDCOUNT];
 extern CAR car[CARCOUNT];
 extern int enemiesRemaining;

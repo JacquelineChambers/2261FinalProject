@@ -183,6 +183,8 @@ void updateBullet(BULLET* bullet);
 
 int fireBullet(BULLET* bullet);
 # 3 "game.c" 2
+# 1 "enemies.h" 1
+# 4 "game.c" 2
 
 # 1 "bg0Space.h" 1
 # 22 "bg0Space.h"
@@ -193,7 +195,7 @@ extern const unsigned short bg0SpaceMap[2048];
 
 
 extern const unsigned short bg0SpacePal[256];
-# 5 "game.c" 2
+# 6 "game.c" 2
 # 1 "bg1Stars.h" 1
 # 22 "bg1Stars.h"
 extern const unsigned short bg1StarsTiles[544];
@@ -203,16 +205,25 @@ extern const unsigned short bg1StarsMap[1024];
 
 
 extern const unsigned short bg1StarsPal[256];
-# 6 "game.c" 2
+# 7 "game.c" 2
+# 1 "sprites.h" 1
+# 21 "sprites.h"
+extern const unsigned short spritesTiles[16384];
+
+
+extern const unsigned short spritesPal[256];
+# 8 "game.c" 2
 
 unsigned short hOff;
-unsigned short hOff_2;
-
+int livesRemaining;
+PLAYER player;
 OBJ_ATTR shadowOAM[128];
 
 void initGame() {
 
      dispBackground();
+     initAliens();
+     initPlayer();
 
 }
 
@@ -234,6 +245,34 @@ void dispBackground() {
 
 }
 
+void initPlayer() {
+    DMANow(3, spritesPal, ((unsigned short *)0x5000200), 256);
+ DMANow(3, spritesTiles, &((charblock *)0x6000000)[4], 32768/2);
+
+    livesRemaining = 3;
+    player.width = 16;
+    player.height = 16;
+    player.cdel = 1;
+    player.rdel = 1;
+ player.col = 120;
+ player.row = 50;
+}
+
 void updateGame() {
     parallax();
+    updatePlayer();
+}
+
+void updatePlayer() {
+
+}
+
+void drawGame() {
+    drawPlayer();
+}
+
+void drawPlayer() {
+    shadowOAM[0].attr0 = player.row | (0<<13) | (0<<14);
+ shadowOAM[0].attr1 = player.col | (1<<14);
+    shadowOAM[0].attr2 = ((0)<<12) | ((0)*32+(0));
 }
