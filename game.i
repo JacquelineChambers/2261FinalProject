@@ -158,6 +158,7 @@ typedef struct {
  int height;
  int active;
  int erased;
+ int sprite;
 } BULLET;
 
 
@@ -189,9 +190,10 @@ void dispBackground();
 void initGame();
 void initPlayer();
 void initPrincess();
+void initBullet();
 
 void drawGame();
-void drawBullets(BULLET* bullet, int j);
+void drawBullet(BULLET* bullet, int j);
 void drawPlayer();
 void drawPrincess();
 
@@ -235,11 +237,13 @@ extern const unsigned short spritesTiles[16384];
 extern const unsigned short spritesPal[256];
 # 9 "game.c" 2
 
+
 unsigned short hOff;
 unsigned short tmphOff;
 int livesRemaining;
 PLAYER player;
 PRINCESS princess;
+BULLET bullet[3];
 OBJ_ATTR shadowOAM[128];
 enum {UP, DOWN, LEFT, RIGHT};
 enum {R, L};
@@ -253,9 +257,8 @@ void initGame() {
      initAliens();
      initPlayer();
      initPrincess();
+     initBullet();
      hideSprites();
-     DMANow(3, spritesPal, ((unsigned short *)0x5000200), 256);
-  DMANow(3, spritesTiles, &((charblock *)0x6000000)[4], 32768/2);
 
 
 }
@@ -272,6 +275,8 @@ void dispBackground() {
     DMANow(3, bg1StarsTiles, &((charblock *)0x6000000)[1], 1088 / 2);
     DMANow(3, bg1StarsMap, &((screenblock *)0x6000000)[28], 2048/2);
 
+    DMANow(3, spritesPal, ((unsigned short *)0x5000200), 256);
+ DMANow(3, spritesTiles, &((charblock *)0x6000000)[4], 32768/2);
     hOff = 0;
 
 
@@ -290,6 +295,7 @@ void initPlayer() {
     movement = UP;
     prevMovement = movement;
     toggle = L;
+
 }
 void initPrincess() {
     princess.hit = 0;
@@ -298,17 +304,34 @@ void initPrincess() {
     princess.width = 16;
     princess.height = 16;
 }
+void initBullet() {
+    for(int i=0; i < 3; i++){
+        bullet[i].col = player.col/2;
+        bullet[i].row = player.row;
+        bullet[i].cdel = 1;
+        bullet[i].rdel = 1;
+        bullet[i].width = 8;
+        bullet[i].height = 8;
+        bullet[i].active = 0;
+        bullet[i].erased = 0;
+        bullet[i].sprite = 10;
+     }
+
+}
 
 void updateGame() {
     parallax();
     updatePlayer();
+
+    for(int i = 0; i< 3; i++){
+
+    }
 }
 
 void updatePlayer() {
     if((!(~(oldButtons)&((1<<0))) && (~buttons & ((1<<0))))) {
 
     }
-
     if((!(~(oldButtons)&((1<<9))) && (~buttons & ((1<<9))))) {
          if(toggle == R) {
              switch(movement) {
@@ -406,22 +429,22 @@ void updatePlayer() {
     if((~((*(volatile unsigned short *)0x04000130)) & ((1<<4)))) {
          switch(prevMovement) {
             case UP:
-                if(player.width + player.col < 140) {
+                if(player.width + player.col < 135) {
                     player.col++;
                 }
                break;
             case RIGHT:
-                if(player.height + player.row < 100) {
+                if(player.height + player.row < 95) {
                     player.row++;
                 }
                break;
             case DOWN:
-                if(player.width + player.col < 140) {
+                if(player.width + player.col < 135) {
                     player.col++;
                 }
                 break;
             case LEFT:
-                if(player.height + player.row < 100) {
+                if(player.height + player.row < 95) {
                     player.row++;
                 }
                 break;
@@ -453,11 +476,17 @@ void updatePlayer() {
         }
     }
 
+
 }
 
 void drawGame() {
+    int j = 2;
     drawPlayer();
     drawPrincess();
+    for(int i = 0; i< 3; i++){
+        drawBullet(&bullet[i], j);
+        j++;
+    }
 
 }
 
@@ -472,5 +501,11 @@ void drawPrincess() {
     shadowOAM[1].attr0 = princess.row | (0<<13) | (0<<14);
  shadowOAM[1].attr1 = princess.col | (1<<14);
     shadowOAM[1].attr2 = ((0)<<12) | ((0)*32+(8));
+
+}
+void drawBullet(BULLET* bullet, int j) {
+    shadowOAM[j].attr0 = bullet->row | (0<<13) | (0<<14);
+ shadowOAM[j].attr1 = bullet->col | (1<<14);
+    shadowOAM[j].attr2 = ((0)<<12) | ((0)*32+(bullet->sprite));
 
 }

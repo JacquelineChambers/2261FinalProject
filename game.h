@@ -38,6 +38,7 @@ typedef struct {
 	int height;
 	int active;
 	int erased;
+	int sprite;
 } BULLET;
 
 
@@ -69,9 +70,10 @@ void dispBackground();
 void initGame();
 void initPlayer();
 void initPrincess();
+void initBullet();
 //draw methods
 void drawGame();
-void drawBullets(BULLET* bullet, int j);
+void drawBullet(BULLET* bullet, int j);
 void drawPlayer();
 void drawPrincess();
 //update methods

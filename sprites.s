@@ -24,7 +24,7 @@ spritesPal:
 	.short	660
 	.short	825
 	.short	31
-	.short	0
+	.short	670
 	.short	0
 	.short	0
 	.short	0
@@ -444,14 +444,14 @@ spritesTiles:
 	.short	0
 	.short	0
 	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
+	.short	28672
+	.short	7
+	.short	30464
+	.short	119
+	.short	30464
+	.short	119
+	.short	28672
+	.short	7
 	.short	0
 	.short	0
 	.short	0
