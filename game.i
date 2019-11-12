@@ -128,12 +128,26 @@ typedef struct {
  int width;
     int height;
     int aniCounter;
+ int sprite;
     int aniState;
     int prevAniState;
     int curFrame;
     int numFrames;
  int bulletTimer;
 } PLAYER;
+
+typedef struct {
+ int row;
+ int col;
+ int width;
+    int height;
+    int aniCounter;
+ int sprite;
+    int aniState;
+    int curFrame;
+    int numFrames;
+ int hit;
+} PRINCESS;
 
 typedef struct {
  int col;
@@ -162,6 +176,7 @@ typedef struct {
 
 
 extern PLAYER player;
+extern PRINCESS princess;
 extern LIVECOUNT liveCount[3];
 extern BULLET bullet[3];
 extern int livesRemaining;
@@ -173,13 +188,16 @@ void dispBackground();
 
 void initGame();
 void initPlayer();
+void initPrincess();
 
 void drawGame();
 void drawBullets(BULLET* bullet, int j);
 void drawPlayer();
+void drawPrincess();
 
 void updateGame();
 void updatePlayer();
+void updatePrincess();
 void updateBullet(BULLET* bullet);
 
 int fireBullet(BULLET* bullet);
@@ -221,13 +239,22 @@ unsigned short hOff;
 unsigned short tmphOff;
 int livesRemaining;
 PLAYER player;
+PRINCESS princess;
 OBJ_ATTR shadowOAM[128];
+enum {UP, DOWN, LEFT, RIGHT};
+enum {R, L};
+int movement;
+int toggle;
+int prevMovement;
 
 void initGame() {
+     DMANow(3, spritesPal, ((unsigned short *)0x5000200), 256);
+  DMANow(3, spritesTiles, &((charblock *)0x6000000)[4], 32768/2);
 
      dispBackground();
      initAliens();
      initPlayer();
+     initPrincess();
      hideSprites();
 
 }
@@ -250,16 +277,25 @@ void dispBackground() {
 }
 
 void initPlayer() {
-    DMANow(3, spritesPal, ((unsigned short *)0x5000200), 256);
- DMANow(3, spritesTiles, &((charblock *)0x6000000)[4], 32768/2);
 
     livesRemaining = 3;
     player.width = 16;
     player.height = 16;
     player.cdel = 1;
     player.rdel = 1;
- player.col = 120;
+ player.col = 110;
  player.row = 80;
+    player.sprite = 0;
+    movement = UP;
+    prevMovement = movement;
+    toggle = L;
+}
+void initPrincess() {
+    princess.hit = 0;
+    princess.row = 110;
+    princess.col = 70;
+    princess.width = 16;
+    princess.height = 16;
 }
 
 void updateGame() {
@@ -268,19 +304,172 @@ void updateGame() {
 }
 
 void updatePlayer() {
+    if((!(~(oldButtons)&((1<<0))) && (~buttons & ((1<<0))))) {
+
+    }
+
+    if((!(~(oldButtons)&((1<<9))) && (~buttons & ((1<<9))))) {
+         if(toggle == R) {
+             switch(movement) {
+            case UP:
+                movement = DOWN;
+                break;
+            case RIGHT:
+                movement = LEFT;
+                break;
+            case DOWN:
+                movement = UP;
+                break;
+            case LEFT:
+                movement = RIGHT;
+                break;
+            }
+        }
+        prevMovement = movement;
+        switch(movement) {
+            case UP:
+                player.col = 110;
+             player.row = 60;
+                player.sprite = 0;
+                movement = LEFT;
+                break;
+            case LEFT:
+                player.col = 100;
+             player.row = 70;
+                player.sprite = 2;
+                movement = DOWN;
+                break;
+            case DOWN:
+                player.col = 110;
+             player.row = 80;
+                player.sprite = 4;
+                movement = RIGHT;
+                break;
+            case RIGHT:
+                player.col = 120;
+             player.row = 70;
+                player.sprite = 6;
+                movement = UP;
+                break;
+        }
+        toggle = L;
+
+    }
+    if((!(~(oldButtons)&((1<<8))) && (~buttons & ((1<<8))))) {
+        if(toggle == L) {
+           switch(movement) {
+            case UP:
+                movement = DOWN;
+                break;
+            case RIGHT:
+                movement = LEFT;
+                break;
+            case DOWN:
+                movement = UP;
+                break;
+            case LEFT:
+                movement = RIGHT;
+                break;
+            }
+        }
+        prevMovement = movement;
+        switch(movement) {
+            case UP:
+                player.col = 110;
+             player.row = 60;
+                player.sprite = 0;
+                movement = RIGHT;
+                break;
+            case RIGHT:
+                player.col = 120;
+             player.row = 70;
+                player.sprite = 6;
+                movement = DOWN;
+                break;
+            case DOWN:
+                player.col = 110;
+             player.row = 80;
+                player.sprite = 4;
+                movement = LEFT;
+                break;
+            case LEFT:
+                player.col = 100;
+             player.row = 70;
+                player.sprite = 2;
+                movement = UP;
+                break;
+        }
+        toggle = R;
+    }
+
+    if((~((*(volatile unsigned short *)0x04000130)) & ((1<<4)))) {
+         switch(prevMovement) {
+            case UP:
+                if(player.width + player.col < 140) {
+                    player.col++;
+                }
+               break;
+            case RIGHT:
+                if(player.height + player.row < 100) {
+                    player.row++;
+                }
+               break;
+            case DOWN:
+                if(player.width + player.col < 140) {
+                    player.col++;
+                }
+                break;
+            case LEFT:
+                if(player.height + player.row < 100) {
+                    player.row++;
+                }
+                break;
+        }
+
+    }
+    if((~((*(volatile unsigned short *)0x04000130)) & ((1<<5)))) {
+        switch(prevMovement) {
+            case UP:
+                if(player.col > 100) {
+                    player.col--;
+                }
+               break;
+            case RIGHT:
+                if(player.row > 60) {
+                    player.row--;
+                }
+               break;
+            case DOWN:
+                if(player.col > 100) {
+                    player.col--;
+                }
+                break;
+            case LEFT:
+                if(player.row > 60) {
+                    player.row--;
+                }
+                break;
+        }
+    }
 
 }
 
 void drawGame() {
     drawPlayer();
-
+    drawPrincess();
 
 }
 
 void drawPlayer() {
-    shadowOAM[0].attr0 = player.row | (0<<13) | (0<<14) ;
+    shadowOAM[0].attr0 = player.row | (0<<13) | (0<<14);
  shadowOAM[0].attr1 = player.col | (1<<14);
-    shadowOAM[0].attr2 = ((0)<<12) | ((0)*32+(0));
+    shadowOAM[0].attr2 = ((0)<<12) | ((0)*32+(player.sprite));
 
+}
+
+void drawPrincess() {
+    shadowOAM[1].attr0 = princess.row | (0<<13) | (0<<14);
+ shadowOAM[1].attr1 = princess.col | (1<<14);
+    shadowOAM[1].attr2 = ((0)<<12) | ((0)*32+(8));
 
 }

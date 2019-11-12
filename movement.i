@@ -17,12 +17,26 @@ typedef struct {
  int width;
     int height;
     int aniCounter;
+ int sprite;
     int aniState;
     int prevAniState;
     int curFrame;
     int numFrames;
  int bulletTimer;
 } PLAYER;
+
+typedef struct {
+ int row;
+ int col;
+ int width;
+    int height;
+    int aniCounter;
+ int sprite;
+    int aniState;
+    int curFrame;
+    int numFrames;
+ int hit;
+} PRINCESS;
 
 typedef struct {
  int col;
@@ -51,6 +65,7 @@ typedef struct {
 
 
 extern PLAYER player;
+extern PRINCESS princess;
 extern LIVECOUNT liveCount[3];
 extern BULLET bullet[3];
 extern int livesRemaining;
@@ -62,13 +77,16 @@ void dispBackground();
 
 void initGame();
 void initPlayer();
+void initPrincess();
 
 void drawGame();
 void drawBullets(BULLET* bullet, int j);
 void drawPlayer();
+void drawPrincess();
 
 void updateGame();
 void updatePlayer();
+void updatePrincess();
 void updateBullet(BULLET* bullet);
 
 int fireBullet(BULLET* bullet);

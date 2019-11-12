@@ -94,7 +94,7 @@ void game() {
     waitForVBlank();
     DMANow(3, shadowOAM, OAM, 128*4);
     //lets the player win if all of the enemies have been killedenemiesRemaining == 0
-	if(BUTTON_PRESSED(BUTTON_A)) { 
+	/*if(BUTTON_PRESSED(BUTTON_A)) { 
         REG_BG0HOFF = 0;
         REG_BG1HOFF = 0;
 		goToWin();
@@ -104,7 +104,7 @@ void game() {
         REG_BG0HOFF = 0;
         REG_BG1HOFF = 0;
 		goToLose();
-	}
+	}*/
     //player can pause the game at any time
 	if(BUTTON_PRESSED(BUTTON_START)) {
         tmphOff = hOff;
