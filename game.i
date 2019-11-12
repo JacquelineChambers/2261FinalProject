@@ -248,14 +248,15 @@ int toggle;
 int prevMovement;
 
 void initGame() {
-     DMANow(3, spritesPal, ((unsigned short *)0x5000200), 256);
-  DMANow(3, spritesTiles, &((charblock *)0x6000000)[4], 32768/2);
 
      dispBackground();
      initAliens();
      initPlayer();
      initPrincess();
      hideSprites();
+     DMANow(3, spritesPal, ((unsigned short *)0x5000200), 256);
+  DMANow(3, spritesTiles, &((charblock *)0x6000000)[4], 32768/2);
+
 
 }
 
@@ -284,7 +285,7 @@ void initPlayer() {
     player.cdel = 1;
     player.rdel = 1;
  player.col = 110;
- player.row = 80;
+ player.row = 60;
     player.sprite = 0;
     movement = UP;
     prevMovement = movement;
@@ -292,8 +293,8 @@ void initPlayer() {
 }
 void initPrincess() {
     princess.hit = 0;
-    princess.row = 110;
-    princess.col = 70;
+    princess.row = 70;
+    princess.col = 110;
     princess.width = 16;
     princess.height = 16;
 }

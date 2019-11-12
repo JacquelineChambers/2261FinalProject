@@ -89,23 +89,10 @@ initGame:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r4, r5, r6, lr}
-	mov	r3, #256
-	ldr	r4, .L8
-	mov	r0, #3
-	mov	r5, #3
-	ldr	r2, .L8+4
-	ldr	r1, .L8+8
-	mov	lr, pc
-	bx	r4
-	ldr	r2, .L8+12
-	ldr	r1, .L8+16
-	mov	r3, #16384
-	mov	r0, #3
-	mov	lr, pc
-	bx	r4
-	mov	r4, #80
+	mov	r4, #3
+	mov	r5, #60
 	bl	dispBackground
-	ldr	r3, .L8+20
+	ldr	r3, .L8
 	mov	lr, pc
 	bx	r3
 	mov	r0, #1
@@ -113,41 +100,49 @@ initGame:
 	mov	r1, #0
 	mov	ip, #110
 	mov	lr, #70
-	ldr	r3, .L8+24
-	str	r5, [r3]
-	ldr	r3, .L8+28
+	ldr	r3, .L8+4
 	str	r4, [r3]
-	ldr	r4, .L8+32
+	ldr	r3, .L8+8
+	str	r5, [r3]
+	ldr	r5, .L8+12
 	str	r0, [r3, #12]
 	str	r0, [r3, #8]
-	str	r0, [r4]
-	ldr	r0, .L8+36
+	str	r0, [r5]
+	ldr	r0, .L8+16
 	str	ip, [r3, #4]
 	str	r2, [r3, #16]
 	str	r2, [r3, #20]
-	ldr	r4, .L8+40
 	str	r1, [r3, #28]
-	ldr	r3, .L8+44
+	ldr	r5, .L8+20
+	ldr	r3, .L8+24
 	str	r1, [r0]
-	ldr	r0, .L8+48
-	str	r1, [r4]
-	str	lr, [r3, #4]
+	ldr	r0, .L8+28
+	str	lr, [r3]
+	str	ip, [r3, #4]
+	str	r1, [r5]
 	str	r1, [r3, #36]
-	str	ip, [r3]
 	str	r2, [r3, #8]
 	str	r2, [r3, #12]
+	ldr	r5, .L8+32
 	mov	lr, pc
 	bx	r0
+	mov	r0, r4
+	mov	r3, #256
+	ldr	r2, .L8+36
+	ldr	r1, .L8+40
+	mov	lr, pc
+	bx	r5
+	mov	r0, r4
+	mov	r3, #16384
+	ldr	r2, .L8+44
+	ldr	r1, .L8+48
+	mov	lr, pc
+	bx	r5
 	pop	{r4, r5, r6, lr}
 	bx	lr
 .L9:
 	.align	2
 .L8:
-	.word	DMANow
-	.word	83886592
-	.word	spritesPal
-	.word	100728832
-	.word	spritesTiles
 	.word	initAliens
 	.word	livesRemaining
 	.word	player
@@ -156,6 +151,11 @@ initGame:
 	.word	movement
 	.word	princess
 	.word	hideSprites
+	.word	DMANow
+	.word	83886592
+	.word	spritesPal
+	.word	100728832
+	.word	spritesTiles
 	.size	initGame, .-initGame
 	.align	2
 	.global	initPlayer
@@ -173,7 +173,7 @@ initPlayer:
 	mov	ip, #110
 	mov	r2, #1
 	mov	r1, #0
-	mov	r4, #80
+	mov	r4, #60
 	ldr	r3, .L12
 	str	lr, [r3]
 	ldr	r3, .L12+4
@@ -214,8 +214,8 @@ initPrincess:
 	@ link register save eliminated.
 	mov	r2, #16
 	mov	ip, #0
-	mov	r0, #110
-	mov	r1, #70
+	mov	r0, #70
+	mov	r1, #110
 	ldr	r3, .L15
 	stm	r3, {r0, r1, r2}
 	str	ip, [r3, #36]
