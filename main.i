@@ -380,7 +380,9 @@ void start(){
  if ((!(~(oldButtons)&((1<<3))) && (~buttons & ((1<<3))))) {
         goToInfo();
  }
-
+    if ((!(~(oldButtons)&((1<<2))) && (~buttons & ((1<<2))))) {
+        goToGame();
+ }
 
 
 }
@@ -396,7 +398,19 @@ void game() {
     drawGame();
     waitForVBlank();
     DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 128*4);
-# 116 "main.c"
+
+ if((!(~(oldButtons)&((1<<2))) && (~buttons & ((1<<2))))) {
+        (*(volatile unsigned short *)0x04000010) = 0;
+        (*(volatile unsigned short *)0x04000014) = 0;
+  goToWin();
+ }
+
+ if((!(~(oldButtons)&((1<<2))) && (~buttons & ((1<<2))))) {
+        (*(volatile unsigned short *)0x04000010) = 0;
+        (*(volatile unsigned short *)0x04000014) = 0;
+  goToLose();
+ }
+
     if(enemiesKilled%5 > 0 || (!(~(oldButtons)&((1<<1))) && (~buttons & ((1<<1))))) {
         (*(volatile unsigned short *)0x04000010) = 0;
         (*(volatile unsigned short *)0x04000014) = 0;

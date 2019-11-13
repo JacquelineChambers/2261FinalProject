@@ -85,7 +85,9 @@ void start(){
 	if (BUTTON_PRESSED(BUTTON_START)) {
         goToInfo();
 	}
-    
+    if (BUTTON_PRESSED(BUTTON_SELECT)) {
+        goToGame();
+	}
     
 	
 }
@@ -102,17 +104,18 @@ void game() {
     waitForVBlank();
     DMANow(3, shadowOAM, OAM, 128*4);
     //lets the player win if all of the enemies have been killedenemiesRemaining == 0
-	/*if(BUTTON_PRESSED(BUTTON_A)) { 
+	if(BUTTON_PRESSED(BUTTON_SELECT)) { 
         REG_BG0HOFF = 0;
         REG_BG1HOFF = 0;
 		goToWin();
 	}
     //if the player has no lives lef then the player looses the game(livesRemaining == 0
-	if(BUTTON_PRESSED(BUTTON_B)) {
+	if(BUTTON_PRESSED(BUTTON_SELECT)) {
         REG_BG0HOFF = 0;
         REG_BG1HOFF = 0;
 		goToLose();
-	}*/
+	}
+    //goes to cutscene if a certain amount of enemies are killed
     if(enemiesKilled%5 > 0 || BUTTON_PRESSED(BUTTON_B)) {
         REG_BG0HOFF = 0;
         REG_BG1HOFF = 0;
