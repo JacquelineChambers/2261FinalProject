@@ -1,5 +1,4 @@
 
-
 typedef struct {
 	int row;
 	int col;
@@ -63,6 +62,11 @@ extern BULLET bullet[BULLETCOUNT];
 extern int livesRemaining;
 extern int timer;
 extern int enemiesKilled;
+extern enum {UP, DOWN, LEFT, RIGHT};
+extern enum {R, L};
+extern int movement;
+extern int toggle;
+extern int prevMovement;
 
 //methods
 

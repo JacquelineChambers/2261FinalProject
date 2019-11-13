@@ -121,7 +121,6 @@ void goToLose();
 # 4 "main.c" 2
 # 1 "game.h" 1
 
-
 typedef struct {
  int row;
  int col;
@@ -185,6 +184,11 @@ extern BULLET bullet[3];
 extern int livesRemaining;
 extern int timer;
 extern int enemiesKilled;
+extern enum {UP, DOWN, LEFT, RIGHT};
+extern enum {R, L};
+extern int movement;
+extern int toggle;
+extern int prevMovement;
 
 
 
@@ -462,6 +466,13 @@ void cutScene() {
     waitForVBlank();
     DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 128*4);
 
+
+    if((!(~(oldButtons)&((1<<3))) && (~buttons & ((1<<3))))) {
+        tmphOff = hOff;
+        (*(volatile unsigned short *)0x04000010) = 0;
+        (*(volatile unsigned short *)0x04000014) = 0;
+  goToGame();
+ }
 }
 void goToPause() {
  state = PAUSE;

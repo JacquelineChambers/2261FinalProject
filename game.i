@@ -119,7 +119,6 @@ void goToLose();
 # 2 "game.c" 2
 # 1 "game.h" 1
 
-
 typedef struct {
  int row;
  int col;
@@ -183,6 +182,11 @@ extern BULLET bullet[3];
 extern int livesRemaining;
 extern int timer;
 extern int enemiesKilled;
+extern enum {UP, DOWN, LEFT, RIGHT};
+extern enum {R, L};
+extern int movement;
+extern int toggle;
+extern int prevMovement;
 
 
 
@@ -206,8 +210,102 @@ void updateBullet(BULLET* bullet);
 int fireBullet(BULLET* bullet);
 # 3 "game.c" 2
 # 1 "enemies.h" 1
+
+
+
+typedef struct {
+ int col;
+ int row;
+ int cdel;
+ int rdel;
+ int width;
+ int height;
+ int active;
+ int erased;
+} ALIENLASER;
+
+typedef struct {
+ int cdel;
+ int rdel;
+ int row;
+ int col;
+ int height;
+ int width;
+ int alienType;
+ int alienPal;
+ int active;
+ int erased;
+ int alienAni;
+} ALIEN;
+
+typedef struct {
+ int cdel;
+ int rdel;
+ int row;
+ int col;
+ int height;
+ int width;
+ int enemyType;
+ int enemyPal;
+ int active;
+ int erased;
+ int num;
+ int enemyAni;
+} CAR;
+
+typedef struct {
+ int cdel;
+ int rdel;
+ int row;
+ int col;
+ int height;
+ int width;
+ int enemyType;
+ int enemyPal;
+ int active;
+ int erased;
+ int num;
+ int enemyAni;
+} ASTEROID;
+
+
+
+
+
+
+extern ALIEN alien[15];
+extern ALIENLASER alienLaser[5];
+extern ASTEROID asteroid[2];
+extern CAR car[2];
+extern int enemiesRemaining;
+
+
+void initAliens();
+void initCars();
+void initAsteroids();
+
+
+void drawAlien(ALIEN* alien, int j);
+void drawCar(CAR* car, int j);
+void drawAsteroid(ASTEROID* asteroid, int j);
+void drawAlienLasers(ALIENLASER* alienLaser, int j);
+
+void updateAlien(ALIEN* alien);
+void updateCar(CAR* car, int j);
+void updateAsteroid(ASTEROID* asteroid, int j);
+void updateAlienLasers(ALIENLASER* alienLaser, int j);
+
+int fireAlienLaser(ALIENLASER* alienLaser, ALIEN* alien);
 # 4 "game.c" 2
 # 1 "movement.h" 1
+
+
+
+
+void rotateLeft();
+void rotateRight();
+void slideRight();
+void slideLeft();
 # 5 "game.c" 2
 
 # 1 "bg0Space.h" 1
@@ -247,11 +345,6 @@ PLAYER player;
 PRINCESS princess;
 BULLET bullet[3];
 OBJ_ATTR shadowOAM[128];
-enum {UP, DOWN, LEFT, RIGHT};
-enum {R, L};
-int movement;
-int toggle;
-int prevMovement;
 
 void initGame() {
 
@@ -260,6 +353,8 @@ void initGame() {
      initPlayer();
      initPrincess();
      initBullet();
+     initAliens();
+     initCar();
      hideSprites();
 
 
@@ -325,8 +420,23 @@ void updateGame() {
     parallax();
     updatePlayer();
 
+    for(int i = 0; i< 15; i++){
+         updateAlien(&alien[i]);
+    }
+
     for(int i = 0; i< 3; i++){
         updateBullet(&bullet[i]);
+    }
+}
+void updateAlien(ALIEN *alien) {
+    for(int i = 0 ;i< 3;i++ ){
+            if ((bullet[i].active && alien->active) && collision(alien->col, alien->row, alien->width, alien->height,
+                        bullet[i].col, bullet[i].row, bullet[i].width, bullet[i].height)) {
+
+                        bullet[i].active = 0;
+                        alien->active = 0;
+
+                }
     }
 }
 void updateBullet(BULLET* bullet){
@@ -389,146 +499,17 @@ void updatePlayer() {
         }
     }
     if((!(~(oldButtons)&((1<<9))) && (~buttons & ((1<<9))))) {
-         if(toggle == R) {
-             switch(movement) {
-            case UP:
-                movement = DOWN;
-                break;
-            case RIGHT:
-                movement = LEFT;
-                break;
-            case DOWN:
-                movement = UP;
-                break;
-            case LEFT:
-                movement = RIGHT;
-                break;
-            }
-        }
-        prevMovement = movement;
-        switch(movement) {
-            case UP:
-                player.col = 110;
-             player.row = 60;
-                player.sprite = 0;
-                movement = LEFT;
-                break;
-            case LEFT:
-                player.col = 90;
-             player.row = 80;
-                player.sprite = 2;
-                movement = DOWN;
-                break;
-            case DOWN:
-                player.col = 110;
-             player.row = 100;
-                player.sprite = 4;
-                movement = RIGHT;
-                break;
-            case RIGHT:
-                player.col = 130;
-             player.row = 80;
-                player.sprite = 6;
-                movement = UP;
-                break;
-        }
-        toggle = L;
+        rotateLeft();
 
     }
     if((!(~(oldButtons)&((1<<8))) && (~buttons & ((1<<8))))) {
-        if(toggle == L) {
-           switch(movement) {
-            case UP:
-                movement = DOWN;
-                break;
-            case RIGHT:
-                movement = LEFT;
-                break;
-            case DOWN:
-                movement = UP;
-                break;
-            case LEFT:
-                movement = RIGHT;
-                break;
-            }
-        }
-        prevMovement = movement;
-        switch(movement) {
-            case UP:
-                player.col = 110;
-             player.row = 60;
-                player.sprite = 0;
-                movement = RIGHT;
-                break;
-            case RIGHT:
-                player.col = 130;
-             player.row = 80;
-                player.sprite = 6;
-                movement = DOWN;
-                break;
-            case DOWN:
-                player.col = 110;
-             player.row = 100;
-                player.sprite = 4;
-                movement = LEFT;
-                break;
-            case LEFT:
-                player.col = 90;
-             player.row = 80;
-                player.sprite = 2;
-                movement = UP;
-                break;
-        }
-        toggle = R;
+        rotateRight();
     }
     if((~((*(volatile unsigned short *)0x04000130)) & ((1<<4)))) {
-         switch(prevMovement) {
-            case UP:
-                if(player.width + player.col < 140) {
-                    player.col++;
-                }
-               break;
-            case RIGHT:
-                if(player.height + player.row < 105) {
-                    player.row++;
-                }
-               break;
-            case DOWN:
-                if(player.width + player.col < 140) {
-                    player.col++;
-                }
-                break;
-            case LEFT:
-                if(player.height + player.row < 105) {
-                    player.row++;
-                }
-                break;
-        }
-
+        slideRight();
     }
     if((~((*(volatile unsigned short *)0x04000130)) & ((1<<5)))) {
-        switch(prevMovement) {
-            case UP:
-                if(player.col > 95) {
-                    player.col--;
-                }
-               break;
-            case RIGHT:
-                if(player.row > 65) {
-                    player.row--;
-                }
-               break;
-            case DOWN:
-                if(player.col > 95) {
-                    player.col--;
-                }
-                break;
-            case LEFT:
-                if(player.row > 65) {
-                    player.row--;
-                }
-                break;
-        }
+        slideLeft();
     }
 }
 
@@ -538,6 +519,16 @@ void drawGame() {
     drawPrincess();
     for(int i = 0; i< 3; i++){
         drawBullet(&bullet[i], j);
+        j++;
+    }
+
+
+
+
+
+
+    for(int i = 0; i< 15; i++){
+        drawAlien(&alien[i], j);
         j++;
     }
 
@@ -563,6 +554,17 @@ void drawBullet(BULLET* bullet, int j) {
         shadowOAM[j].attr0 = bullet->row | (0<<13) | (0<<14);
         shadowOAM[j].attr1 = bullet->col | (1<<14);
         shadowOAM[j].attr2 = ((0)<<12) | ((0)*32+(bullet->sprite));
+    }
+    else {
+        shadowOAM[j].attr0 = (2<<8);
+    }
+}
+
+void drawAlien(ALIEN* alien, int j) {
+    if (alien->active) {
+        shadowOAM[j].attr0 = alien->row | (0<<13) | (0<<14);
+        shadowOAM[j].attr1 = alien->col | (1<<14);
+        shadowOAM[j].attr2 = ((3)<<12) | ((0)*32+(14));
     }
     else {
         shadowOAM[j].attr0 = (2<<8);

@@ -16,11 +16,6 @@ PLAYER player;
 PRINCESS princess;
 BULLET bullet[BULLETCOUNT];
 OBJ_ATTR shadowOAM[128];
-enum {UP, DOWN, LEFT, RIGHT};
-enum {R, L};
-int movement;
-int toggle;
-int prevMovement;
 
 void initGame() {
      
@@ -29,6 +24,8 @@ void initGame() {
      initPlayer();
      initPrincess();
      initBullet();
+     initAliens();
+     initCar();
      hideSprites();
      
     
@@ -94,8 +91,23 @@ void updateGame() {
     parallax();
     updatePlayer();
     //updatePrincess();
+    for(int i = 0; i< ALIENCOUNT; i++){
+         updateAlien(&alien[i]);
+    }
+   
     for(int i = 0; i< BULLETCOUNT; i++){
         updateBullet(&bullet[i]);
+    }
+}
+void updateAlien(ALIEN *alien) {
+    for(int i = 0 ;i< BULLETCOUNT;i++ ){
+            if ((bullet[i].active && alien->active) && collision(alien->col, alien->row, alien->width, alien->height,
+                        bullet[i].col, bullet[i].row, bullet[i].width, bullet[i].height)) {
+
+                        bullet[i].active = 0;
+                        alien->active = 0;
+
+                }
     }
 }
 void updateBullet(BULLET* bullet){
@@ -158,146 +170,17 @@ void updatePlayer() {
         }
     }
     if(BUTTON_PRESSED(BUTTON_L)) { // rotate player to the left
-         if(toggle == R) {
-             switch(movement) {
-            case UP:
-                movement = DOWN;
-                break;
-            case RIGHT:
-                movement = LEFT;
-                break;
-            case DOWN:
-                movement = UP;
-                break;
-            case LEFT:
-                movement = RIGHT;
-                break;
-            } 
-        }
-        prevMovement = movement;
-        switch(movement) {
-            case UP:
-                player.col = 110;
-	            player.row = 60;
-                player.sprite = 0;
-                movement = LEFT;
-                break;
-            case LEFT:
-                player.col = 90;
-	            player.row = 80;
-                player.sprite = 2;
-                movement = DOWN;
-                break;
-            case DOWN:
-                player.col = 110;
-	            player.row = 100;
-                player.sprite = 4;
-                movement = RIGHT;
-                break;
-            case RIGHT:
-                player.col = 130;
-	            player.row = 80;
-                player.sprite = 6;
-                movement = UP;
-                break;
-        }
-        toggle = L;
+        rotateLeft();
         
     }
     if(BUTTON_PRESSED(BUTTON_R)) { // rotate the player to the right
-        if(toggle == L) {
-           switch(movement) {
-            case UP:
-                movement = DOWN;
-                break;
-            case RIGHT:
-                movement = LEFT;
-                break;
-            case DOWN:
-                movement = UP;
-                break;
-            case LEFT:
-                movement = RIGHT;
-                break;
-            } 
-        }
-        prevMovement = movement;
-        switch(movement) {
-            case UP:
-                player.col = 110;
-	            player.row = 60;
-                player.sprite = 0;
-                movement = RIGHT;
-                break;
-            case RIGHT:
-                player.col = 130;
-	            player.row = 80;
-                player.sprite = 6;
-                movement = DOWN;
-                break;
-            case DOWN:
-                player.col = 110;
-	            player.row = 100;
-                player.sprite = 4;
-                movement = LEFT;
-                break;
-            case LEFT:
-                player.col = 90;
-	            player.row = 80;
-                player.sprite = 2;
-                movement = UP;
-                break;
-        }
-        toggle = R;
+        rotateRight();
     }
     if(BUTTON_HELD(BUTTON_RIGHT)) { //slide player to the right
-         switch(prevMovement) {
-            case UP:
-                if(player.width + player.col < 140) {
-                    player.col++;
-                }
-               break;
-            case RIGHT:
-                if(player.height + player.row < 105) {
-                    player.row++;
-                }
-               break;
-            case DOWN:
-                if(player.width + player.col < 140) {
-                    player.col++;
-                }
-                break;
-            case LEFT:
-                if(player.height + player.row < 105) {
-                    player.row++;
-                }
-                break;
-        }
-        
+        slideRight();
     }
     if(BUTTON_HELD(BUTTON_LEFT)) {//slide the player to the left
-        switch(prevMovement) {
-            case UP:
-                if(player.col > 95) {
-                    player.col--;
-                }
-               break;
-            case RIGHT:
-                if(player.row > 65) {
-                    player.row--;
-                }
-               break;
-            case DOWN:
-                if(player.col > 95) {
-                    player.col--;
-                }
-                break;
-            case LEFT:
-                if(player.row > 65) {
-                    player.row--;
-                }
-                break;
-        }
+        slideLeft();
     }
 }
 
@@ -307,6 +190,16 @@ void drawGame() {
     drawPrincess();
     for(int i = 0; i< BULLETCOUNT; i++){
         drawBullet(&bullet[i], j);
+        j++;
+    } 
+    /*
+    for(int i = 0; i< CARCOUNT; i++){
+        drawCars(&bullet[i], j);
+        j++;
+    } 
+    */
+    for(int i = 0; i< ALIENCOUNT; i++){
+        drawAlien(&alien[i], j);
         j++;
     } 
 
@@ -337,6 +230,20 @@ void drawBullet(BULLET* bullet, int j) {//increment loc up
         shadowOAM[j].attr0 = ATTR0_HIDE;
     }
 }
+
+void drawAlien(ALIEN* alien, int j) {//increment loc up
+    if (alien->active) {
+        shadowOAM[j].attr0 = alien->row | ATTR0_4BPP | ATTR0_SQUARE; //| ATTR0_AFFINE;
+        shadowOAM[j].attr1 = alien->col | ATTR1_SMALL;
+        shadowOAM[j].attr2 = ATTR2_PALROW(3) | ATTR2_TILEID(14,0);
+    }
+    else {
+        shadowOAM[j].attr0 = ATTR0_HIDE;
+    }
+}
+
+
+
 
 
 

@@ -149,7 +149,6 @@ void drawCutScene();
 # 3 "cutScene.c" 2
 # 1 "game.h" 1
 
-
 typedef struct {
  int row;
  int col;
@@ -213,6 +212,11 @@ extern BULLET bullet[3];
 extern int livesRemaining;
 extern int timer;
 extern int enemiesKilled;
+extern enum {UP, DOWN, LEFT, RIGHT};
+extern enum {R, L};
+extern int movement;
+extern int toggle;
+extern int prevMovement;
 
 
 

@@ -167,6 +167,13 @@ void cutScene() {
     waitForVBlank();
     DMANow(3, shadowOAM, OAM, 128*4);
     //nextScreen();
+
+    if(BUTTON_PRESSED(BUTTON_START)) {
+        tmphOff = hOff;
+        REG_BG0HOFF = 0;
+        REG_BG1HOFF = 0;
+		goToGame();
+	}
 }
 void goToPause() {
 	state = PAUSE;

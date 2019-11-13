@@ -1,5 +1,5 @@
-#ifndef MY_LIB_H
-#define MY_LIB_H
+
+
 
 typedef struct {
 	int col;
@@ -78,12 +78,10 @@ void drawCar(CAR* car, int j);
 void drawAsteroid(ASTEROID* asteroid, int j);
 void drawAlienLasers(ALIENLASER* alienLaser, int j);
 
-void updateAlien(ALIEN* alien, int j);
+void updateAlien(ALIEN* alien);
 void updateCar(CAR* car, int j);
 void updateAsteroid(ASTEROID* asteroid, int j);
 void updateAlienLasers(ALIENLASER* alienLaser, int j); 
 
 int fireAlienLaser(ALIENLASER* alienLaser, ALIEN* alien);
 
-
-#endif
