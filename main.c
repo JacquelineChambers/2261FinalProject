@@ -23,6 +23,7 @@ OBJ_ATTR shadowOAM[128];
 
 enum {START, GAME, PAUSE, WIN, LOSE, CUTSCENE};
 int state;
+int enemiesKilled;
 
 int main() {
 
@@ -105,6 +106,11 @@ void game() {
         REG_BG1HOFF = 0;
 		goToLose();
 	}*/
+    if(enemiesKilled%5 == 0) {
+        REG_BG0HOFF = 0;
+        REG_BG1HOFF = 0;
+		goToCutScene();
+	}
     //player can pause the game at any time
 	if(BUTTON_PRESSED(BUTTON_START)) {
         tmphOff = hOff;
@@ -118,7 +124,7 @@ void goToCutScene() {
     state = CUTSCENE;
 }
 void cutScene() {
-
+    
 }
 void goToPause() {
 	state = PAUSE;

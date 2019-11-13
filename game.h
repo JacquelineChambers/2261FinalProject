@@ -62,6 +62,7 @@ extern LIVECOUNT liveCount[LIVES];
 extern BULLET bullet[BULLETCOUNT];
 extern int livesRemaining;
 extern int timer;
+extern int enemiesKilled;
 
 //methods
 
