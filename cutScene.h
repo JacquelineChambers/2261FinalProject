@@ -1,7 +1,29 @@
-#ifndef MY_LIB_H
-#define MY_LIB_H
 
-void thing();
-extern int make_iso_compilers_happy;
 
-#endif
+void initCutScene();
+
+typedef struct {
+	int row;
+	int col;
+	int width;
+    int height;
+    int aniState;
+} NOOT;
+
+typedef struct {
+	int row;
+	int col;
+	int width;
+    int height;
+    int section;
+} BOX;
+
+extern BOX boxRight;
+
+extern BOX boxLeft;
+//extern BOX boxCenter[3];
+extern NOOT noot;
+
+void initCharacter();
+void drawCutScene();
+

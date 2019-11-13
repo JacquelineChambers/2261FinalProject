@@ -2,6 +2,9 @@
 //internal .h files
 #include "myLib.h"
 #include "game.h"
+#include "cutScene.h"
+#include "font.h"
+#include "text.h"
 
 //external .h files
 #include "loseScreen.h"
@@ -21,7 +24,7 @@ unsigned short hOff;
 
 OBJ_ATTR shadowOAM[128];
 
-enum {START, GAME, PAUSE, WIN, LOSE, CUTSCENE};
+enum {START, GAME, PAUSE, WIN, LOSE, CUTSCENE, INFO};
 int state;
 int enemiesKilled;
 
@@ -40,6 +43,9 @@ int main() {
                 break;
             case GAME:
                 game();
+                break;
+            case INFO:
+                info();
                 break;
             case CUTSCENE:
                 cutScene();
@@ -77,14 +83,15 @@ void start(){
 
     //allows the player to start the game
 	if (BUTTON_PRESSED(BUTTON_START)) {
-		initGame();
-        
-		goToGame();
+        goToInfo();
 	}
+    
+    
 	
 }
 void goToGame() {
     REG_DISPCTL =  MODE0 | BG1_ENABLE | BG0_ENABLE | SPRITE_ENABLE;
+    initGame();
     hOff = tmphOff;
 	state = GAME;
 }
@@ -106,7 +113,7 @@ void game() {
         REG_BG1HOFF = 0;
 		goToLose();
 	}*/
-    if(enemiesKilled%5 == 0) {
+    if(enemiesKilled%5 > 0 || BUTTON_PRESSED(BUTTON_B)) {
         REG_BG0HOFF = 0;
         REG_BG1HOFF = 0;
 		goToCutScene();
@@ -118,13 +125,45 @@ void game() {
         REG_BG1HOFF = 0;
 		goToPause();
 	}
+    
 
 }
+void goToInfo() {
+    REG_DISPCTL =  MODE3| BG2_ENABLE;
+    fillScreen3(BLACK);
+    state = INFO;
+    info();
+}
+void info() {
+    drawString(10, 40, "Press START to begin game", WHITE);
+    drawString(10, 50, "Press L and R keys to toggle", WHITE);
+     drawString(10, 60, " your direction to shoot", WHITE);
+    drawString(10, 70, "Press A to shoot", WHITE);
+    drawString(10, 80, "Press LEFT or RIGHT to slide", WHITE); 
+    drawString(10, 90, "from side to side", WHITE);
+    drawString(10, 100, "Press SELECT to return", WHITE);
+    drawString(10, 110, "to splash Screen", WHITE);
+    oldButtons = buttons;
+    buttons = BUTTONS;
+    if(BUTTON_PRESSED(BUTTON_SELECT)) {
+		goToStart();
+	}
+     if(BUTTON_PRESSED(BUTTON_START)) {
+		goToGame();
+	}
+}
 void goToCutScene() {
+     initCutScene();
     state = CUTSCENE;
 }
 void cutScene() {
+   
+    updateCutScene();
     
+    drawCutScene();
+    waitForVBlank();
+    DMANow(3, shadowOAM, OAM, 128*4);
+    //nextScreen();
 }
 void goToPause() {
 	state = PAUSE;
@@ -139,11 +178,17 @@ void pause() {
 
     REG_BG0CNT = BG_CHARBLOCK(0) | BG_SCREENBLOCK(28) | BG_4BPP | BG_SIZE_LARGE;
     //player can return to the game at any time
+    
 	if(BUTTON_PRESSED(BUTTON_START)) {
        
 		dispBackground();
 		goToGame();
 	}
+    if(BUTTON_PRESSED(BUTTON_SELECT)) {
+        REG_DISPCTL = 0;
+        goToStart();
+	}
+    
 }
 void goToWin() {
     

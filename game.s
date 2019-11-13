@@ -677,7 +677,7 @@ updatePlayer:
 	ldr	r1, [r3]
 	ldr	r2, [r3, #20]
 	add	r2, r1, r2
-	cmp	r2, #114
+	cmp	r2, #104
 	ldr	r2, .L141+8
 	ldrh	r2, [r2, #48]
 	addle	r1, r1, #1
@@ -905,6 +905,7 @@ drawBullet:
 	.comm	bullet,108,4
 	.comm	princess,40,4
 	.comm	player,52,4
+	.comm	enemiesKilled,4,4
 	.comm	livesRemaining,4,4
 	.comm	tmphOff,2,2
 	.comm	hOff,2,2

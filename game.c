@@ -309,6 +309,8 @@ void drawGame() {
         drawBullet(&bullet[i], j);
         j++;
     } 
+
+    
 }
 
 void drawPlayer() {
@@ -320,7 +322,9 @@ void drawPlayer() {
 void drawPrincess() {
     shadowOAM[1].attr0 = princess.row | ATTR0_4BPP | ATTR0_SQUARE;
 	shadowOAM[1].attr1 = princess.col | ATTR1_MEDIUM;
-    shadowOAM[1].attr2 = ATTR2_PALROW(1) | ATTR2_TILEID(8,0); 
+    shadowOAM[1].attr2 = ATTR2_PALROW(1) | ATTR2_TILEID(8,0);
+
+     
 }
 
 void drawBullet(BULLET* bullet, int j) {//increment loc up
@@ -333,6 +337,8 @@ void drawBullet(BULLET* bullet, int j) {//increment loc up
         shadowOAM[j].attr0 = ATTR0_HIDE;
     }
 }
+
+
 
 
 

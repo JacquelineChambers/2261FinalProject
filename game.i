@@ -182,6 +182,7 @@ extern LIVECOUNT liveCount[3];
 extern BULLET bullet[3];
 extern int livesRemaining;
 extern int timer;
+extern int enemiesKilled;
 
 
 
@@ -241,6 +242,7 @@ extern const unsigned short spritesPal[256];
 unsigned short hOff;
 unsigned short tmphOff;
 int livesRemaining;
+int enemiesKilled;
 PLAYER player;
 PRINCESS princess;
 BULLET bullet[3];
@@ -487,7 +489,7 @@ void updatePlayer() {
                 }
                break;
             case RIGHT:
-                if(player.height + player.row < 115) {
+                if(player.height + player.row < 105) {
                     player.row++;
                 }
                break;
@@ -497,7 +499,7 @@ void updatePlayer() {
                 }
                 break;
             case LEFT:
-                if(player.height + player.row < 115) {
+                if(player.height + player.row < 105) {
                     player.row++;
                 }
                 break;
@@ -538,6 +540,8 @@ void drawGame() {
         drawBullet(&bullet[i], j);
         j++;
     }
+
+
 }
 
 void drawPlayer() {
@@ -550,6 +554,8 @@ void drawPrincess() {
     shadowOAM[1].attr0 = princess.row | (0<<13) | (0<<14);
  shadowOAM[1].attr1 = princess.col | (2<<14);
     shadowOAM[1].attr2 = ((1)<<12) | ((0)*32+(8));
+
+
 }
 
 void drawBullet(BULLET* bullet, int j) {

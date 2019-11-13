@@ -1175,6 +1175,7 @@ void setPixel3(int col, int row, unsigned short color) {
 }
 
 
+
 void setPixel4(int col, int row, unsigned char colorIndex) {
     unsigned short pixelData = videoBuffer[((row)*(240)+(col)) / 2];
     if (col & 1) {

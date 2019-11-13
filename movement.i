@@ -71,6 +71,7 @@ extern LIVECOUNT liveCount[3];
 extern BULLET bullet[3];
 extern int livesRemaining;
 extern int timer;
+extern int enemiesKilled;
 
 
 

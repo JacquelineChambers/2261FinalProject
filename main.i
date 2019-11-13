@@ -184,6 +184,7 @@ extern LIVECOUNT liveCount[3];
 extern BULLET bullet[3];
 extern int livesRemaining;
 extern int timer;
+extern int enemiesKilled;
 
 
 
@@ -206,6 +207,45 @@ void updateBullet(BULLET* bullet);
 
 int fireBullet(BULLET* bullet);
 # 5 "main.c" 2
+# 1 "cutScene.h" 1
+
+
+void initCutScene();
+
+typedef struct {
+ int row;
+ int col;
+ int width;
+    int height;
+    int aniState;
+} NOOT;
+
+typedef struct {
+ int row;
+ int col;
+ int width;
+    int height;
+    int section;
+} BOX;
+
+extern BOX boxRight;
+
+extern BOX boxLeft;
+
+extern NOOT noot;
+
+void initCharacter();
+void drawCutScene();
+# 6 "main.c" 2
+# 1 "font.h" 1
+
+extern const unsigned char fontdata_6x8[12288];
+# 7 "main.c" 2
+# 1 "text.h" 1
+
+void drawChar(int, int, char, unsigned short);
+void drawString(int, int, char *, unsigned short);
+# 8 "main.c" 2
 
 
 # 1 "loseScreen.h" 1
@@ -217,7 +257,7 @@ extern const unsigned short loseScreenMap[1024];
 
 
 extern const unsigned short loseScreenPal[256];
-# 8 "main.c" 2
+# 11 "main.c" 2
 # 1 "winScreen.h" 1
 # 22 "winScreen.h"
 extern const unsigned short winScreenTiles[608];
@@ -227,7 +267,7 @@ extern const unsigned short winScreenMap[1024];
 
 
 extern const unsigned short winScreenPal[256];
-# 9 "main.c" 2
+# 12 "main.c" 2
 # 1 "moonArt.h" 1
 # 22 "moonArt.h"
 extern const unsigned short moonArtTiles[7568];
@@ -237,7 +277,7 @@ extern const unsigned short moonArtMap[1024];
 
 
 extern const unsigned short moonArtPal[256];
-# 10 "main.c" 2
+# 13 "main.c" 2
 # 1 "bg0Space.h" 1
 # 22 "bg0Space.h"
 extern const unsigned short bg0SpaceTiles[1888];
@@ -247,7 +287,7 @@ extern const unsigned short bg0SpaceMap[2048];
 
 
 extern const unsigned short bg0SpacePal[256];
-# 11 "main.c" 2
+# 14 "main.c" 2
 # 1 "bg1Stars.h" 1
 # 22 "bg1Stars.h"
 extern const unsigned short bg1StarsTiles[544];
@@ -257,7 +297,7 @@ extern const unsigned short bg1StarsMap[1024];
 
 
 extern const unsigned short bg1StarsPal[256];
-# 12 "main.c" 2
+# 15 "main.c" 2
 # 1 "bg0SpacePause.h" 1
 # 22 "bg0SpacePause.h"
 extern const unsigned short bg0SpacePauseTiles[2352];
@@ -267,7 +307,7 @@ extern const unsigned short bg0SpacePauseMap[1024];
 
 
 extern const unsigned short bg0SpacePausePal[256];
-# 13 "main.c" 2
+# 16 "main.c" 2
 
 
 void initialize();
@@ -279,8 +319,9 @@ unsigned short hOff;
 
 OBJ_ATTR shadowOAM[128];
 
-enum {START, GAME, PAUSE, WIN, LOSE, CUTSCENE};
+enum {START, GAME, PAUSE, WIN, LOSE, CUTSCENE, INFO};
 int state;
+int enemiesKilled;
 
 int main() {
 
@@ -297,6 +338,9 @@ int main() {
                 break;
             case GAME:
                 game();
+                break;
+            case INFO:
+                info();
                 break;
             case CUTSCENE:
                 cutScene();
@@ -334,14 +378,15 @@ void start(){
 
 
  if ((!(~(oldButtons)&((1<<3))) && (~buttons & ((1<<3))))) {
-  initGame();
-
-  goToGame();
+        goToInfo();
  }
+
+
 
 }
 void goToGame() {
     (*(unsigned short *)0x4000000) = 0 | (1<<9) | (1<<8) | (1<<12);
+    initGame();
     hOff = tmphOff;
  state = GAME;
 }
@@ -351,7 +396,13 @@ void game() {
     drawGame();
     waitForVBlank();
     DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 128*4);
-# 109 "main.c"
+# 116 "main.c"
+    if(enemiesKilled%5 > 0 || (!(~(oldButtons)&((1<<1))) && (~buttons & ((1<<1))))) {
+        (*(volatile unsigned short *)0x04000010) = 0;
+        (*(volatile unsigned short *)0x04000014) = 0;
+  goToCutScene();
+ }
+
  if((!(~(oldButtons)&((1<<3))) && (~buttons & ((1<<3))))) {
         tmphOff = hOff;
         (*(volatile unsigned short *)0x04000010) = 0;
@@ -359,11 +410,43 @@ void game() {
   goToPause();
  }
 
+
+}
+void goToInfo() {
+    (*(unsigned short *)0x4000000) = 3| (1<<10);
+    fillScreen3(((0) | (0)<<5 | (0)<<10));
+    state = INFO;
+    info();
+}
+void info() {
+    drawString(10, 40, "Press START to begin game", ((31) | (31)<<5 | (31)<<10));
+    drawString(10, 50, "Press L and R keys to toggle", ((31) | (31)<<5 | (31)<<10));
+     drawString(10, 60, " your direction to shoot", ((31) | (31)<<5 | (31)<<10));
+    drawString(10, 70, "Press A to shoot", ((31) | (31)<<5 | (31)<<10));
+    drawString(10, 80, "Press LEFT or RIGHT to slide", ((31) | (31)<<5 | (31)<<10));
+    drawString(10, 90, "from side to side", ((31) | (31)<<5 | (31)<<10));
+    drawString(10, 100, "Press SELECT to return", ((31) | (31)<<5 | (31)<<10));
+    drawString(10, 110, "to splash Screen", ((31) | (31)<<5 | (31)<<10));
+    oldButtons = buttons;
+    buttons = (*(volatile unsigned short *)0x04000130);
+    if((!(~(oldButtons)&((1<<2))) && (~buttons & ((1<<2))))) {
+  goToStart();
+ }
+     if((!(~(oldButtons)&((1<<3))) && (~buttons & ((1<<3))))) {
+  goToGame();
+ }
 }
 void goToCutScene() {
+     initCutScene();
     state = CUTSCENE;
 }
 void cutScene() {
+
+    updateCutScene();
+
+    drawCutScene();
+    waitForVBlank();
+    DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 128*4);
 
 }
 void goToPause() {
@@ -379,11 +462,17 @@ void pause() {
 
     (*(volatile unsigned short*)0x4000008) = ((0)<<2) | ((28)<<8) | (0<<7) | (3<<14);
 
+
  if((!(~(oldButtons)&((1<<3))) && (~buttons & ((1<<3))))) {
 
   dispBackground();
   goToGame();
  }
+    if((!(~(oldButtons)&((1<<2))) && (~buttons & ((1<<2))))) {
+        (*(unsigned short *)0x4000000) = 0;
+        goToStart();
+ }
+
 }
 void goToWin() {
 
