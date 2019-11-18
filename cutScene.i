@@ -142,8 +142,48 @@ typedef struct {
     int section;
 } BOX;
 
-extern BOX boxRight;
+typedef struct {
+ int a;
+ int b;
+ int c;
+    int d;
+    int e;
+ int f;
+ int g;
+ int h;
+ int i;
+ int j;
+ int k;
+ int l;
+ int m;
+ int n;
+ int o;
+ int p;
+ int q;
+ int r;
+ int s;
+ int t;
+ int u;
+ int v;
+ int w;
+ int x;
+ int y;
+ int z;
+ int space;
 
+} ALPHABET;
+
+typedef struct {
+ int letter;
+ int row;
+ int col;
+} TEXT;
+
+
+
+extern BOX boxRight;
+extern ALPHABET alphabet;
+extern TEXT text[23];
 extern BOX boxLeft;
 
 extern NOOT noot;
@@ -292,20 +332,81 @@ BOX boxRight;
 BOX boxLeft;
 BOX boxCenter[4];
 OBJ_ATTR shadowOAM[128];
+ALPHABET alphabet;
+TEXT text[23];
 
 void initCutScene() {
     dispBackground();
-    initChar();
     initDialogBox();
+    initQuoteOne_letter();
+    for (int i = 0; i< 23; i++) {
+        initQuoteOne_setup(&text[i], i);
+    }
+    initAlphabet();
+    initCharacter();
     hideSprites();
 }
-void initChar() {
+void initCharacter() {
     noot.row = 100;
  noot.col = 50;
  noot.width = 64;
     noot.height = 64;
     noot.aniState = 13;
 }
+void initAlphabet() {
+    alphabet.a = 0;
+ alphabet.b = 1;
+ alphabet.c = 2;
+    alphabet.d = 3;
+ alphabet.e = 4;
+ alphabet.f = 5;
+    alphabet.g = 6;
+ alphabet.h = 7;
+ alphabet.i = 8;
+    alphabet.j = 9;
+ alphabet.k = 10;
+ alphabet.l = 11;
+    alphabet.m = 12;
+ alphabet.n = 13;
+ alphabet.o = 14;
+    alphabet.p = 15;
+ alphabet.q = 16;
+ alphabet.r = 17;
+    alphabet.s = 18;
+ alphabet.t = 19;
+ alphabet.u = 20;
+    alphabet.v = 21;
+ alphabet.w = 22;
+ alphabet.x = 23;
+    alphabet.y = 24;
+ alphabet.z = 25;
+    alphabet.space = 27;
+}
+void initQuoteOne_letter() {
+    text[0].letter = 22;
+    text[1].letter = 7;
+    text[2].letter = 0;
+    text[3].letter = 19;
+    text[4].letter = 27;
+    text[5].letter = 0;
+    text[6].letter = 12;
+    text[7].letter = 27;
+    text[8].letter = 8;
+    text[9].letter = 27;
+    text[10].letter = 5;
+    text[11].letter = 8;
+    text[12].letter = 6;
+    text[13].letter = 7;
+    text[14].letter = 8;
+    text[15].letter = 13;
+    text[16].letter = 6;
+    text[17].letter = 27;
+}
+void initQuoteOne_setup(TEXT* text, int i) {
+    text->row = 130;
+    text->col = 50 + (i * 2);
+}
+
 void initDialogBox() {
         boxLeft.row = 120;
         boxLeft.col = 40;
@@ -334,12 +435,15 @@ void updateCutScene() {
 void drawCutScene() {
     drawPlayer();
     drawPrincess();
-
     drawDialogBox();
-    initCharacter();
+    for (int i = 0; i < 23; i++) {
+        drawQuoteOne(&text[i], i);
+    }
+    drawCharacter();
+
 
 }
-void initCharacter() {
+void drawCharacter() {
     shadowOAM[5].attr0 = noot.row | (0<<13) | (0<<14);
  shadowOAM[5].attr1 = noot.col | (2<<14);
     shadowOAM[5].attr2 = ((0)<<12) | ((0)*32+(noot.aniState));
@@ -359,4 +463,9 @@ void drawDialogBox() {
     shadowOAM[11].attr0 = boxRight.row | (0<<13) | (0<<14);
  shadowOAM[11].attr1 = boxRight.col | (2<<14);
     shadowOAM[11].attr2 = ((2)<<12) | ((7)*32+(boxRight.section));
+}
+void drawQuoteOne(TEXT* text, int i) {
+    shadowOAM[i + 12].attr0 = text->row | (0<<13) | (0<<14);
+ shadowOAM[i + 12].attr1 = text->col | (0<<14);
+    shadowOAM[i + 12].attr2 = ((0)<<12) | ((0)*32+(text->letter));
 }

@@ -116,7 +116,7 @@ void game() {
 		goToLose();
 	}
     //goes to cutscene if a certain amount of enemies are killed
-    if(enemiesKilled%5 == 0 || BUTTON_PRESSED(BUTTON_B)) {
+    if(enemiesKilled%5 == 0) { //|| BUTTON_PRESSED(BUTTON_B)) {
         REG_BG0HOFF = 0;
         REG_BG1HOFF = 0;
 		goToCutScene();
