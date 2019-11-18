@@ -126,6 +126,10 @@ void goToGame();
 void goToWin();
 void goToPause();
 void goToLose();
+void goToCutScene();
+void goToInfo();
+void cutScene();
+void info();
 # 3 "movement.c" 2
 # 1 "game.h" 1
 
@@ -143,6 +147,7 @@ typedef struct {
     int curFrame;
     int numFrames;
  int bulletTimer;
+ int
 } PLAYER;
 
 typedef struct {
@@ -168,6 +173,8 @@ typedef struct {
  int active;
  int erased;
  int sprite;
+ int shotDirection;
+ int tetherBullet;
 } BULLET;
 
 
@@ -188,7 +195,7 @@ typedef struct {
 extern PLAYER player;
 extern PRINCESS princess;
 extern LIVECOUNT liveCount[3];
-extern BULLET bullet[3];
+extern BULLET bullet[5];
 extern int livesRemaining;
 extern int timer;
 extern int enemiesKilled;
@@ -197,27 +204,35 @@ extern enum {R, L};
 extern int movement;
 extern int toggle;
 extern int prevMovement;
+extern int princessHealth;
 
 
 
 void dispBackground();
+void parallax();
 
 void initGame();
 void initPlayer();
 void initPrincess();
 void initBullet();
+void initCar();
+void initAsteroids();
 
 void drawGame();
 void drawBullet(BULLET* bullet, int j);
 void drawPlayer();
 void drawPrincess();
+void drawAsteroids();
+void drawAlien();
+void drawCars();
 
 void updateGame();
 void updatePlayer();
 void updatePrincess();
 void updateBullet(BULLET* bullet);
+void updateEnemies();
 
-int fireBullet(BULLET* bullet);
+void fireBullet(BULLET* bullet);
 # 4 "movement.c" 2
 
  int movement;

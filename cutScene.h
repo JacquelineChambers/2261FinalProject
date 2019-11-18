@@ -26,4 +26,10 @@ extern NOOT noot;
 
 void initCharacter();
 void drawCutScene();
+void parallax();
+void drawDialogBox();
+void initDialogBox();
+void initChar();
+void updateCutScene();
+
 

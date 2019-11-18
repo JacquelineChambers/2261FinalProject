@@ -116,6 +116,10 @@ void goToGame();
 void goToWin();
 void goToPause();
 void goToLose();
+void goToCutScene();
+void goToInfo();
+void cutScene();
+void info();
 # 2 "game.c" 2
 # 1 "game.h" 1
 
@@ -133,6 +137,7 @@ typedef struct {
     int curFrame;
     int numFrames;
  int bulletTimer;
+ int
 } PLAYER;
 
 typedef struct {
@@ -158,6 +163,8 @@ typedef struct {
  int active;
  int erased;
  int sprite;
+ int shotDirection;
+ int tetherBullet;
 } BULLET;
 
 
@@ -178,7 +185,7 @@ typedef struct {
 extern PLAYER player;
 extern PRINCESS princess;
 extern LIVECOUNT liveCount[3];
-extern BULLET bullet[3];
+extern BULLET bullet[5];
 extern int livesRemaining;
 extern int timer;
 extern int enemiesKilled;
@@ -187,27 +194,35 @@ extern enum {R, L};
 extern int movement;
 extern int toggle;
 extern int prevMovement;
+extern int princessHealth;
 
 
 
 void dispBackground();
+void parallax();
 
 void initGame();
 void initPlayer();
 void initPrincess();
 void initBullet();
+void initCar();
+void initAsteroids();
 
 void drawGame();
 void drawBullet(BULLET* bullet, int j);
 void drawPlayer();
 void drawPrincess();
+void drawAsteroids();
+void drawAlien();
+void drawCars();
 
 void updateGame();
 void updatePlayer();
 void updatePrincess();
 void updateBullet(BULLET* bullet);
+void updateEnemies();
 
-int fireBullet(BULLET* bullet);
+void fireBullet(BULLET* bullet);
 # 3 "game.c" 2
 # 1 "enemies.h" 1
 
@@ -235,6 +250,7 @@ typedef struct {
  int alienPal;
  int active;
  int erased;
+ int shine;
  int alienAni;
 } ALIEN;
 
@@ -250,7 +266,7 @@ typedef struct {
  int active;
  int erased;
  int num;
- int enemyAni;
+ int carAni;
 } CAR;
 
 typedef struct {
@@ -265,7 +281,7 @@ typedef struct {
  int active;
  int erased;
  int num;
- int enemyAni;
+ int asteroidAni;
 } ASTEROID;
 
 
@@ -273,11 +289,12 @@ typedef struct {
 
 
 
-extern ALIEN alien[15];
+extern ALIEN alien[2];
 extern ALIENLASER alienLaser[5];
 extern ASTEROID asteroid[2];
 extern CAR car[2];
 extern int enemiesRemaining;
+extern int timer;
 
 
 void initAliens();
@@ -291,9 +308,9 @@ void drawAsteroid(ASTEROID* asteroid, int j);
 void drawAlienLasers(ALIENLASER* alienLaser, int j);
 
 void updateAlien(ALIEN* alien);
-void updateCar(CAR* car, int j);
-void updateAsteroid(ASTEROID* asteroid, int j);
-void updateAlienLasers(ALIENLASER* alienLaser, int j);
+void updateCar(CAR* car);
+void updateAsteroid(ASTEROID* asteroid);
+void updateAlienLasers(ALIENLASER* alienLaser);
 
 int fireAlienLaser(ALIENLASER* alienLaser, ALIEN* alien);
 # 4 "game.c" 2
@@ -343,20 +360,24 @@ int livesRemaining;
 int enemiesKilled;
 PLAYER player;
 PRINCESS princess;
-BULLET bullet[3];
+BULLET bullet[5];
 OBJ_ATTR shadowOAM[128];
+int shotDirection;
+int princessHealth;
 
 void initGame() {
-
+    enemiesKilled = 1;
+     princessHealth = 1;
      dispBackground();
+     timer = 0;
      initAliens();
      initPlayer();
      initPrincess();
      initBullet();
+     bullet[0].tetherBullet = 1;
      initAliens();
      initCar();
      hideSprites();
-
 
 }
 
@@ -402,7 +423,7 @@ void initPrincess() {
     princess.height = 32;
 }
 void initBullet() {
-    for(int i=0; i < 3; i++){
+    for(int i=0; i < 5; i++){
         bullet[i].col = 0;
         bullet[i].row = 0;
         bullet[i].cdel = 1;
@@ -412,62 +433,103 @@ void initBullet() {
         bullet[i].active = 0;
         bullet[i].erased = 0;
         bullet[i].sprite = 12;
+        bullet[i].shotDirection = UP;
+        bullet[i].tetherBullet = 0;
+
      }
 
 }
 
 void updateGame() {
+
     parallax();
     updatePlayer();
+    updatePrincess();
+    updateEnemies();
 
-    for(int i = 0; i< 15; i++){
-         updateAlien(&alien[i]);
-    }
 
-    for(int i = 0; i< 3; i++){
+    for(int i = 0; i< 5; i++){
         updateBullet(&bullet[i]);
     }
 }
-void updateAlien(ALIEN *alien) {
-    for(int i = 0 ;i< 3;i++ ){
-            if ((bullet[i].active && alien->active) && collision(alien->col, alien->row, alien->width, alien->height,
-                        bullet[i].col, bullet[i].row, bullet[i].width, bullet[i].height)) {
-
-                        bullet[i].active = 0;
-                        alien->active = 0;
-
-                }
+void updateEnemies() {
+    for(int i = 0; i< 2; i++){
+        updateAlien(&alien[i]);
+     }
+    for(int i = 0; i< 2; i++) {
+        updateCar(&car[i]);
     }
+    for(int i = 0; i< 2; i++) {
+        updateAsteroid(&asteroid[i]);
+    }
+
 }
 void updateBullet(BULLET* bullet){
 
-    if (bullet->active == 1 && bullet->row < 160 && bullet->col < 240 && bullet->row > 0 && bullet->col > 0) {
-
-            switch(prevMovement) {
+    if (bullet->active == 1 && bullet->row < 160 && bullet->col < 240
+    && bullet->row > 0 && bullet->col > 0 && bullet->tetherBullet == 1) {
+            switch(bullet->shotDirection) {
             case UP:
-                bullet->row--;
+                bullet->row-=2;
                 break;
             case RIGHT:
-                bullet->col++;
+                bullet->col+=2;
                 break;
             case DOWN:
-                bullet->row++;
+                bullet->row+=2;
                 break;
             case LEFT:
-                bullet->col--;
+                bullet->col-=2;
                 break;
         }
-
+    }
+    if (bullet->active == 1 && bullet->row < 160 && bullet->col < 240
+    && bullet->row > 0 && bullet->col > 0 && bullet->tetherBullet == 0) {
+            switch(prevMovement) {
+            case UP:
+                bullet->row-=2;
+                break;
+            case RIGHT:
+                bullet->col+=2;
+                break;
+            case DOWN:
+                bullet->row+=2;
+                break;
+            case LEFT:
+                bullet->col-=2;
+                break;
+        }
     }
     else {
         bullet->active = 0;
-        bullet->row = 160;
     }
 }
 
-int fireBullet(BULLET* bullet) {
+void fireBullet(BULLET* bullet) {
 
-  if (bullet->active == 0) {
+
+  if (bullet->active == 0 && bullet->tetherBullet == 0) {
+            switch(bullet->shotDirection) {
+            case UP:
+                bullet->col = player.col+8;
+       bullet->row = player.row;
+                break;
+            case RIGHT:
+                bullet->col = player.col;
+       bullet->row = player.row+8;
+                break;
+            case DOWN:
+                bullet->col = player.col-8;
+       bullet->row = player.row;
+                break;
+            case LEFT:
+                bullet->col = player.col;
+       bullet->row = player.row-8;
+                break;
+            }
+   bullet->active = 1;
+  }
+        if (bullet->active == 0 && bullet->tetherBullet == 1) {
             switch(prevMovement) {
             case UP:
                 bullet->col = player.col+8;
@@ -485,16 +547,16 @@ int fireBullet(BULLET* bullet) {
                 bullet->col = player.col;
        bullet->row = player.row-8;
                 break;
-        }
+            }
    bullet->active = 1;
-            return 1;
   }
-        else return 0;
+
 }
 
 void updatePlayer() {
     if((!(~(oldButtons)&((1<<0))) && (~buttons & ((1<<0))))) {
-        for(int i = 0; i< 3; i++) {
+    bullet->shotDirection = prevMovement;
+        for(int i = 0; i< 5; i++) {
             fireBullet(&bullet[i]);
         }
     }
@@ -512,23 +574,52 @@ void updatePlayer() {
         slideLeft();
     }
 }
+void updatePrincess() {
+    for(int i = 0; i < 2; i++ ){
+            if ((alien[i].active) && collision(princess.col, princess.row, princess.width, princess.height,
+                        alien[i].col, alien[i].row, alien[i].width, alien[i].height)) {
 
+                        alien[i].active = 0;
+                        princessHealth--;
+                }
+    }
+    for(int i = 0; i < 2; i++ ){
+            if ((car[i].active) && collision(princess.col, princess.row, princess.width, princess.height,
+                        car[i].col, car[i].row, car[i].width, car[i].height)) {
+
+                        car[i].active = 0;
+                        princessHealth--;
+                }
+    }
+    for(int i = 0; i < 2; i++ ){
+            if ((asteroid[i].active) && collision(princess.col, princess.row, princess.width, princess.height,
+                        asteroid[i].col, asteroid[i].row, asteroid[i].width, asteroid[i].height)) {
+
+                        asteroid[i].active = 0;
+                        princessHealth--;
+                }
+    }
+}
 void drawGame() {
     int j = 2;
     drawPlayer();
     drawPrincess();
-    for(int i = 0; i< 3; i++){
+    for(int i = 0; i< 5; i++){
         drawBullet(&bullet[i], j);
         j++;
     }
 
+    for(int i = 0; i< 2; i++){
+        drawCars(&car[i], j);
+        j++;
+    }
 
-
-
-
-
-    for(int i = 0; i< 15; i++){
+    for(int i = 0; i< 2; i++){
         drawAlien(&alien[i], j);
+        j++;
+    }
+    for(int i = 0; i< 2; i++){
+        drawAsteroids(&asteroid[i], j);
         j++;
     }
 
@@ -552,7 +643,7 @@ void drawPrincess() {
 void drawBullet(BULLET* bullet, int j) {
     if (bullet->active) {
         shadowOAM[j].attr0 = bullet->row | (0<<13) | (0<<14);
-        shadowOAM[j].attr1 = bullet->col | (1<<14);
+        shadowOAM[j].attr1 = bullet->col | (0<<14);
         shadowOAM[j].attr2 = ((0)<<12) | ((0)*32+(bullet->sprite));
     }
     else {
@@ -564,7 +655,28 @@ void drawAlien(ALIEN* alien, int j) {
     if (alien->active) {
         shadowOAM[j].attr0 = alien->row | (0<<13) | (0<<14);
         shadowOAM[j].attr1 = alien->col | (1<<14);
-        shadowOAM[j].attr2 = ((3)<<12) | ((0)*32+(14));
+        shadowOAM[j].attr2 = ((3)<<12) | ((alien->shine)*32+(alien->alienAni));
+    }
+    else {
+        shadowOAM[j].attr0 = (2<<8);
+    }
+}
+
+void drawCars(CAR* car, int j) {
+    if (car->active) {
+        shadowOAM[j].attr0 = car->row | (0<<13) | (0<<14);
+        shadowOAM[j].attr1 = car->col | (1<<14);
+        shadowOAM[j].attr2 = ((5)<<12) | ((0)*32+(car->carAni));
+    }
+    else {
+        shadowOAM[j].attr0 = (2<<8);
+    }
+}
+void drawAsteroids(ASTEROID* asteroid, int j) {
+    if (asteroid->active) {
+        shadowOAM[j].attr0 = asteroid->row | (0<<13) | (0<<14);
+        shadowOAM[j].attr1 = asteroid->col | (1<<14);
+        shadowOAM[j].attr2 = ((4)<<12) | ((0)*32+(asteroid->asteroidAni));
     }
     else {
         shadowOAM[j].attr0 = (2<<8);

@@ -116,6 +116,10 @@ void goToGame();
 void goToWin();
 void goToPause();
 void goToLose();
+void goToCutScene();
+void goToInfo();
+void cutScene();
+void info();
 # 2 "cutScene.c" 2
 # 1 "cutScene.h" 1
 
@@ -146,6 +150,11 @@ extern NOOT noot;
 
 void initCharacter();
 void drawCutScene();
+void parallax();
+void drawDialogBox();
+void initDialogBox();
+void initChar();
+void updateCutScene();
 # 3 "cutScene.c" 2
 # 1 "game.h" 1
 
@@ -163,6 +172,7 @@ typedef struct {
     int curFrame;
     int numFrames;
  int bulletTimer;
+ int
 } PLAYER;
 
 typedef struct {
@@ -188,6 +198,8 @@ typedef struct {
  int active;
  int erased;
  int sprite;
+ int shotDirection;
+ int tetherBullet;
 } BULLET;
 
 
@@ -208,7 +220,7 @@ typedef struct {
 extern PLAYER player;
 extern PRINCESS princess;
 extern LIVECOUNT liveCount[3];
-extern BULLET bullet[3];
+extern BULLET bullet[5];
 extern int livesRemaining;
 extern int timer;
 extern int enemiesKilled;
@@ -217,27 +229,35 @@ extern enum {R, L};
 extern int movement;
 extern int toggle;
 extern int prevMovement;
+extern int princessHealth;
 
 
 
 void dispBackground();
+void parallax();
 
 void initGame();
 void initPlayer();
 void initPrincess();
 void initBullet();
+void initCar();
+void initAsteroids();
 
 void drawGame();
 void drawBullet(BULLET* bullet, int j);
 void drawPlayer();
 void drawPrincess();
+void drawAsteroids();
+void drawAlien();
+void drawCars();
 
 void updateGame();
 void updatePlayer();
 void updatePrincess();
 void updateBullet(BULLET* bullet);
+void updateEnemies();
 
-int fireBullet(BULLET* bullet);
+void fireBullet(BULLET* bullet);
 # 4 "cutScene.c" 2
 
 # 1 "bg0Space.h" 1
@@ -284,11 +304,11 @@ void initChar() {
  noot.col = 50;
  noot.width = 64;
     noot.height = 64;
-    noot.aniState = 0;;
+    noot.aniState = 13;
 }
 void initDialogBox() {
         boxLeft.row = 120;
-        boxLeft.col = 50;
+        boxLeft.col = 40;
         boxLeft.width = 32;
         boxLeft.height = 32;
         boxLeft.section = 0;
@@ -322,7 +342,7 @@ void drawCutScene() {
 void initCharacter() {
     shadowOAM[5].attr0 = noot.row | (0<<13) | (0<<14);
  shadowOAM[5].attr1 = noot.col | (2<<14);
-    shadowOAM[5].attr2 = ((0)<<12) | ((2)*32+(0));
+    shadowOAM[5].attr2 = ((0)<<12) | ((0)*32+(noot.aniState));
 }
 void drawDialogBox() {
     shadowOAM[6].attr0 = boxLeft.row | (0<<13) | (0<<14);

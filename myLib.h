@@ -363,6 +363,11 @@ void goToGame();
 void goToWin();
 void goToPause();
 void goToLose();
+void goToCutScene();
+void goToInfo();
+void cutScene();
+void info();
+
 
 
 

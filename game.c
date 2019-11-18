@@ -16,19 +16,23 @@ PLAYER player;
 PRINCESS princess;
 BULLET bullet[BULLETCOUNT];
 OBJ_ATTR shadowOAM[128];
+int shotDirection;
+int princessHealth;
 
 void initGame() {
-     
+    enemiesKilled = 1;
+     princessHealth = 1;
      dispBackground();
+     timer = 0;
      initAliens();
      initPlayer();
      initPrincess();
      initBullet();
+     bullet[0].tetherBullet = 1;
      initAliens();
      initCar();
      hideSprites();
      
-    
 }
 
 void dispBackground() {
@@ -83,62 +87,103 @@ void initBullet() {
         bullet[i].active = 0;
         bullet[i].erased = 0;
         bullet[i].sprite = 12;
+        bullet[i].shotDirection = UP;
+        bullet[i].tetherBullet = 0;
+
      }
     
 }
 
 void updateGame() {
+
     parallax();
     updatePlayer();
-    //updatePrincess();
-    for(int i = 0; i< ALIENCOUNT; i++){
-         updateAlien(&alien[i]);
-    }
+    updatePrincess();
+    updateEnemies();
+   
    
     for(int i = 0; i< BULLETCOUNT; i++){
         updateBullet(&bullet[i]);
     }
 }
-void updateAlien(ALIEN *alien) {
-    for(int i = 0 ;i< BULLETCOUNT;i++ ){
-            if ((bullet[i].active && alien->active) && collision(alien->col, alien->row, alien->width, alien->height,
-                        bullet[i].col, bullet[i].row, bullet[i].width, bullet[i].height)) {
-
-                        bullet[i].active = 0;
-                        alien->active = 0;
-
-                }
+void updateEnemies() {//collissions with alien
+    for(int i = 0; i< ALIENCOUNT; i++){
+        updateAlien(&alien[i]);
+     }
+    for(int i = 0; i< CARCOUNT; i++) {
+        updateCar(&car[i]);
     }
+    for(int i = 0; i< ASTEROIDCOUNT; i++) {
+        updateAsteroid(&asteroid[i]);
+    }
+    
 }
-void updateBullet(BULLET* bullet){
-
-    if (bullet->active == 1 && bullet->row < 160 && bullet->col < 240 && bullet->row > 0 && bullet->col > 0) {
-      
-            switch(prevMovement) {
+void updateBullet(BULLET* bullet){//player's bullet movement is updated
+        
+    if (bullet->active == 1 && bullet->row < 160 && bullet->col < 240 
+    && bullet->row > 0 && bullet->col > 0 && bullet->tetherBullet == 1) {
+            switch(bullet->shotDirection) {
             case UP:
-                bullet->row--;
+                bullet->row-=2;
                 break;
             case RIGHT:
-                bullet->col++;
+                bullet->col+=2;
                 break;
             case DOWN:
-                bullet->row++;
+                bullet->row+=2;
                 break;
             case LEFT:
-                bullet->col--;
+                bullet->col-=2;
+                break;
+        }	
+    }
+    if (bullet->active == 1 && bullet->row < 160 && bullet->col < 240 
+    && bullet->row > 0 && bullet->col > 0 && bullet->tetherBullet == 0) {
+            switch(prevMovement) {
+            case UP:
+                bullet->row-=2;
+                break;
+            case RIGHT:
+                bullet->col+=2;
+                break;
+            case DOWN:
+                bullet->row+=2;
+                break;
+            case LEFT:
+                bullet->col-=2;
                 break;
         }
-			
     }
     else {
         bullet->active = 0;
-        bullet->row = 160;
     }
 }
 
-int fireBullet(BULLET* bullet) {
-   
-		if (bullet->active == 0) {
+void fireBullet(BULLET* bullet) {//player can fire bullet
+        
+
+		if (bullet->active == 0 && bullet->tetherBullet == 0) {
+            switch(bullet->shotDirection) {
+            case UP:
+                bullet->col = player.col+8;
+			    bullet->row = player.row;
+                break;
+            case RIGHT:
+                bullet->col = player.col;
+			    bullet->row = player.row+8;
+                break;
+            case DOWN:
+                bullet->col = player.col-8;
+			    bullet->row = player.row;
+                break;
+            case LEFT:
+                bullet->col = player.col;
+			    bullet->row = player.row-8;
+                break;
+            }
+		 bullet->active = 1;
+		}
+        if (bullet->active == 0 && bullet->tetherBullet == 1) {
             switch(prevMovement) {
             case UP:
                 bullet->col = player.col+8;
@@ -156,15 +201,15 @@ int fireBullet(BULLET* bullet) {
                 bullet->col = player.col;
 			    bullet->row = player.row-8;
                 break;
-        }
-			bullet->active = 1;
-            return 1;
+            }
+		 bullet->active = 1;
 		}
-        else return 0;
+     
 }
 
-void updatePlayer() {
+void updatePlayer() {//updates player's movement and actions based on user input
     if(BUTTON_PRESSED(BUTTON_A)) { //shooty
+    bullet->shotDirection = prevMovement;
         for(int i = 0; i< BULLETCOUNT; i++) {
             fireBullet(&bullet[i]);
         }
@@ -183,8 +228,33 @@ void updatePlayer() {
         slideLeft();
     }
 }
+void updatePrincess() {
+    for(int i = 0; i < ALIENCOUNT; i++ ){
+            if ((alien[i].active) && collision(princess.col, princess.row, princess.width, princess.height,
+                        alien[i].col, alien[i].row, alien[i].width, alien[i].height)) {
 
-void drawGame() {
+                        alien[i].active = 0;
+                        princessHealth--;
+                }
+    }
+    for(int i = 0; i < CARCOUNT; i++ ){
+            if ((car[i].active) && collision(princess.col, princess.row, princess.width, princess.height,
+                        car[i].col, car[i].row, car[i].width, car[i].height)) {
+
+                        car[i].active = 0;
+                        princessHealth--;
+                }
+    }
+    for(int i = 0; i < ASTEROIDCOUNT; i++ ){
+            if ((asteroid[i].active) && collision(princess.col, princess.row, princess.width, princess.height,
+                        asteroid[i].col, asteroid[i].row, asteroid[i].width, asteroid[i].height)) {
+
+                        asteroid[i].active = 0;
+                        princessHealth--;
+                }
+    }
+}
+void drawGame() {//draws all sprite in the game
     int j = 2;
     drawPlayer();
     drawPrincess();
@@ -192,27 +262,31 @@ void drawGame() {
         drawBullet(&bullet[i], j);
         j++;
     } 
-    /*
+    
     for(int i = 0; i< CARCOUNT; i++){
-        drawCars(&bullet[i], j);
+        drawCars(&car[i], j);
         j++;
     } 
-    */
+    
     for(int i = 0; i< ALIENCOUNT; i++){
         drawAlien(&alien[i], j);
         j++;
     } 
+    for(int i = 0; i< ASTEROIDCOUNT; i++){
+        drawAsteroids(&asteroid[i], j);
+        j++;
+    }
 
     
 }
 
-void drawPlayer() {
+void drawPlayer() {//draws player sprite
     shadowOAM[0].attr0 = player.row | ATTR0_4BPP | ATTR0_SQUARE; //| ATTR0_AFFINE;
 	shadowOAM[0].attr1 = player.col | ATTR1_SMALL;
     shadowOAM[0].attr2 = ATTR2_PALROW(0) | ATTR2_TILEID(player.sprite,0);
 }
 
-void drawPrincess() {
+void drawPrincess() {//draws princess sprite
     shadowOAM[1].attr0 = princess.row | ATTR0_4BPP | ATTR0_SQUARE;
 	shadowOAM[1].attr1 = princess.col | ATTR1_MEDIUM;
     shadowOAM[1].attr2 = ATTR2_PALROW(1) | ATTR2_TILEID(8,0);
@@ -223,7 +297,7 @@ void drawPrincess() {
 void drawBullet(BULLET* bullet, int j) {//increment loc up
     if (bullet->active) {
         shadowOAM[j].attr0 = bullet->row | ATTR0_4BPP | ATTR0_SQUARE; //| ATTR0_AFFINE;
-        shadowOAM[j].attr1 = bullet->col | ATTR1_SMALL;
+        shadowOAM[j].attr1 = bullet->col | ATTR1_TINY;
         shadowOAM[j].attr2 = ATTR2_PALROW(0) | ATTR2_TILEID(bullet->sprite,0);
     }
     else {
@@ -235,7 +309,28 @@ void drawAlien(ALIEN* alien, int j) {//increment loc up
     if (alien->active) {
         shadowOAM[j].attr0 = alien->row | ATTR0_4BPP | ATTR0_SQUARE; //| ATTR0_AFFINE;
         shadowOAM[j].attr1 = alien->col | ATTR1_SMALL;
-        shadowOAM[j].attr2 = ATTR2_PALROW(3) | ATTR2_TILEID(14,0);
+        shadowOAM[j].attr2 = ATTR2_PALROW(3) | ATTR2_TILEID(alien->alienAni,alien->shine);
+    }
+    else {
+        shadowOAM[j].attr0 = ATTR0_HIDE;
+    }
+}
+
+void drawCars(CAR* car, int j) {//increment loc up
+    if (car->active) {
+        shadowOAM[j].attr0 = car->row | ATTR0_4BPP | ATTR0_SQUARE; //| ATTR0_AFFINE;
+        shadowOAM[j].attr1 = car->col | ATTR1_SMALL;
+        shadowOAM[j].attr2 = ATTR2_PALROW(5) | ATTR2_TILEID(car->carAni,0);
+    }
+    else {
+        shadowOAM[j].attr0 = ATTR0_HIDE;
+    }
+}
+void drawAsteroids(ASTEROID* asteroid, int j) {//increment loc up
+    if (asteroid->active) {
+        shadowOAM[j].attr0 = asteroid->row | ATTR0_4BPP | ATTR0_SQUARE; //| ATTR0_AFFINE;
+        shadowOAM[j].attr1 = asteroid->col | ATTR1_SMALL;
+        shadowOAM[j].attr2 = ATTR2_PALROW(4) | ATTR2_TILEID(asteroid->asteroidAni,0);
     }
     else {
         shadowOAM[j].attr0 = ATTR0_HIDE;

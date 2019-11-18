@@ -116,6 +116,10 @@ void goToGame();
 void goToWin();
 void goToPause();
 void goToLose();
+void goToCutScene();
+void goToInfo();
+void cutScene();
+void info();
 # 2 "text.c" 2
 # 1 "text.h" 1
 

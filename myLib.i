@@ -116,6 +116,10 @@ void goToGame();
 void goToWin();
 void goToPause();
 void goToLose();
+void goToCutScene();
+void goToInfo();
+void cutScene();
+void info();
 # 2 "myLib.c" 2
 # 1 "c:\\devkitpro\\devkitarm\\arm-none-eabi\\include\\stdio.h" 1 3
 # 29 "c:\\devkitpro\\devkitarm\\arm-none-eabi\\include\\stdio.h" 3

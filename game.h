@@ -13,6 +13,7 @@ typedef struct {
     int curFrame;
     int numFrames;
 	int bulletTimer;
+	int 
 } PLAYER;
 
 typedef struct {
@@ -38,6 +39,8 @@ typedef struct {
 	int active;
 	int erased;
 	int sprite;
+	int shotDirection;
+	int tetherBullet;
 } BULLET;
 
 
@@ -51,7 +54,7 @@ typedef struct {
 
 // Constants
 
-#define BULLETCOUNT 3
+#define BULLETCOUNT 5
 #define LIVES 3
 
 //variables
@@ -67,25 +70,34 @@ extern enum {R, L};
 extern int movement;
 extern int toggle;
 extern int prevMovement;
+extern int princessHealth;
 
 //methods
 
 void dispBackground();
+void parallax();
 //initalize methods
 void initGame();
 void initPlayer();
 void initPrincess();
 void initBullet();
+void initCar();
+void initAsteroids();
 //draw methods
 void drawGame();
 void drawBullet(BULLET* bullet, int j);
 void drawPlayer();
 void drawPrincess();
+void drawAsteroids();
+void drawAlien();
+void drawCars();
 //update methods
 void updateGame();
 void updatePlayer();
 void updatePrincess();
 void updateBullet(BULLET* bullet);
+void updateEnemies();
 //fire bullet methods
-int fireBullet(BULLET* bullet);
+void fireBullet(BULLET* bullet);
+
 

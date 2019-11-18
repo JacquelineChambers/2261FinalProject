@@ -110,13 +110,13 @@ void game() {
 		goToWin();
 	}
     //if the player has no lives lef then the player looses the game(livesRemaining == 0
-	if(BUTTON_PRESSED(BUTTON_SELECT)) {
+	if(princessHealth == 0) {
         REG_BG0HOFF = 0;
         REG_BG1HOFF = 0;
 		goToLose();
 	}
     //goes to cutscene if a certain amount of enemies are killed
-    if(enemiesKilled%5 > 0 || BUTTON_PRESSED(BUTTON_B)) {
+    if(enemiesKilled%5 == 0 || BUTTON_PRESSED(BUTTON_B)) {
         REG_BG0HOFF = 0;
         REG_BG1HOFF = 0;
 		goToCutScene();

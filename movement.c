@@ -23,7 +23,7 @@ void rotate (PLAYER *player) {
 }
 */
 
-void rotateLeft() {
+void rotateLeft() {//player can rotate to the left
      if(toggle == R) {
              switch(movement) {
             case UP:
@@ -70,7 +70,7 @@ void rotateLeft() {
         toggle = L;
 }
 
-void rotateRight() {
+void rotateRight() {//player can rotate to the right
     if(toggle == L) {
            switch(movement) {
             case UP:
@@ -117,7 +117,7 @@ void rotateRight() {
         toggle = R;
 }
 
-void slideRight() {
+void slideRight() {//player can slide to the right
      switch(prevMovement) {
             case UP:
                 if(player.width + player.col < 140) {
@@ -143,7 +143,7 @@ void slideRight() {
         
 }
 
-void slideLeft() {
+void slideLeft() {//player can slide to the left
     switch(prevMovement) {
             case UP:
                 if(player.col > 95) {

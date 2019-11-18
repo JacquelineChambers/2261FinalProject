@@ -22,11 +22,11 @@ void initChar() {
 	noot.col = 50;
 	noot.width = 64;
     noot.height = 64;
-    noot.aniState = 0;;
+    noot.aniState = 13;
 }
 void initDialogBox() {
         boxLeft.row = 120;
-        boxLeft.col = 50;
+        boxLeft.col = 40;
         boxLeft.width = 32;
         boxLeft.height = 32;
         boxLeft.section = 0;
@@ -60,7 +60,7 @@ void drawCutScene() {
 void initCharacter() {
     shadowOAM[5].attr0 = noot.row | ATTR0_4BPP | ATTR0_SQUARE;
 	shadowOAM[5].attr1 = noot.col | ATTR1_MEDIUM;
-    shadowOAM[5].attr2 = ATTR2_PALROW(0) | ATTR2_TILEID(0,2);  
+    shadowOAM[5].attr2 = ATTR2_PALROW(0) | ATTR2_TILEID(noot.aniState,0);  
 }
 void drawDialogBox() {
     shadowOAM[6].attr0 = boxLeft.row | ATTR0_4BPP | ATTR0_SQUARE;

@@ -25,7 +25,7 @@ initChar:
 	mov	r2, #64
 	mov	ip, #100
 	mov	r0, #50
-	mov	r1, #0
+	mov	r1, #13
 	ldr	r3, .L3
 	str	ip, [r3]
 	str	r0, [r3, #4]
@@ -50,17 +50,17 @@ initDialogBox:
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r4, r5, r6, lr}
 	mov	lr, #32
-	mov	r5, #120
-	mov	r4, #50
-	mov	r6, #0
-	mov	r0, r5
-	mov	r2, r4
+	mov	r4, #120
+	mov	r6, #40
+	mov	r5, #0
+	mov	r0, r4
 	mov	r1, lr
+	mov	r2, #50
 	mov	ip, #4
 	ldr	r3, .L9
-	stmib	r3, {r4, lr}
-	str	r5, [r3]
-	str	r6, [r3, #16]
+	stm	r3, {r4, r6}
+	str	r5, [r3, #16]
+	str	lr, [r3, #8]
 	str	lr, [r3, #12]
 	ldr	r3, .L9+4
 .L6:
@@ -105,14 +105,14 @@ initCutScene:
 	bx	r3
 	mov	r2, #64
 	mov	ip, #100
-	mov	r1, #0
 	mov	r0, #50
+	mov	r1, #13
 	ldr	r3, .L13+4
 	str	ip, [r3]
+	str	r0, [r3, #4]
 	str	r1, [r3, #16]
 	str	r2, [r3, #8]
 	str	r2, [r3, #12]
-	str	r0, [r3, #4]
 	bl	initDialogBox
 	ldr	r3, .L13+8
 	mov	lr, pc
@@ -158,13 +158,13 @@ initCharacter:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	@ link register save eliminated.
-	ldr	r2, .L20
-	ldr	r3, [r2, #4]
+	ldr	r1, .L20
+	ldr	r3, [r1, #4]
 	mvn	r3, r3, lsl #17
-	mov	r1, #64
 	mvn	r3, r3, lsr #17
-	ldr	r0, [r2]
 	ldr	r2, .L20+4
+	ldr	r0, [r1]
+	ldr	r1, [r1, #16]
 	strh	r3, [r2, #42]	@ movhi
 	strh	r0, [r2, #40]	@ movhi
 	strh	r1, [r2, #44]	@ movhi
@@ -256,17 +256,17 @@ drawCutScene:
 	mov	lr, pc
 	bx	r3
 	bl	drawDialogBox
-	ldr	r2, .L30+8
-	ldr	r3, [r2, #4]
+	ldr	r1, .L30+8
+	ldr	r3, [r1, #4]
 	mvn	r3, r3, lsl #17
-	mov	r1, #64
 	mvn	r3, r3, lsr #17
-	ldr	r0, [r2]
 	ldr	r2, .L30+12
-	pop	{r4, lr}
+	ldr	r0, [r1]
+	ldr	r1, [r1, #16]
 	strh	r3, [r2, #42]	@ movhi
 	strh	r0, [r2, #40]	@ movhi
 	strh	r1, [r2, #44]	@ movhi
+	pop	{r4, lr}
 	bx	lr
 .L31:
 	.align	2

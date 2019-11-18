@@ -23,6 +23,7 @@ typedef struct {
 	int alienPal;
 	int active;
 	int erased;
+	int shine;
 	int alienAni;
 } ALIEN;
 
@@ -38,7 +39,7 @@ typedef struct {
 	int active;
 	int erased;
 	int num;
-	int enemyAni;
+	int carAni;
 } CAR;
 
 typedef struct {
@@ -53,10 +54,10 @@ typedef struct {
 	int active;
 	int erased;
 	int num;
-	int enemyAni;
+	int asteroidAni;
 } ASTEROID;
 
-#define ALIENCOUNT 15
+#define ALIENCOUNT 2
 #define ALIENLASERCOUNT 5
 #define ASTEROIDCOUNT 2
 #define CARCOUNT 2
@@ -66,6 +67,7 @@ extern ALIENLASER alienLaser[ALIENLASERCOUNT];
 extern ASTEROID asteroid[ASTEROIDCOUNT];
 extern CAR car[CARCOUNT];
 extern int enemiesRemaining;
+extern int timer;
 
 
 void initAliens();
@@ -79,9 +81,9 @@ void drawAsteroid(ASTEROID* asteroid, int j);
 void drawAlienLasers(ALIENLASER* alienLaser, int j);
 
 void updateAlien(ALIEN* alien);
-void updateCar(CAR* car, int j);
-void updateAsteroid(ASTEROID* asteroid, int j);
-void updateAlienLasers(ALIENLASER* alienLaser, int j); 
+void updateCar(CAR* car);
+void updateAsteroid(ASTEROID* asteroid);
+void updateAlienLasers(ALIENLASER* alienLaser); 
 
 int fireAlienLaser(ALIENLASER* alienLaser, ALIEN* alien);
 
