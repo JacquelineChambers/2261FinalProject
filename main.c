@@ -104,13 +104,13 @@ void game() {
     waitForVBlank();
     DMANow(3, shadowOAM, OAM, 128*4);
     //lets the player win if all of the enemies have been killedenemiesRemaining == 0
-	if(BUTTON_PRESSED(BUTTON_SELECT)) { 
+	if(enemiesKilled == 20) { 
         REG_BG0HOFF = 0;
         REG_BG1HOFF = 0;
 		goToWin();
 	}
     //if the player has no lives lef then the player looses the game(livesRemaining == 0
-	if(princessHealth == 0) {
+	if( 0) {
         REG_BG0HOFF = 0;
         REG_BG1HOFF = 0;
 		goToLose();

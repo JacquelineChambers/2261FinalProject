@@ -6,6 +6,7 @@
 #include "bg0Space.h"
 #include "bg1Stars.h"
 #include "sprites.h"
+#include "sine.h"
 //s->spriteCol = s->baseState + (s->aniState + (s->width/8));
 
 unsigned short hOff;
@@ -16,8 +17,12 @@ PLAYER player;
 PRINCESS princess;
 BULLET bullet[BULLETCOUNT];
 OBJ_ATTR shadowOAM[128];
+OBJ_AFFINE* shadowAffine = (OBJ_AFFINE*)(shadowOAM);
 int shotDirection;
 int princessHealth;
+int shootAni;
+int timerShooting;
+unsigned int rotTimer;
 
 void initGame() {
     enemiesKilled = 1;
@@ -182,6 +187,7 @@ void fireBullet(BULLET* bullet) {//player can fire bullet
                 break;
             }
 		 bullet->active = 1;
+         shootAni = 4;
 		}
         if (bullet->active == 0 && bullet->tetherBullet == 1) {
             switch(prevMovement) {
@@ -257,6 +263,11 @@ void updatePrincess() {
 void drawGame() {//draws all sprite in the game
     int j = 2;
     drawPlayer();
+    if(timerShooting%5 == 0 && shootAni != 0) {
+        shootAni-=2;
+        timerShooting = 0;
+    }
+    timerShooting++;
     drawPrincess();
     for(int i = 0; i< BULLETCOUNT; i++){
         drawBullet(&bullet[i], j);
@@ -283,7 +294,7 @@ void drawGame() {//draws all sprite in the game
 void drawPlayer() {//draws player sprite
     shadowOAM[0].attr0 = player.row | ATTR0_4BPP | ATTR0_SQUARE; //| ATTR0_AFFINE;
 	shadowOAM[0].attr1 = player.col | ATTR1_SMALL;
-    shadowOAM[0].attr2 = ATTR2_PALROW(0) | ATTR2_TILEID(player.sprite,0);
+    shadowOAM[0].attr2 = ATTR2_PALROW(0) | ATTR2_TILEID(player.sprite, shootAni);
 }
 
 void drawPrincess() {//draws princess sprite
@@ -327,9 +338,20 @@ void drawCars(CAR* car, int j) {//increment loc up
     }
 }
 void drawAsteroids(ASTEROID* asteroid, int j) {//increment loc up
+    rotTimer++;
+    int deg = (rotTimer % 360);
+    
+
     if (asteroid->active) {
-        shadowOAM[j].attr0 = asteroid->row | ATTR0_4BPP | ATTR0_SQUARE; //| ATTR0_AFFINE;
-        shadowOAM[j].attr1 = asteroid->col | ATTR1_SMALL;
+        shadowAffine[0].a = sin_lut_fixed8[(deg + 90) % 360];
+        shadowAffine[0].b = sin_lut_fixed8[(deg + 180) % 360];
+        shadowAffine[0].c = sin_lut_fixed8[(deg) % 360];
+        shadowAffine[0].d = sin_lut_fixed8[(deg + 90) % 360];
+       
+       
+
+        shadowOAM[j].attr0 = asteroid->row | ATTR0_4BPP | ATTR0_SQUARE | ATTR0_DOUBLEAFFINE;
+        shadowOAM[j].attr1 = asteroid->col | ATTR1_SMALL | ATTR1_AFFINEINDEX(0); 
         shadowOAM[j].attr2 = ATTR2_PALROW(4) | ATTR2_TILEID(asteroid->asteroidAni,0);
     }
     else {

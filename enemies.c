@@ -11,6 +11,7 @@ int timer;
 
 
 void initAliens() { //creates aliens
+int j;
     for(int i=0; i < ALIENCOUNT; i++){
         alien[i].height = 16;
         alien[i].width = 16;
@@ -19,9 +20,33 @@ void initAliens() { //creates aliens
         alien[i].active = 1;
         alien[i].erased = 0;
         alien[i].alienAni = 17;
+        alien[i].alienPal = 3;
         alien[i].shine = 0;
-        alien[i].row = 0;
-        alien[i].col = 20 + (i*30);
+        if(j < 4) {
+            alien[i].direction = j;
+            switch(j) {
+                case 0:
+                alien[i].row = 0;
+                alien[i].col = 20 + (i*30);
+                continue;
+                case 1:
+                alien[i].row = 160;
+                alien[i].col = 20 + (i*30);
+                continue;
+                case 2:
+                alien[i].row = 20 + (i*30);
+                alien[i].col = 0;
+                continue;
+                case 3:
+                alien[i].row = 20 + (i*30);
+                alien[i].col = 240;
+                continue;
+            }
+            
+            j++;
+        } else {
+            j = 0;
+        }
     }
        
 }
@@ -67,16 +92,16 @@ void initAlienLaser() {//creates alien's lasers
     }
        
 }
-void alienMovement() {//allows the alien to move
+void alienActive() {//allows the alien to move
     
 }
-void carMovement() {//allows the car to move
+void carActive() {//allows the car to move
     
 }
-void asteroidMovement() {//allows the asteroid to move
+void asteroidActive() {//allows the asteroid to move
 
 }
-void alienLaserMovement() {//allows the alien's laser to move
+void alienLaserActive() {//allows the alien's laser to move
 
 }
 
@@ -92,11 +117,59 @@ void updateAlien(ALIEN *alien) {
                 }
     }
     
-    if(alien->row < 160 || alien->col < 240 && timer%2 == 0) {
-        if(timer%6 == 0) {
-        alien->col++; 
+    if(alien->row < 160 && alien->col < 240) {
+        switch(alien->direction) {
+
+            case 0:
+                if(timer%4 == 0) {
+                alien->col++; 
             
+                }
+                if(timer%5 == 0) {
+                alien->row++;
+          
+                }
+                break;
+            case 1:
+                if(timer%4 == 0) {
+                alien->col--; 
+            
+                }
+                if(timer%5 == 0) {
+                alien->row--;
+          
+                }
+                break;
+            case 2:
+                if(timer%4 == 0) {
+                alien->col++; 
+            
+                }
+                if(timer%5 == 0) {
+                alien->row--;
+          
+                }
+                if(timer%8 == 0) {
+                alien->row++;
+          
+                }
+                break;
+            case 3:
+                if(timer%4 == 0) {
+                alien->col--; 
+            
+                }
+                if(timer%7 == 0) {
+                alien->row++;
+          
+                }
+                if(timer%5 == 0) {
+                alien->row++;
+          
+                }
+                break;
         }
+        
         if(timer%5 == 0) {
             if(alien->shine == 6) {
                 alien->shine = 0;
@@ -104,11 +177,8 @@ void updateAlien(ALIEN *alien) {
                 alien->shine+=2;
             }
         } 
-        if(timer%5 == 0) {
-        alien->row++;
-          
-        }
-        timer++;
+        
+        //timer++;
     } else {
         initAliens();
     }
@@ -126,17 +196,18 @@ void updateCar(CAR *car) {
 
                 }
     }
-    if(car->row < 160 || car->col < 240) {
-         if(timer%2 == 0) {
+    if(car->row < 160 && car->col < 240) {
+         if(timer%3 == 0) {
             car->col++;
         }
-        if(timer%3 == 0) {
+        if(timer%4 == 0) {
             car->row++;
         }
-        timer++;
+       // timer++;
     } else {
         initCar();
     }
+
 }
 
 void updateAsteroid(ASTEROID *asteroid) {
@@ -150,11 +221,11 @@ void updateAsteroid(ASTEROID *asteroid) {
 
                 }
     }
-    if(asteroid->row < 160 || asteroid->col < 240) {
-         if(timer%4 == 0) {
+    if(asteroid->row < 160 && asteroid->col < 240) {
+         if(timer%3 == 0) {
             asteroid->col++;
         }
-        if(timer%3 == 0) {
+        if(timer%4 == 0) {
             asteroid->row++;
         }
         timer++;

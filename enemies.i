@@ -24,12 +24,12 @@ typedef struct {
  int col;
  int height;
  int width;
- int alienType;
  int alienPal;
  int active;
  int erased;
  int shine;
  int alienAni;
+ int direction;
 } ALIEN;
 
 typedef struct {
@@ -69,7 +69,7 @@ typedef struct {
 
 extern ALIEN alien[2];
 extern ALIENLASER alienLaser[5];
-extern ASTEROID asteroid[2];
+extern ASTEROID asteroid[1];
 extern CAR car[2];
 extern int enemiesRemaining;
 extern int timer;
@@ -166,6 +166,7 @@ extern int movement;
 extern int toggle;
 extern int prevMovement;
 extern int princessHealth;
+extern unsigned int rotTimer;
 
 
 
@@ -253,12 +254,30 @@ typedef struct {
 
 
 extern OBJ_ATTR shadowOAM[];
-# 163 "myLib.h"
+
+
+
+typedef struct {
+    u16 fill0[3];
+    short a;
+    u16 fill1[3];
+    short b;
+    u16 fill2[3];
+    short c;
+    u16 fill3[3];
+    short d;
+
+} __attribute__((aligned(4))) OBJ_AFFINE;
+
+
+
+extern OBJ_AFFINE* shadowAffine;
+# 181 "myLib.h"
  void hideSprites();
-# 184 "myLib.h"
+# 202 "myLib.h"
 extern unsigned short oldButtons;
 extern unsigned short buttons;
-# 195 "myLib.h"
+# 213 "myLib.h"
 typedef volatile struct {
     volatile const void *src;
     volatile void *dst;
@@ -267,9 +286,9 @@ typedef volatile struct {
 
 
 extern DMA *dma;
-# 235 "myLib.h"
+# 253 "myLib.h"
 void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned int cnt);
-# 327 "myLib.h"
+# 345 "myLib.h"
 typedef struct{
     const unsigned char* data;
     int length;
@@ -317,13 +336,14 @@ void info();
 
 ALIEN alien[2];
 ALIENLASER alienLaser[5];
-ASTEROID asteroid[2];
+ASTEROID asteroid[1];
 CAR car[2];
 int enemiesRemaining;
 int timer;
 
 
 void initAliens() {
+int j;
     for(int i=0; i < 2; i++){
         alien[i].height = 16;
         alien[i].width = 16;
@@ -332,9 +352,33 @@ void initAliens() {
         alien[i].active = 1;
         alien[i].erased = 0;
         alien[i].alienAni = 17;
+        alien[i].alienPal = 3;
         alien[i].shine = 0;
-        alien[i].row = 0;
-        alien[i].col = 20 + (i*30);
+        if(j < 4) {
+            alien[i].direction = j;
+            switch(j) {
+                case 0:
+                alien[i].row = 0;
+                alien[i].col = 20 + (i*30);
+                continue;
+                case 1:
+                alien[i].row = 160;
+                alien[i].col = 20 + (i*30);
+                continue;
+                case 2:
+                alien[i].row = 20 + (i*30);
+                alien[i].col = 0;
+                continue;
+                case 3:
+                alien[i].row = 20 + (i*30);
+                alien[i].col = 240;
+                continue;
+            }
+
+            j++;
+        } else {
+            j = 0;
+        }
     }
 
 }
@@ -353,7 +397,7 @@ void initCar() {
 
 }
 void initAsteroids() {
-    for(int i=0; i < 2; i++){
+    for(int i=0; i < 1; i++){
         asteroid[i].height = 16;
         asteroid[i].width = 16;
         asteroid[i].cdel = 1;
@@ -380,16 +424,16 @@ void initAlienLaser() {
     }
 
 }
-void alienMovement() {
+void alienActive() {
 
 }
-void carMovement() {
+void carActive() {
 
 }
-void asteroidMovement() {
+void asteroidActive() {
 
 }
-void alienLaserMovement() {
+void alienLaserActive() {
 
 }
 
@@ -405,11 +449,59 @@ void updateAlien(ALIEN *alien) {
                 }
     }
 
-    if(alien->row < 160 || alien->col < 240 && timer%2 == 0) {
-        if(timer%6 == 0) {
-        alien->col++;
+    if(alien->row < 160 && alien->col < 240) {
+        switch(alien->direction) {
 
+            case 0:
+                if(timer%4 == 0) {
+                alien->col++;
+
+                }
+                if(timer%5 == 0) {
+                alien->row++;
+
+                }
+                break;
+            case 1:
+                if(timer%4 == 0) {
+                alien->col--;
+
+                }
+                if(timer%5 == 0) {
+                alien->row--;
+
+                }
+                break;
+            case 2:
+                if(timer%4 == 0) {
+                alien->col++;
+
+                }
+                if(timer%5 == 0) {
+                alien->row--;
+
+                }
+                if(timer%8 == 0) {
+                alien->row++;
+
+                }
+                break;
+            case 3:
+                if(timer%4 == 0) {
+                alien->col--;
+
+                }
+                if(timer%7 == 0) {
+                alien->row++;
+
+                }
+                if(timer%5 == 0) {
+                alien->row++;
+
+                }
+                break;
         }
+
         if(timer%5 == 0) {
             if(alien->shine == 6) {
                 alien->shine = 0;
@@ -417,11 +509,8 @@ void updateAlien(ALIEN *alien) {
                 alien->shine+=2;
             }
         }
-        if(timer%5 == 0) {
-        alien->row++;
 
-        }
-        timer++;
+
     } else {
         initAliens();
     }
@@ -439,17 +528,18 @@ void updateCar(CAR *car) {
 
                 }
     }
-    if(car->row < 160 || car->col < 240) {
-         if(timer%2 == 0) {
+    if(car->row < 160 && car->col < 240) {
+         if(timer%3 == 0) {
             car->col++;
         }
-        if(timer%3 == 0) {
+        if(timer%4 == 0) {
             car->row++;
         }
-        timer++;
+
     } else {
         initCar();
     }
+
 }
 
 void updateAsteroid(ASTEROID *asteroid) {
@@ -463,11 +553,11 @@ void updateAsteroid(ASTEROID *asteroid) {
 
                 }
     }
-    if(asteroid->row < 160 || asteroid->col < 240) {
-         if(timer%4 == 0) {
+    if(asteroid->row < 160 && asteroid->col < 240) {
+         if(timer%3 == 0) {
             asteroid->col++;
         }
-        if(timer%3 == 0) {
+        if(timer%4 == 0) {
             asteroid->row++;
         }
         timer++;

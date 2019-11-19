@@ -71,6 +71,7 @@ extern int movement;
 extern int toggle;
 extern int prevMovement;
 extern int princessHealth;
+extern unsigned int rotTimer;
 
 //methods
 

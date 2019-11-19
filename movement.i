@@ -70,12 +70,30 @@ typedef struct {
 
 
 extern OBJ_ATTR shadowOAM[];
-# 163 "myLib.h"
+
+
+
+typedef struct {
+    u16 fill0[3];
+    short a;
+    u16 fill1[3];
+    short b;
+    u16 fill2[3];
+    short c;
+    u16 fill3[3];
+    short d;
+
+} __attribute__((aligned(4))) OBJ_AFFINE;
+
+
+
+extern OBJ_AFFINE* shadowAffine;
+# 181 "myLib.h"
  void hideSprites();
-# 184 "myLib.h"
+# 202 "myLib.h"
 extern unsigned short oldButtons;
 extern unsigned short buttons;
-# 195 "myLib.h"
+# 213 "myLib.h"
 typedef volatile struct {
     volatile const void *src;
     volatile void *dst;
@@ -84,9 +102,9 @@ typedef volatile struct {
 
 
 extern DMA *dma;
-# 235 "myLib.h"
+# 253 "myLib.h"
 void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned int cnt);
-# 327 "myLib.h"
+# 345 "myLib.h"
 typedef struct{
     const unsigned char* data;
     int length;
@@ -205,6 +223,7 @@ extern int movement;
 extern int toggle;
 extern int prevMovement;
 extern int princessHealth;
+extern unsigned int rotTimer;
 
 
 

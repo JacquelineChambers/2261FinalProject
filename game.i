@@ -60,12 +60,30 @@ typedef struct {
 
 
 extern OBJ_ATTR shadowOAM[];
-# 163 "myLib.h"
+
+
+
+typedef struct {
+    u16 fill0[3];
+    short a;
+    u16 fill1[3];
+    short b;
+    u16 fill2[3];
+    short c;
+    u16 fill3[3];
+    short d;
+
+} __attribute__((aligned(4))) OBJ_AFFINE;
+
+
+
+extern OBJ_AFFINE* shadowAffine;
+# 181 "myLib.h"
  void hideSprites();
-# 184 "myLib.h"
+# 202 "myLib.h"
 extern unsigned short oldButtons;
 extern unsigned short buttons;
-# 195 "myLib.h"
+# 213 "myLib.h"
 typedef volatile struct {
     volatile const void *src;
     volatile void *dst;
@@ -74,9 +92,9 @@ typedef volatile struct {
 
 
 extern DMA *dma;
-# 235 "myLib.h"
+# 253 "myLib.h"
 void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned int cnt);
-# 327 "myLib.h"
+# 345 "myLib.h"
 typedef struct{
     const unsigned char* data;
     int length;
@@ -195,6 +213,7 @@ extern int movement;
 extern int toggle;
 extern int prevMovement;
 extern int princessHealth;
+extern unsigned int rotTimer;
 
 
 
@@ -246,12 +265,12 @@ typedef struct {
  int col;
  int height;
  int width;
- int alienType;
  int alienPal;
  int active;
  int erased;
  int shine;
  int alienAni;
+ int direction;
 } ALIEN;
 
 typedef struct {
@@ -291,7 +310,7 @@ typedef struct {
 
 extern ALIEN alien[2];
 extern ALIENLASER alienLaser[5];
-extern ASTEROID asteroid[2];
+extern ASTEROID asteroid[1];
 extern CAR car[2];
 extern int enemiesRemaining;
 extern int timer;
@@ -352,6 +371,9 @@ extern const unsigned short spritesTiles[16384];
 
 extern const unsigned short spritesPal[256];
 # 9 "game.c" 2
+# 1 "sine.h" 1
+const int sin_lut_fixed8[];
+# 10 "game.c" 2
 
 
 unsigned short hOff;
@@ -362,8 +384,12 @@ PLAYER player;
 PRINCESS princess;
 BULLET bullet[5];
 OBJ_ATTR shadowOAM[128];
+OBJ_AFFINE* shadowAffine = (OBJ_AFFINE*)(shadowOAM);
 int shotDirection;
 int princessHealth;
+int shootAni;
+int timerShooting;
+unsigned int rotTimer;
 
 void initGame() {
     enemiesKilled = 1;
@@ -459,7 +485,7 @@ void updateEnemies() {
     for(int i = 0; i< 2; i++) {
         updateCar(&car[i]);
     }
-    for(int i = 0; i< 2; i++) {
+    for(int i = 0; i< 1; i++) {
         updateAsteroid(&asteroid[i]);
     }
 
@@ -528,6 +554,7 @@ void fireBullet(BULLET* bullet) {
                 break;
             }
    bullet->active = 1;
+         shootAni = 4;
   }
         if (bullet->active == 0 && bullet->tetherBullet == 1) {
             switch(prevMovement) {
@@ -591,7 +618,7 @@ void updatePrincess() {
                         princessHealth--;
                 }
     }
-    for(int i = 0; i < 2; i++ ){
+    for(int i = 0; i < 1; i++ ){
             if ((asteroid[i].active) && collision(princess.col, princess.row, princess.width, princess.height,
                         asteroid[i].col, asteroid[i].row, asteroid[i].width, asteroid[i].height)) {
 
@@ -603,6 +630,11 @@ void updatePrincess() {
 void drawGame() {
     int j = 2;
     drawPlayer();
+    if(timerShooting%5 == 0 && shootAni != 0) {
+        shootAni-=2;
+        timerShooting = 0;
+    }
+    timerShooting++;
     drawPrincess();
     for(int i = 0; i< 5; i++){
         drawBullet(&bullet[i], j);
@@ -618,7 +650,7 @@ void drawGame() {
         drawAlien(&alien[i], j);
         j++;
     }
-    for(int i = 0; i< 2; i++){
+    for(int i = 0; i< 1; i++){
         drawAsteroids(&asteroid[i], j);
         j++;
     }
@@ -629,7 +661,7 @@ void drawGame() {
 void drawPlayer() {
     shadowOAM[0].attr0 = player.row | (0<<13) | (0<<14);
  shadowOAM[0].attr1 = player.col | (1<<14);
-    shadowOAM[0].attr2 = ((0)<<12) | ((0)*32+(player.sprite));
+    shadowOAM[0].attr2 = ((0)<<12) | ((shootAni)*32+(player.sprite));
 }
 
 void drawPrincess() {
@@ -673,9 +705,20 @@ void drawCars(CAR* car, int j) {
     }
 }
 void drawAsteroids(ASTEROID* asteroid, int j) {
+    rotTimer++;
+    int deg = (rotTimer % 360);
+
+
     if (asteroid->active) {
-        shadowOAM[j].attr0 = asteroid->row | (0<<13) | (0<<14);
-        shadowOAM[j].attr1 = asteroid->col | (1<<14);
+        shadowAffine[0].a = sin_lut_fixed8[(deg + 90) % 360];
+        shadowAffine[0].b = sin_lut_fixed8[(deg + 180) % 360];
+        shadowAffine[0].c = sin_lut_fixed8[(deg) % 360];
+        shadowAffine[0].d = sin_lut_fixed8[(deg + 90) % 360];
+
+
+
+        shadowOAM[j].attr0 = asteroid->row | (0<<13) | (0<<14) | (3<<8);
+        shadowOAM[j].attr1 = asteroid->col | (1<<14) | ((0) << 9);
         shadowOAM[j].attr2 = ((4)<<12) | ((0)*32+(asteroid->asteroidAni));
     }
     else {

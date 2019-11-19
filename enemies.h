@@ -19,12 +19,12 @@ typedef struct {
 	int col;
 	int height;
 	int width;
-	int alienType;
 	int alienPal;
 	int active;
 	int erased;
 	int shine;
 	int alienAni;
+	int direction;
 } ALIEN;
 
 typedef struct {
@@ -59,7 +59,7 @@ typedef struct {
 
 #define ALIENCOUNT 2
 #define ALIENLASERCOUNT 5
-#define ASTEROIDCOUNT 2
+#define ASTEROIDCOUNT 1
 #define CARCOUNT 2
 
 extern ALIEN alien[ALIENCOUNT];
