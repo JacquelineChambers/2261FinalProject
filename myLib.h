@@ -144,8 +144,6 @@ typedef struct {
 
 } ALIGN(4) OBJ_AFFINE;
 
-
-
 extern OBJ_AFFINE* shadowAffine;
 
 // Attribute 0

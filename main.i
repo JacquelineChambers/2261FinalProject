@@ -2,8 +2,7 @@
 # 1 "<built-in>"
 # 1 "<command-line>"
 # 1 "main.c"
-
-
+# 35 "main.c"
 # 1 "myLib.h" 1
 
 
@@ -77,15 +76,13 @@ typedef struct {
 
 } __attribute__((aligned(4))) OBJ_AFFINE;
 
-
-
 extern OBJ_AFFINE* shadowAffine;
-# 181 "myLib.h"
+# 179 "myLib.h"
  void hideSprites();
-# 202 "myLib.h"
+# 200 "myLib.h"
 extern unsigned short oldButtons;
 extern unsigned short buttons;
-# 213 "myLib.h"
+# 211 "myLib.h"
 typedef volatile struct {
     volatile const void *src;
     volatile void *dst;
@@ -94,9 +91,9 @@ typedef volatile struct {
 
 
 extern DMA *dma;
-# 253 "myLib.h"
+# 251 "myLib.h"
 void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned int cnt);
-# 345 "myLib.h"
+# 343 "myLib.h"
 typedef struct{
     const unsigned char* data;
     int length;
@@ -140,7 +137,7 @@ void goToCutScene();
 void goToInfo();
 void cutScene();
 void info();
-# 4 "main.c" 2
+# 36 "main.c" 2
 # 1 "game.h" 1
 
 typedef struct {
@@ -213,9 +210,13 @@ extern enum {UP, DOWN, LEFT, RIGHT};
 extern enum {R, L};
 extern int movement;
 extern int toggle;
+extern int hit;
+extern int playerHealth;
 extern int prevMovement;
 extern int princessHealth;
 extern unsigned int rotTimer;
+extern int immunity;
+extern immunityWait;
 
 
 
@@ -244,7 +245,7 @@ void updateBullet(BULLET* bullet);
 void updateEnemies();
 
 void fireBullet(BULLET* bullet);
-# 5 "main.c" 2
+# 37 "main.c" 2
 # 1 "cutScene.h" 1
 
 
@@ -263,7 +264,8 @@ typedef struct {
  int col;
  int width;
     int height;
-    int section;
+    int x;
+ int y;
 } BOX;
 
 typedef struct {
@@ -305,10 +307,14 @@ typedef struct {
 
 
 
-extern BOX boxRight;
+
+
+
 extern ALPHABET alphabet;
-extern TEXT text[23];
-extern BOX boxLeft;
+extern TEXT text[22];
+extern BOX boxSide[2];
+extern BOX boxCorner[4];
+extern BOX boxCenter[25];
 
 extern NOOT noot;
 
@@ -318,17 +324,26 @@ void parallax();
 void drawDialogBox();
 void initDialogBox();
 void initChar();
+void initBoxCorner();
+void drawCharacter();
+void initAlphabet();
 void updateCutScene();
-# 6 "main.c" 2
+void initBoxLeftSide();
+void initBoxRightSide();
+void initQuoteOne_letter();
+void initQuoteOne_setup();
+void drawQuoteOne();
+void drawBox();
+# 38 "main.c" 2
 # 1 "font.h" 1
 
 extern const unsigned char fontdata_6x8[12288];
-# 7 "main.c" 2
+# 39 "main.c" 2
 # 1 "text.h" 1
 
 void drawChar(int, int, char, unsigned short);
 void drawString(int, int, char *, unsigned short);
-# 8 "main.c" 2
+# 40 "main.c" 2
 
 
 # 1 "loseScreen.h" 1
@@ -340,7 +355,7 @@ extern const unsigned short loseScreenMap[1024];
 
 
 extern const unsigned short loseScreenPal[256];
-# 11 "main.c" 2
+# 43 "main.c" 2
 # 1 "winScreen.h" 1
 # 22 "winScreen.h"
 extern const unsigned short winScreenTiles[608];
@@ -350,7 +365,7 @@ extern const unsigned short winScreenMap[1024];
 
 
 extern const unsigned short winScreenPal[256];
-# 12 "main.c" 2
+# 44 "main.c" 2
 # 1 "moonArt.h" 1
 # 22 "moonArt.h"
 extern const unsigned short moonArtTiles[7568];
@@ -360,7 +375,7 @@ extern const unsigned short moonArtMap[1024];
 
 
 extern const unsigned short moonArtPal[256];
-# 13 "main.c" 2
+# 45 "main.c" 2
 # 1 "bg0Space.h" 1
 # 22 "bg0Space.h"
 extern const unsigned short bg0SpaceTiles[1888];
@@ -370,7 +385,7 @@ extern const unsigned short bg0SpaceMap[2048];
 
 
 extern const unsigned short bg0SpacePal[256];
-# 14 "main.c" 2
+# 46 "main.c" 2
 # 1 "bg1Stars.h" 1
 # 22 "bg1Stars.h"
 extern const unsigned short bg1StarsTiles[544];
@@ -380,7 +395,7 @@ extern const unsigned short bg1StarsMap[1024];
 
 
 extern const unsigned short bg1StarsPal[256];
-# 15 "main.c" 2
+# 47 "main.c" 2
 # 1 "bg0SpacePause.h" 1
 # 22 "bg0SpacePause.h"
 extern const unsigned short bg0SpacePauseTiles[2352];
@@ -390,7 +405,7 @@ extern const unsigned short bg0SpacePauseMap[1024];
 
 
 extern const unsigned short bg0SpacePausePal[256];
-# 16 "main.c" 2
+# 48 "main.c" 2
 
 
 void initialize();
@@ -488,7 +503,7 @@ void game() {
   goToWin();
  }
 
- if( 0) {
+ if(princessHealth == 0 || playerHealth == 0) {
         (*(volatile unsigned short *)0x04000010) = 0;
         (*(volatile unsigned short *)0x04000014) = 0;
   goToLose();

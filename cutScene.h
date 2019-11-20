@@ -15,7 +15,8 @@ typedef struct {
 	int col;
 	int width;
     int height;
-    int section;
+    int x;
+	int y;
 } BOX;
 
 typedef struct {
@@ -55,12 +56,16 @@ typedef struct {
 	int col;
 } TEXT;
 
-#define QUOTELENGTH 23
+#define QUOTELENGTH 22
+#define BOXSIZE 25
+#define SIDESIZE 2
+#define NUMCORNERS 4
 
-extern BOX boxRight;
 extern ALPHABET alphabet;
 extern TEXT text[QUOTELENGTH];
-extern BOX boxLeft;
+extern BOX boxSide[SIDESIZE];
+extern BOX boxCorner[NUMCORNERS];
+extern BOX boxCenter[BOXSIZE];
 //extern BOX boxCenter[3];
 extern NOOT noot;
 
@@ -70,6 +75,15 @@ void parallax();
 void drawDialogBox();
 void initDialogBox();
 void initChar();
+void initBoxCorner();
+void drawCharacter();
+void initAlphabet();
 void updateCutScene();
+void initBoxLeftSide();
+void initBoxRightSide();
+void initQuoteOne_letter();
+void initQuoteOne_setup();
+void drawQuoteOne();
+void drawBox();
 
 

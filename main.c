@@ -1,3 +1,49 @@
+/*
+HOW TO PLAY
+------------------------------------------
+Press START to begin game
+Press L and R keys to toggle
+your direction to shoot
+Press A to shoot
+Press L and R keys to toggle shot recently shot
+Press LEFT or RIGHT to slide
+from side to side
+Press SELECT to return
+to splash Screen
+Press B for temporary immunity
+
+WHAT IT CAN DO
+----------------------------------
+- can shoot at enemies
+- after a certain amount enemies are shot then a cut scene with 
+text is shown
+- if princess is hit once game ends
+- if player is hit 3 times the game ends
+- if 20 enemies are killed then the player wins
+- the cheat is implemented so if the player hits A 
+then they are immune to enemies for a certain amount of time
+
+CURRENT BUGS
+-------------------------------------
+- colliders for affine asteroid sprite not working as expected
+- still managing randomization for the different paths for each enemy
+- sometimes enemies dissapear and never return to the screen
+probably something to do with touching the edge that i didnt specify
+
+FUTURE MODIFICATIONS
+---------------------------------------
+- will continue to work on cut scene
+- might have aliens have lasers to shoot at the player
+- might slow down enemies to make it easier for player to shoot
+- will modify immunity to be a transparancy instead of a color change
+
+
+
+
+
+
+
+*/
 
 //internal .h files
 #include "myLib.h"
@@ -110,7 +156,7 @@ void game() {
 		goToWin();
 	}
     //if the player has no lives lef then the player looses the game(livesRemaining == 0
-	if( 0) {
+	if(princessHealth == 0 || playerHealth == 0) {
         REG_BG0HOFF = 0;
         REG_BG1HOFF = 0;
 		goToLose();

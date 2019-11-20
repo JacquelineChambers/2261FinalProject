@@ -69,9 +69,13 @@ extern enum {UP, DOWN, LEFT, RIGHT};
 extern enum {R, L};
 extern int movement;
 extern int toggle;
+extern int hit;
+extern int playerHealth;
 extern int prevMovement;
 extern int princessHealth;
 extern unsigned int rotTimer;
+extern int immunity;
+extern immunityWait;
 
 //methods
 

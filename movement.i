@@ -85,15 +85,13 @@ typedef struct {
 
 } __attribute__((aligned(4))) OBJ_AFFINE;
 
-
-
 extern OBJ_AFFINE* shadowAffine;
-# 181 "myLib.h"
+# 179 "myLib.h"
  void hideSprites();
-# 202 "myLib.h"
+# 200 "myLib.h"
 extern unsigned short oldButtons;
 extern unsigned short buttons;
-# 213 "myLib.h"
+# 211 "myLib.h"
 typedef volatile struct {
     volatile const void *src;
     volatile void *dst;
@@ -102,9 +100,9 @@ typedef volatile struct {
 
 
 extern DMA *dma;
-# 253 "myLib.h"
+# 251 "myLib.h"
 void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned int cnt);
-# 345 "myLib.h"
+# 343 "myLib.h"
 typedef struct{
     const unsigned char* data;
     int length;
@@ -221,9 +219,13 @@ extern enum {UP, DOWN, LEFT, RIGHT};
 extern enum {R, L};
 extern int movement;
 extern int toggle;
+extern int hit;
+extern int playerHealth;
 extern int prevMovement;
 extern int princessHealth;
 extern unsigned int rotTimer;
+extern int immunity;
+extern immunityWait;
 
 
 

@@ -6,16 +6,20 @@
 #include "bg1Stars.h"
 #include "sprites.h"
 NOOT noot;
-BOX boxRight;
-BOX boxLeft;
-BOX boxCenter[4];
+BOX boxLeftSide[BOXSIZE/5 - 2];
+BOX boxRightSide[BOXSIZE/5 - 2];
+BOX boxCorner[NUMCORNERS];
+BOX boxCenter[BOXSIZE];
+BOX boxBlack;
 OBJ_ATTR shadowOAM[128];
 ALPHABET alphabet;
 TEXT text[QUOTELENGTH];
 
 void initCutScene() {
     dispBackground();
-    initDialogBox();
+    initBoxLeftSide();
+    initBoxRightSide();
+    initBoxCorner();
     initQuoteOne_letter();
     for (int i = 0; i< QUOTELENGTH; i++) {
         initQuoteOne_setup(&text[i], i);
@@ -61,50 +65,115 @@ void initAlphabet() {
     alphabet.space = 27;
 }
 void initQuoteOne_letter() {
-    text[0].letter = 22;
-    text[1].letter = 7;
-    text[2].letter = 0;
-    text[3].letter = 19;
-    text[4].letter = 27;
-    text[5].letter = 0;
-    text[6].letter = 12;
-    text[7].letter = 27;
-    text[8].letter = 8;
-    text[9].letter = 27;
-    text[10].letter = 5;
-    text[11].letter = 8;
-    text[12].letter = 6;
-    text[13].letter = 7;
-    text[14].letter = 8;
-    text[15].letter = 13;
-    text[16].letter = 6;
-    text[17].letter = 27;
+    text[0].letter = 22;//w
+    text[1].letter = 7;//h
+    text[2].letter = 0;//a
+    text[3].letter = 19;//t
+    
+    text[4].letter = 27;//space
+
+    text[5].letter = 0;//a
+    text[6].letter = 12;//m
+    
+    text[7].letter = 27;//space
+
+    text[8].letter = 8;//i
+
+    text[9].letter = 27;//space
+
+    text[10].letter = 5;//f
+    text[11].letter = 8;//i
+    text[12].letter = 6;//g
+    text[13].letter = 7;//h
+    text[14].letter = 19;//t
+    text[15].letter = 8;//i
+    text[16].letter = 13;//n
+    text[17].letter = 6;//g
+
+    text[18].letter = 27;//space
+
+    text[19].letter = 5;//f
+    text[20].letter = 14;//o
+    text[21].letter = 17;//r
 }
 void initQuoteOne_setup(TEXT* text, int i) {
     text->row = 130;
-    text->col = 50 + (i * 2);
+    text->col = 25 + (i * 8);
 }
 
-void initDialogBox() {
-        boxLeft.row = 120;
-        boxLeft.col = 40;
-        boxLeft.width = 32;
-        boxLeft.height = 32;
-        boxLeft.section = 0;
-    for(int i = 0; i < 4 ; i++) {
-        boxCenter[i].row = 120 ;
-        boxCenter[i].col = 50+ (i*32);
-        boxCenter[i].width = 32;
-        boxCenter[i].height = 32;
-        boxCenter[i].section = 4;
-    }
-        boxRight.row = 120;
-        boxRight.col = 50+ (2*32) + 50;
-        boxRight.width = 32;
-        boxRight.height = 32;
-        boxRight.section = 8;
+void initBoxLeftSide() {
+        for(int i = 0; i <SIDESIZE; i++) {
+        boxLeftSide[i].row = 130 + (i*8);
+        boxLeftSide[i].col = 17;
+        boxLeftSide[i].width = 8;
+        boxLeftSide[i].height = 32;
+        boxLeftSide[i].y = 8;
+        boxLeftSide[i].x = 0;
+        }
+}
+void initBoxRightSide() {
+        for(int i = 0; i <SIDESIZE; i++) {
+        boxRightSide[i].row = 130 + (i*8);
+        boxRightSide[i].col = 200;
+        boxRightSide[i].width = 8;
+        boxRightSide[i].height = 32;
+        boxRightSide[i].y = 8;
+        boxRightSide[i].x = 4;
+        }
 }
 
+void initBoxCorner() {
+    
+        boxCorner[0].row = 125;
+        boxCorner[0].col = 17;
+        boxCorner[0].width = 8;
+        boxCorner[0].height = 8;
+        boxCorner[0].x = 0;
+        boxCorner[0].y = 7;
+  
+        boxCorner[1].row = 125;
+        boxCorner[1].col = 200;
+        boxCorner[1].width = 8;
+        boxCorner[1].height = 8;
+        boxCorner[1].x = 4;
+        boxCorner[1].y = 7;
+
+        boxCorner[2].row = 140;
+        boxCorner[2].col = 17;
+        boxCorner[2].width = 8;
+        boxCorner[2].height = 8;
+        boxCorner[2].x = 0;
+        boxCorner[2].y = 10;
+
+        boxCorner[3].row = 140;
+        boxCorner[3].col = 200;
+        boxCorner[3].width = 8;
+        boxCorner[3].height = 8;
+        boxCorner[3].x = 4;
+        boxCorner[3].y = 10;
+}
+
+/*
+void initBoxEdgeTop() {
+    
+    boxCenter->row = 120;
+    boxCenter->col = 50;
+    boxCenter->width = 8;
+    boxCenter->height = 8;
+    boxCenter->x = 6;
+    boxCenter->y = 1;
+     
+}
+*/
+void boxEdgeBottom() {
+    
+}
+void boxEdgeRight() {
+
+}
+void boxEdgeLeft() {
+
+}
 void updateCutScene() {
     parallax();
 }
@@ -113,37 +182,44 @@ void updateCutScene() {
 void drawCutScene() {
     drawPlayer();
     drawPrincess();
-    drawDialogBox();
-    for (int i = 0; i < QUOTELENGTH; i++) {
-        drawQuoteOne(&text[i], i);
-    }
-    drawCharacter();
-   
-
-}
-void drawCharacter() {
-    shadowOAM[5].attr0 = noot.row | ATTR0_4BPP | ATTR0_SQUARE;
-	shadowOAM[5].attr1 = noot.col | ATTR1_MEDIUM;
-    shadowOAM[5].attr2 = ATTR2_PALROW(0) | ATTR2_TILEID(noot.aniState,0);  
-}
-void drawDialogBox() {
-    shadowOAM[6].attr0 = boxLeft.row | ATTR0_4BPP | ATTR0_SQUARE;
-	shadowOAM[6].attr1 = boxLeft.col | ATTR1_MEDIUM;
-    shadowOAM[6].attr2 = ATTR2_PALROW(2) | ATTR2_TILEID(boxLeft.section,7);
-    int j = 0;
-    for(int i = 7; i < 11; i++) {
-    shadowOAM[i].attr0 = boxCenter[j].row | ATTR0_4BPP | ATTR0_SQUARE;
-	shadowOAM[i].attr1 = boxCenter[j].col | ATTR1_MEDIUM;
-    shadowOAM[i].attr2 = ATTR2_PALROW(2) | ATTR2_TILEID(boxCenter[j].section,7);  
+    int j = 5;
+    drawCharacter(j);
     j++;
+    for(int i = 0; i <SIDESIZE; i++) {
+        drawBox(&boxLeftSide[i], j);
+        j++;
+    }
+    for(int i = 0; i <SIDESIZE; i++) {
+        drawBox(&boxRightSide[i], j);
+        j++;
     }
     
-    shadowOAM[11].attr0 = boxRight.row | ATTR0_4BPP | ATTR0_SQUARE;
-	shadowOAM[11].attr1 = boxRight.col | ATTR1_MEDIUM;
-    shadowOAM[11].attr2 = ATTR2_PALROW(2) | ATTR2_TILEID(boxRight.section,7);  
+    for(int i = 0; i <NUMCORNERS; i++) {
+        drawBox(&boxCorner[i], j);
+        j++;
+    }
+    
+    for (int i = 0; i < QUOTELENGTH; i++) {
+        drawQuoteOne(&text[i], j);
+        j++;
+    }
+
 }
-void drawQuoteOne(TEXT* text, int i) {
-    shadowOAM[i + 12].attr0 = text->row | ATTR0_4BPP | ATTR0_SQUARE;
-	shadowOAM[i + 12].attr1 = text->col | ATTR1_TINY;
-    shadowOAM[i + 12].attr2 = ATTR2_PALROW(0) | ATTR2_TILEID(text->letter,0);  
+void drawCharacter(int j) {
+    shadowOAM[j].attr0 = noot.row | ATTR0_4BPP | ATTR0_SQUARE;
+	shadowOAM[j].attr1 = noot.col | ATTR1_MEDIUM;
+    shadowOAM[j].attr2 = ATTR2_PALROW(0) | ATTR2_TILEID(noot.aniState,0);  
+}
+
+void drawBox(BOX* side, int j) {
+    
+    shadowOAM[j].attr0 = side->row | ATTR0_4BPP | ATTR0_SQUARE;
+    shadowOAM[j].attr1 = side->col | ATTR1_TINY;
+    shadowOAM[j].attr2 = ATTR2_PALROW(2) | ATTR2_TILEID(side->x,side->y);  
+   
+}
+void drawQuoteOne(TEXT* text, int j) {
+    shadowOAM[j].attr0 = text->row | ATTR0_4BPP | ATTR0_SQUARE;
+	shadowOAM[j].attr1 = text->col | ATTR1_TINY;
+    shadowOAM[j].attr2 = ATTR2_PALROW(2) | ATTR2_TILEID(text->letter, 14);  
 }

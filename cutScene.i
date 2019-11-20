@@ -75,15 +75,13 @@ typedef struct {
 
 } __attribute__((aligned(4))) OBJ_AFFINE;
 
-
-
 extern OBJ_AFFINE* shadowAffine;
-# 181 "myLib.h"
+# 179 "myLib.h"
  void hideSprites();
-# 202 "myLib.h"
+# 200 "myLib.h"
 extern unsigned short oldButtons;
 extern unsigned short buttons;
-# 213 "myLib.h"
+# 211 "myLib.h"
 typedef volatile struct {
     volatile const void *src;
     volatile void *dst;
@@ -92,9 +90,9 @@ typedef volatile struct {
 
 
 extern DMA *dma;
-# 253 "myLib.h"
+# 251 "myLib.h"
 void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned int cnt);
-# 345 "myLib.h"
+# 343 "myLib.h"
 typedef struct{
     const unsigned char* data;
     int length;
@@ -157,7 +155,8 @@ typedef struct {
  int col;
  int width;
     int height;
-    int section;
+    int x;
+ int y;
 } BOX;
 
 typedef struct {
@@ -199,10 +198,14 @@ typedef struct {
 
 
 
-extern BOX boxRight;
+
+
+
 extern ALPHABET alphabet;
-extern TEXT text[23];
-extern BOX boxLeft;
+extern TEXT text[22];
+extern BOX boxSide[2];
+extern BOX boxCorner[4];
+extern BOX boxCenter[25];
 
 extern NOOT noot;
 
@@ -212,7 +215,16 @@ void parallax();
 void drawDialogBox();
 void initDialogBox();
 void initChar();
+void initBoxCorner();
+void drawCharacter();
+void initAlphabet();
 void updateCutScene();
+void initBoxLeftSide();
+void initBoxRightSide();
+void initQuoteOne_letter();
+void initQuoteOne_setup();
+void drawQuoteOne();
+void drawBox();
 # 3 "cutScene.c" 2
 # 1 "game.h" 1
 
@@ -286,9 +298,13 @@ extern enum {UP, DOWN, LEFT, RIGHT};
 extern enum {R, L};
 extern int movement;
 extern int toggle;
+extern int hit;
+extern int playerHealth;
 extern int prevMovement;
 extern int princessHealth;
 extern unsigned int rotTimer;
+extern int immunity;
+extern immunityWait;
 
 
 
@@ -347,18 +363,22 @@ extern const unsigned short spritesTiles[16384];
 extern const unsigned short spritesPal[256];
 # 8 "cutScene.c" 2
 NOOT noot;
-BOX boxRight;
-BOX boxLeft;
-BOX boxCenter[4];
+BOX boxLeftSide[25/5 - 2];
+BOX boxRightSide[25/5 - 2];
+BOX boxCorner[4];
+BOX boxCenter[25];
+BOX boxBlack;
 OBJ_ATTR shadowOAM[128];
 ALPHABET alphabet;
-TEXT text[23];
+TEXT text[22];
 
 void initCutScene() {
     dispBackground();
-    initDialogBox();
+    initBoxLeftSide();
+    initBoxRightSide();
+    initBoxCorner();
     initQuoteOne_letter();
-    for (int i = 0; i< 23; i++) {
+    for (int i = 0; i< 22; i++) {
         initQuoteOne_setup(&text[i], i);
     }
     initAlphabet();
@@ -406,46 +426,99 @@ void initQuoteOne_letter() {
     text[1].letter = 7;
     text[2].letter = 0;
     text[3].letter = 19;
+
     text[4].letter = 27;
+
     text[5].letter = 0;
     text[6].letter = 12;
+
     text[7].letter = 27;
+
     text[8].letter = 8;
+
     text[9].letter = 27;
+
     text[10].letter = 5;
     text[11].letter = 8;
     text[12].letter = 6;
     text[13].letter = 7;
-    text[14].letter = 8;
-    text[15].letter = 13;
-    text[16].letter = 6;
-    text[17].letter = 27;
+    text[14].letter = 19;
+    text[15].letter = 8;
+    text[16].letter = 13;
+    text[17].letter = 6;
+
+    text[18].letter = 27;
+
+    text[19].letter = 5;
+    text[20].letter = 14;
+    text[21].letter = 17;
 }
 void initQuoteOne_setup(TEXT* text, int i) {
     text->row = 130;
-    text->col = 50 + (i * 2);
+    text->col = 25 + (i * 8);
 }
 
-void initDialogBox() {
-        boxLeft.row = 120;
-        boxLeft.col = 40;
-        boxLeft.width = 32;
-        boxLeft.height = 32;
-        boxLeft.section = 0;
-    for(int i = 0; i < 4 ; i++) {
-        boxCenter[i].row = 120 ;
-        boxCenter[i].col = 50+ (i*32);
-        boxCenter[i].width = 32;
-        boxCenter[i].height = 32;
-        boxCenter[i].section = 4;
-    }
-        boxRight.row = 120;
-        boxRight.col = 50+ (2*32) + 50;
-        boxRight.width = 32;
-        boxRight.height = 32;
-        boxRight.section = 8;
+void initBoxLeftSide() {
+        for(int i = 0; i <2; i++) {
+        boxLeftSide[i].row = 130 + (i*8);
+        boxLeftSide[i].col = 17;
+        boxLeftSide[i].width = 8;
+        boxLeftSide[i].height = 32;
+        boxLeftSide[i].y = 8;
+        boxLeftSide[i].x = 0;
+        }
+}
+void initBoxRightSide() {
+        for(int i = 0; i <2; i++) {
+        boxRightSide[i].row = 130 + (i*8);
+        boxRightSide[i].col = 200;
+        boxRightSide[i].width = 8;
+        boxRightSide[i].height = 32;
+        boxRightSide[i].y = 8;
+        boxRightSide[i].x = 4;
+        }
 }
 
+void initBoxCorner() {
+
+        boxCorner[0].row = 125;
+        boxCorner[0].col = 17;
+        boxCorner[0].width = 8;
+        boxCorner[0].height = 8;
+        boxCorner[0].x = 0;
+        boxCorner[0].y = 7;
+
+        boxCorner[1].row = 125;
+        boxCorner[1].col = 200;
+        boxCorner[1].width = 8;
+        boxCorner[1].height = 8;
+        boxCorner[1].x = 4;
+        boxCorner[1].y = 7;
+
+        boxCorner[2].row = 140;
+        boxCorner[2].col = 17;
+        boxCorner[2].width = 8;
+        boxCorner[2].height = 8;
+        boxCorner[2].x = 0;
+        boxCorner[2].y = 10;
+
+        boxCorner[3].row = 140;
+        boxCorner[3].col = 200;
+        boxCorner[3].width = 8;
+        boxCorner[3].height = 8;
+        boxCorner[3].x = 4;
+        boxCorner[3].y = 10;
+}
+# 168 "cutScene.c"
+void boxEdgeBottom() {
+
+}
+void boxEdgeRight() {
+
+}
+void boxEdgeLeft() {
+
+}
 void updateCutScene() {
     parallax();
 }
@@ -454,37 +527,44 @@ void updateCutScene() {
 void drawCutScene() {
     drawPlayer();
     drawPrincess();
-    drawDialogBox();
-    for (int i = 0; i < 23; i++) {
-        drawQuoteOne(&text[i], i);
-    }
-    drawCharacter();
-
-
-}
-void drawCharacter() {
-    shadowOAM[5].attr0 = noot.row | (0<<13) | (0<<14);
- shadowOAM[5].attr1 = noot.col | (2<<14);
-    shadowOAM[5].attr2 = ((0)<<12) | ((0)*32+(noot.aniState));
-}
-void drawDialogBox() {
-    shadowOAM[6].attr0 = boxLeft.row | (0<<13) | (0<<14);
- shadowOAM[6].attr1 = boxLeft.col | (2<<14);
-    shadowOAM[6].attr2 = ((2)<<12) | ((7)*32+(boxLeft.section));
-    int j = 0;
-    for(int i = 7; i < 11; i++) {
-    shadowOAM[i].attr0 = boxCenter[j].row | (0<<13) | (0<<14);
- shadowOAM[i].attr1 = boxCenter[j].col | (2<<14);
-    shadowOAM[i].attr2 = ((2)<<12) | ((7)*32+(boxCenter[j].section));
+    int j = 5;
+    drawCharacter(j);
     j++;
+    for(int i = 0; i <2; i++) {
+        drawBox(&boxLeftSide[i], j);
+        j++;
+    }
+    for(int i = 0; i <2; i++) {
+        drawBox(&boxRightSide[i], j);
+        j++;
     }
 
-    shadowOAM[11].attr0 = boxRight.row | (0<<13) | (0<<14);
- shadowOAM[11].attr1 = boxRight.col | (2<<14);
-    shadowOAM[11].attr2 = ((2)<<12) | ((7)*32+(boxRight.section));
+    for(int i = 0; i <4; i++) {
+        drawBox(&boxCorner[i], j);
+        j++;
+    }
+
+    for (int i = 0; i < 22; i++) {
+        drawQuoteOne(&text[i], j);
+        j++;
+    }
+
 }
-void drawQuoteOne(TEXT* text, int i) {
-    shadowOAM[i + 12].attr0 = text->row | (0<<13) | (0<<14);
- shadowOAM[i + 12].attr1 = text->col | (0<<14);
-    shadowOAM[i + 12].attr2 = ((0)<<12) | ((0)*32+(text->letter));
+void drawCharacter(int j) {
+    shadowOAM[j].attr0 = noot.row | (0<<13) | (0<<14);
+ shadowOAM[j].attr1 = noot.col | (2<<14);
+    shadowOAM[j].attr2 = ((0)<<12) | ((0)*32+(noot.aniState));
+}
+
+void drawBox(BOX* side, int j) {
+
+    shadowOAM[j].attr0 = side->row | (0<<13) | (0<<14);
+    shadowOAM[j].attr1 = side->col | (0<<14);
+    shadowOAM[j].attr2 = ((2)<<12) | ((side->y)*32+(side->x));
+
+}
+void drawQuoteOne(TEXT* text, int j) {
+    shadowOAM[j].attr0 = text->row | (0<<13) | (0<<14);
+ shadowOAM[j].attr1 = text->col | (0<<14);
+    shadowOAM[j].attr2 = ((2)<<12) | ((14)*32+(text->letter));
 }

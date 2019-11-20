@@ -20,13 +20,20 @@ OBJ_ATTR shadowOAM[128];
 OBJ_AFFINE* shadowAffine = (OBJ_AFFINE*)(shadowOAM);
 int shotDirection;
 int princessHealth;
+int playerHealth;
 int shootAni;
 int timerShooting;
 unsigned int rotTimer;
+int hit;
+int immunity;
+int immunityWait;
 
 void initGame() {
-    enemiesKilled = 1;
+    immunity = 0;
+    immunityWait = 0;
+     enemiesKilled = 1;
      princessHealth = 1;
+     playerHealth = 3;
      dispBackground();
      timer = 0;
      initAliens();
@@ -115,6 +122,7 @@ void updateEnemies() {//collissions with alien
     for(int i = 0; i< ALIENCOUNT; i++){
         updateAlien(&alien[i]);
      }
+     timerShine++;
     for(int i = 0; i< CARCOUNT; i++) {
         updateCar(&car[i]);
     }
@@ -221,8 +229,7 @@ void updatePlayer() {//updates player's movement and actions based on user input
         }
     }
     if(BUTTON_PRESSED(BUTTON_L)) { // rotate player to the left
-        rotateLeft();
-        
+        rotateLeft(); 
     }
     if(BUTTON_PRESSED(BUTTON_R)) { // rotate the player to the right
         rotateRight();
@@ -233,14 +240,49 @@ void updatePlayer() {//updates player's movement and actions based on user input
     if(BUTTON_HELD(BUTTON_LEFT)) {//slide the player to the left
         slideLeft();
     }
-}
-void updatePrincess() {
+    if(BUTTON_PRESSED(BUTTON_B) && immunityWait == 0) {//slide the player to the left
+        immunity = 100;
+        immunityWait += 100;
+    }
+    if (immunity == 0) {
     for(int i = 0; i < ALIENCOUNT; i++ ){
-            if ((alien[i].active) && collision(princess.col, princess.row, princess.width, princess.height,
+            if ((alien[i].active) && collision(player.col, player.row, player.width, player.height,
                         alien[i].col, alien[i].row, alien[i].width, alien[i].height)) {
 
                         alien[i].active = 0;
-                        princessHealth--;
+                        playerHealth--;
+                        hit+=4;
+                }
+    }
+    for(int i = 0; i < CARCOUNT; i++ ){
+            if ((car[i].active) && collision(player.col, player.row, player.width, player.height,
+                        car[i].col, car[i].row, car[i].width, car[i].height)) {
+
+                        car[i].active = 0;
+                        playerHealth--;
+                        hit+=4;
+                }
+    }
+    for(int i = 0; i < ASTEROIDCOUNT; i++ ){
+            if ((asteroid[i].active) && collision(player.col, player.row, player.width, player.height,
+                        asteroid[i].col, asteroid[i].row, asteroid[i].width, asteroid[i].height)) {
+
+                        asteroid[i].active = 0;
+                        playerHealth--;
+                        hit+=4;
+                }
+    }
+    }
+}
+void updatePrincess() {
+if (immunity == 0) {
+    for(int i = 0; i < ALIENCOUNT; i++ ){
+            if ((alien[i].active) && collision(player.col, player.row, player.width, player.height,
+                        alien[i].col, alien[i].row, alien[i].width, alien[i].height)) {
+
+                        alien[i].active = 0;
+                        playerHealth--;
+                        hit+=4;
                 }
     }
     for(int i = 0; i < CARCOUNT; i++ ){
@@ -249,6 +291,7 @@ void updatePrincess() {
 
                         car[i].active = 0;
                         princessHealth--;
+                        hit+=4;
                 }
     }
     for(int i = 0; i < ASTEROIDCOUNT; i++ ){
@@ -257,8 +300,10 @@ void updatePrincess() {
 
                         asteroid[i].active = 0;
                         princessHealth--;
+                        hit+=4;
                 }
     }
+}
 }
 void drawGame() {//draws all sprite in the game
     int j = 2;
@@ -287,22 +332,36 @@ void drawGame() {//draws all sprite in the game
         drawAsteroids(&asteroid[i], j);
         j++;
     }
-
+    if(hit != 0) {
+        hit--;
+    }
+    if (immunity != 0) {
+        immunity--;
+    }
+    if (immunityWait != 0) {
+        immunityWait--;
+    }
     
 }
 
 void drawPlayer() {//draws player sprite
     shadowOAM[0].attr0 = player.row | ATTR0_4BPP | ATTR0_SQUARE; //| ATTR0_AFFINE;
 	shadowOAM[0].attr1 = player.col | ATTR1_SMALL;
-    shadowOAM[0].attr2 = ATTR2_PALROW(0) | ATTR2_TILEID(player.sprite, shootAni);
+    if (hit > 0) {
+        shadowOAM[0].attr2 = ATTR2_PALROW(5) | ATTR2_TILEID(player.sprite, shootAni);
+    } else {
+         shadowOAM[0].attr2 = ATTR2_PALROW(0) | ATTR2_TILEID(player.sprite, shootAni);
+    }
 }
 
 void drawPrincess() {//draws princess sprite
     shadowOAM[1].attr0 = princess.row | ATTR0_4BPP | ATTR0_SQUARE;
 	shadowOAM[1].attr1 = princess.col | ATTR1_MEDIUM;
-    shadowOAM[1].attr2 = ATTR2_PALROW(1) | ATTR2_TILEID(8,0);
-
-     
+    if (immunity > 0) {
+        shadowOAM[1].attr2 = ATTR2_PALROW(3) | ATTR2_TILEID(8,0);
+    } else {
+        shadowOAM[1].attr2 = ATTR2_PALROW(1) | ATTR2_TILEID(8,0);
+    }
 }
 
 void drawBullet(BULLET* bullet, int j) {//increment loc up
@@ -349,10 +408,9 @@ void drawAsteroids(ASTEROID* asteroid, int j) {//increment loc up
         shadowAffine[0].d = sin_lut_fixed8[(deg + 90) % 360];
        
        
-
         shadowOAM[j].attr0 = asteroid->row | ATTR0_4BPP | ATTR0_SQUARE | ATTR0_DOUBLEAFFINE;
         shadowOAM[j].attr1 = asteroid->col | ATTR1_SMALL | ATTR1_AFFINEINDEX(0); 
-        shadowOAM[j].attr2 = ATTR2_PALROW(4) | ATTR2_TILEID(asteroid->asteroidAni,0);
+        shadowOAM[j].attr2 = ATTR2_PALROW(4) | ATTR2_TILEID(19,0);
     }
     else {
         shadowOAM[j].attr0 = ATTR0_HIDE;
