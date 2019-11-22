@@ -2,7 +2,7 @@
 # 1 "<built-in>"
 # 1 "<command-line>"
 # 1 "main.c"
-# 35 "main.c"
+# 49 "main.c"
 # 1 "myLib.h" 1
 
 
@@ -79,10 +79,10 @@ typedef struct {
 extern OBJ_AFFINE* shadowAffine;
 # 179 "myLib.h"
  void hideSprites();
-# 200 "myLib.h"
+# 228 "myLib.h"
 extern unsigned short oldButtons;
 extern unsigned short buttons;
-# 211 "myLib.h"
+# 239 "myLib.h"
 typedef volatile struct {
     volatile const void *src;
     volatile void *dst;
@@ -91,9 +91,9 @@ typedef volatile struct {
 
 
 extern DMA *dma;
-# 251 "myLib.h"
+# 279 "myLib.h"
 void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned int cnt);
-# 343 "myLib.h"
+# 371 "myLib.h"
 typedef struct{
     const unsigned char* data;
     int length;
@@ -137,7 +137,7 @@ void goToCutScene();
 void goToInfo();
 void cutScene();
 void info();
-# 36 "main.c" 2
+# 50 "main.c" 2
 # 1 "game.h" 1
 
 typedef struct {
@@ -154,7 +154,6 @@ typedef struct {
     int curFrame;
     int numFrames;
  int bulletTimer;
- int
 } PLAYER;
 
 typedef struct {
@@ -206,8 +205,6 @@ extern BULLET bullet[5];
 extern int livesRemaining;
 extern int timer;
 extern int enemiesKilled;
-extern enum {UP, DOWN, LEFT, RIGHT};
-extern enum {R, L};
 extern int movement;
 extern int toggle;
 extern int hit;
@@ -216,7 +213,7 @@ extern int prevMovement;
 extern int princessHealth;
 extern unsigned int rotTimer;
 extern int immunity;
-extern immunityWait;
+extern int immunityWait;
 
 
 
@@ -245,7 +242,7 @@ void updateBullet(BULLET* bullet);
 void updateEnemies();
 
 void fireBullet(BULLET* bullet);
-# 37 "main.c" 2
+# 51 "main.c" 2
 # 1 "cutScene.h" 1
 
 
@@ -334,16 +331,31 @@ void initQuoteOne_letter();
 void initQuoteOne_setup();
 void drawQuoteOne();
 void drawBox();
-# 38 "main.c" 2
+# 52 "main.c" 2
 # 1 "font.h" 1
 
 extern const unsigned char fontdata_6x8[12288];
-# 39 "main.c" 2
+# 53 "main.c" 2
 # 1 "text.h" 1
 
 void drawChar(int, int, char, unsigned short);
 void drawString(int, int, char *, unsigned short);
-# 40 "main.c" 2
+# 54 "main.c" 2
+# 1 "sound.h" 1
+SOUND soundA;
+SOUND soundB;
+
+void setupSounds();
+void playSoundA( const unsigned char* sound, int length, int frequency, int loops);
+void playSoundB( const unsigned char* sound, int length, int frequency, int loops);
+
+void setupInterrupts();
+void interruptHandler();
+
+void pauseSound();
+void unpauseSound();
+void stopSound();
+# 55 "main.c" 2
 
 
 # 1 "loseScreen.h" 1
@@ -355,7 +367,7 @@ extern const unsigned short loseScreenMap[1024];
 
 
 extern const unsigned short loseScreenPal[256];
-# 43 "main.c" 2
+# 58 "main.c" 2
 # 1 "winScreen.h" 1
 # 22 "winScreen.h"
 extern const unsigned short winScreenTiles[608];
@@ -365,7 +377,7 @@ extern const unsigned short winScreenMap[1024];
 
 
 extern const unsigned short winScreenPal[256];
-# 44 "main.c" 2
+# 59 "main.c" 2
 # 1 "moonArt.h" 1
 # 22 "moonArt.h"
 extern const unsigned short moonArtTiles[7568];
@@ -375,7 +387,7 @@ extern const unsigned short moonArtMap[1024];
 
 
 extern const unsigned short moonArtPal[256];
-# 45 "main.c" 2
+# 60 "main.c" 2
 # 1 "bg0Space.h" 1
 # 22 "bg0Space.h"
 extern const unsigned short bg0SpaceTiles[1888];
@@ -385,7 +397,7 @@ extern const unsigned short bg0SpaceMap[2048];
 
 
 extern const unsigned short bg0SpacePal[256];
-# 46 "main.c" 2
+# 61 "main.c" 2
 # 1 "bg1Stars.h" 1
 # 22 "bg1Stars.h"
 extern const unsigned short bg1StarsTiles[544];
@@ -395,7 +407,7 @@ extern const unsigned short bg1StarsMap[1024];
 
 
 extern const unsigned short bg1StarsPal[256];
-# 47 "main.c" 2
+# 62 "main.c" 2
 # 1 "bg0SpacePause.h" 1
 # 22 "bg0SpacePause.h"
 extern const unsigned short bg0SpacePauseTiles[2352];
@@ -405,10 +417,22 @@ extern const unsigned short bg0SpacePauseMap[1024];
 
 
 extern const unsigned short bg0SpacePausePal[256];
-# 48 "main.c" 2
+# 63 "main.c" 2
+
+# 1 "keepOnKeepingOn.h" 1
+# 20 "keepOnKeepingOn.h"
+extern const unsigned char keepOnKeepingOn[2553696];
+# 65 "main.c" 2
+
 
 
 void initialize();
+
+SOUND soundA;
+SOUND soundB;
+const unsigned char* spaceSound;
+int* spaceSoundLen;
+int spaceSoundToPlay = 0;
 
 unsigned short buttons;
 unsigned short oldButtons;
@@ -459,6 +483,8 @@ int main() {
 
 
 void initialize() {
+
+    enemiesKilled = 1;
  goToStart();
 }
 
@@ -485,33 +511,42 @@ void start(){
 
 }
 void goToGame() {
+    stopSound();
     (*(unsigned short *)0x4000000) = 0 | (1<<9) | (1<<8) | (1<<12);
+    playSoundA(keepOnKeepingOn,2553696,11025, 0);
+
     initGame();
     hOff = tmphOff;
  state = GAME;
 }
 void game() {
 
+
  updateGame();
     drawGame();
     waitForVBlank();
     DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 128*4);
 
- if(enemiesKilled == 20) {
+ if(enemiesKilled > 20) {
         (*(volatile unsigned short *)0x04000010) = 0;
         (*(volatile unsigned short *)0x04000014) = 0;
+        stopSound();
   goToWin();
  }
 
  if(princessHealth == 0 || playerHealth == 0) {
         (*(volatile unsigned short *)0x04000010) = 0;
         (*(volatile unsigned short *)0x04000014) = 0;
+        stopSound();
   goToLose();
  }
 
-    if(enemiesKilled%5 == 0) {
+    if(enemiesKilled%8 == 0) {
+        enemiesKilled++;
+        tmphOff = hOff;
         (*(volatile unsigned short *)0x04000010) = 0;
         (*(volatile unsigned short *)0x04000014) = 0;
+        pauseSound();
   goToCutScene();
  }
 
@@ -519,6 +554,7 @@ void game() {
         tmphOff = hOff;
         (*(volatile unsigned short *)0x04000010) = 0;
         (*(volatile unsigned short *)0x04000014) = 0;
+        pauseSound();
   goToPause();
  }
 
@@ -565,6 +601,7 @@ void cutScene() {
         tmphOff = hOff;
         (*(volatile unsigned short *)0x04000010) = 0;
         (*(volatile unsigned short *)0x04000014) = 0;
+        dispBackground();
   goToGame();
  }
 }
@@ -600,6 +637,7 @@ void goToWin() {
 }
 
 void win() {
+     (*(unsigned short *)0x4000000) = 0 | (1<<8);
  DMANow(3, winScreenPal, ((unsigned short *)0x5000000), 256);
     DMANow(3, winScreenTiles, &((charblock *)0x6000000)[0], 1216 / 2);
     DMANow(3, winScreenMap, &((screenblock *)0x6000000)[28], 1024 * 4);

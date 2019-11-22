@@ -9,6 +9,8 @@ CAR car[CARCOUNT];
 int enemiesRemaining;
 int timer;
 int timerShine;
+enum {UP, DOWN, LEFT, RIGHT};
+enum {R, L};
 
 void initAliens() { //creates aliens
     int j = 0;

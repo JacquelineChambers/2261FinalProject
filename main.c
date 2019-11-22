@@ -51,6 +51,7 @@ FUTURE MODIFICATIONS
 #include "cutScene.h"
 #include "font.h"
 #include "text.h"
+#include "sound.h"
 
 //external .h files
 #include "loseScreen.h"
@@ -60,8 +61,17 @@ FUTURE MODIFICATIONS
 #include "bg1Stars.h"
 #include "bg0SpacePause.h"
 
+#include "keepOnKeepingOn.h"
+
+
 
 void initialize();
+
+SOUND soundA;
+SOUND soundB;
+const unsigned char* spaceSound;
+int* spaceSoundLen;
+int spaceSoundToPlay = 0;
 
 unsigned short buttons;
 unsigned short oldButtons;
@@ -75,9 +85,9 @@ int state;
 int enemiesKilled;
 
 int main() {
-
+    
     initialize(); 
-
+    
 	while(1) {
         oldButtons = buttons;
         buttons = BUTTONS;
@@ -112,6 +122,8 @@ int main() {
 
 
 void initialize() {
+    
+    enemiesKilled = 1;
 	goToStart();
 }
 
@@ -138,33 +150,42 @@ void start(){
 	
 }
 void goToGame() {
+    stopSound();
     REG_DISPCTL =  MODE0 | BG1_ENABLE | BG0_ENABLE | SPRITE_ENABLE;
+    playSoundA(keepOnKeepingOn,KEEPONKEEPINGONLEN,KEEPONKEEPINGONFREQ, 0);
+	//playSoundB(StartSFX,STARTSFXLEN,STARTSFXFREQ, 0);
     initGame();
     hOff = tmphOff;
 	state = GAME;
 }
 void game() {
     //updates, draws, and shows the games sprites
+    
 	updateGame();
     drawGame();
     waitForVBlank();
     DMANow(3, shadowOAM, OAM, 128*4);
     //lets the player win if all of the enemies have been killedenemiesRemaining == 0
-	if(enemiesKilled == 20) { 
+	if(enemiesKilled > 20) { 
         REG_BG0HOFF = 0;
         REG_BG1HOFF = 0;
+        stopSound();
 		goToWin();
 	}
     //if the player has no lives lef then the player looses the game(livesRemaining == 0
 	if(princessHealth == 0 || playerHealth == 0) {
         REG_BG0HOFF = 0;
         REG_BG1HOFF = 0;
+        stopSound();
 		goToLose();
 	}
     //goes to cutscene if a certain amount of enemies are killed
-    if(enemiesKilled%5 == 0) { //|| BUTTON_PRESSED(BUTTON_B)) {
+    if(enemiesKilled%8 == 0) { //|| BUTTON_PRESSED(BUTTON_B)) {
+        enemiesKilled++;
+        tmphOff = hOff;
         REG_BG0HOFF = 0;
         REG_BG1HOFF = 0;
+        pauseSound();
 		goToCutScene();
 	}
     //player can pause the game at any time
@@ -172,6 +193,7 @@ void game() {
         tmphOff = hOff;
         REG_BG0HOFF = 0;
         REG_BG1HOFF = 0;
+        pauseSound();
 		goToPause();
 	}
     
@@ -218,6 +240,7 @@ void cutScene() {
         tmphOff = hOff;
         REG_BG0HOFF = 0;
         REG_BG1HOFF = 0;
+        dispBackground();
 		goToGame();
 	}
 }
@@ -253,6 +276,7 @@ void goToWin() {
 }
 //shows the win screen
 void win() {
+     REG_DISPCTL =  MODE0 | BG0_ENABLE;
 	DMANow(3, winScreenPal, PALETTE, 256);
     DMANow(3, winScreenTiles, &CHARBLOCK[0], winScreenTilesLen / 2);
     DMANow(3, winScreenMap, &SCREENBLOCK[28], 1024 * 4);

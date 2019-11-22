@@ -7,6 +7,7 @@
 #include "bg1Stars.h"
 #include "sprites.h"
 #include "sine.h"
+#include "sound.h"
 //s->spriteCol = s->baseState + (s->aniState + (s->width/8));
 
 unsigned short hOff;
@@ -27,11 +28,13 @@ unsigned int rotTimer;
 int hit;
 int immunity;
 int immunityWait;
+enum {UP, DOWN, LEFT, RIGHT};
+enum {R, L};
 
 void initGame() {
-    immunity = 0;
-    immunityWait = 0;
-     enemiesKilled = 1;
+     REG_BLDCNT = BLD_BDa | BLD_BG0b | BLD_BG1b | BLD_STD;
+     immunity = 0;
+     immunityWait = 0;
      princessHealth = 1;
      playerHealth = 3;
      dispBackground();
@@ -355,11 +358,14 @@ void drawPlayer() {//draws player sprite
 }
 
 void drawPrincess() {//draws princess sprite
-    shadowOAM[1].attr0 = princess.row | ATTR0_4BPP | ATTR0_SQUARE;
+    REG_BLDALPHA = BLD_EVA(10) | BLD_EVB(0);
+    REG_BLDY = BLD_EY(10);
 	shadowOAM[1].attr1 = princess.col | ATTR1_MEDIUM;
     if (immunity > 0) {
-        shadowOAM[1].attr2 = ATTR2_PALROW(3) | ATTR2_TILEID(8,0);
+        shadowOAM[1].attr0 = princess.row | ATTR0_4BPP | ATTR0_SQUARE | ATTR0_BLEND;
+        shadowOAM[1].attr2 = ATTR2_PALROW(1) | ATTR2_TILEID(8,0);
     } else {
+        shadowOAM[1].attr0 = princess.row | ATTR0_4BPP | ATTR0_SQUARE;
         shadowOAM[1].attr2 = ATTR2_PALROW(1) | ATTR2_TILEID(8,0);
     }
 }

@@ -13,7 +13,6 @@ typedef struct {
     int curFrame;
     int numFrames;
 	int bulletTimer;
-	int 
 } PLAYER;
 
 typedef struct {
@@ -65,8 +64,6 @@ extern BULLET bullet[BULLETCOUNT];
 extern int livesRemaining;
 extern int timer;
 extern int enemiesKilled;
-extern enum {UP, DOWN, LEFT, RIGHT};
-extern enum {R, L};
 extern int movement;
 extern int toggle;
 extern int hit;
@@ -75,7 +72,7 @@ extern int prevMovement;
 extern int princessHealth;
 extern unsigned int rotTimer;
 extern int immunity;
-extern immunityWait;
+extern int immunityWait;
 
 //methods
 

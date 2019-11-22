@@ -78,10 +78,10 @@ typedef struct {
 extern OBJ_AFFINE* shadowAffine;
 # 179 "myLib.h"
  void hideSprites();
-# 200 "myLib.h"
+# 228 "myLib.h"
 extern unsigned short oldButtons;
 extern unsigned short buttons;
-# 211 "myLib.h"
+# 239 "myLib.h"
 typedef volatile struct {
     volatile const void *src;
     volatile void *dst;
@@ -90,9 +90,9 @@ typedef volatile struct {
 
 
 extern DMA *dma;
-# 251 "myLib.h"
+# 279 "myLib.h"
 void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned int cnt);
-# 343 "myLib.h"
+# 371 "myLib.h"
 typedef struct{
     const unsigned char* data;
     int length;
@@ -242,7 +242,6 @@ typedef struct {
     int curFrame;
     int numFrames;
  int bulletTimer;
- int
 } PLAYER;
 
 typedef struct {
@@ -294,8 +293,6 @@ extern BULLET bullet[5];
 extern int livesRemaining;
 extern int timer;
 extern int enemiesKilled;
-extern enum {UP, DOWN, LEFT, RIGHT};
-extern enum {R, L};
 extern int movement;
 extern int toggle;
 extern int hit;
@@ -304,7 +301,7 @@ extern int prevMovement;
 extern int princessHealth;
 extern unsigned int rotTimer;
 extern int immunity;
-extern immunityWait;
+extern int immunityWait;
 
 
 

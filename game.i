@@ -78,10 +78,10 @@ typedef struct {
 extern OBJ_AFFINE* shadowAffine;
 # 179 "myLib.h"
  void hideSprites();
-# 200 "myLib.h"
+# 228 "myLib.h"
 extern unsigned short oldButtons;
 extern unsigned short buttons;
-# 211 "myLib.h"
+# 239 "myLib.h"
 typedef volatile struct {
     volatile const void *src;
     volatile void *dst;
@@ -90,9 +90,9 @@ typedef volatile struct {
 
 
 extern DMA *dma;
-# 251 "myLib.h"
+# 279 "myLib.h"
 void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned int cnt);
-# 343 "myLib.h"
+# 371 "myLib.h"
 typedef struct{
     const unsigned char* data;
     int length;
@@ -153,7 +153,6 @@ typedef struct {
     int curFrame;
     int numFrames;
  int bulletTimer;
- int
 } PLAYER;
 
 typedef struct {
@@ -205,8 +204,6 @@ extern BULLET bullet[5];
 extern int livesRemaining;
 extern int timer;
 extern int enemiesKilled;
-extern enum {UP, DOWN, LEFT, RIGHT};
-extern enum {R, L};
 extern int movement;
 extern int toggle;
 extern int hit;
@@ -215,7 +212,7 @@ extern int prevMovement;
 extern int princessHealth;
 extern unsigned int rotTimer;
 extern int immunity;
-extern immunityWait;
+extern int immunityWait;
 
 
 
@@ -311,10 +308,10 @@ typedef struct {
 
 
 
-extern ALIEN alien[2];
+extern ALIEN alien[5];
 extern ALIENLASER alienLaser[5];
-extern ASTEROID asteroid[3];
-extern CAR car[2];
+extern ASTEROID asteroid[0];
+extern CAR car[0];
 extern int enemiesRemaining;
 extern int timer;
 extern int timerShine;
@@ -377,6 +374,21 @@ extern const unsigned short spritesPal[256];
 # 1 "sine.h" 1
 extern const int sin_lut_fixed8[];
 # 10 "game.c" 2
+# 1 "sound.h" 1
+SOUND soundA;
+SOUND soundB;
+
+void setupSounds();
+void playSoundA( const unsigned char* sound, int length, int frequency, int loops);
+void playSoundB( const unsigned char* sound, int length, int frequency, int loops);
+
+void setupInterrupts();
+void interruptHandler();
+
+void pauseSound();
+void unpauseSound();
+void stopSound();
+# 11 "game.c" 2
 
 
 unsigned short hOff;
@@ -397,11 +409,13 @@ unsigned int rotTimer;
 int hit;
 int immunity;
 int immunityWait;
+enum {UP, DOWN, LEFT, RIGHT};
+enum {R, L};
 
 void initGame() {
-    immunity = 0;
-    immunityWait = 0;
-     enemiesKilled = 1;
+     (*(volatile unsigned short*)0x04000050) = (1<<5) | (1<<8) | (1<<9) | (1<<6);
+     immunity = 0;
+     immunityWait = 0;
      princessHealth = 1;
      playerHealth = 3;
      dispBackground();
@@ -489,14 +503,14 @@ void updateGame() {
     }
 }
 void updateEnemies() {
-    for(int i = 0; i< 2; i++){
+    for(int i = 0; i< 5; i++){
         updateAlien(&alien[i]);
      }
      timerShine++;
-    for(int i = 0; i< 2; i++) {
+    for(int i = 0; i< 0; i++) {
         updateCar(&car[i]);
     }
-    for(int i = 0; i< 3; i++) {
+    for(int i = 0; i< 0; i++) {
         updateAsteroid(&asteroid[i]);
     }
 
@@ -615,7 +629,7 @@ void updatePlayer() {
         immunityWait += 100;
     }
     if (immunity == 0) {
-    for(int i = 0; i < 2; i++ ){
+    for(int i = 0; i < 5; i++ ){
             if ((alien[i].active) && collision(player.col, player.row, player.width, player.height,
                         alien[i].col, alien[i].row, alien[i].width, alien[i].height)) {
 
@@ -624,7 +638,7 @@ void updatePlayer() {
                         hit+=4;
                 }
     }
-    for(int i = 0; i < 2; i++ ){
+    for(int i = 0; i < 0; i++ ){
             if ((car[i].active) && collision(player.col, player.row, player.width, player.height,
                         car[i].col, car[i].row, car[i].width, car[i].height)) {
 
@@ -633,7 +647,7 @@ void updatePlayer() {
                         hit+=4;
                 }
     }
-    for(int i = 0; i < 3; i++ ){
+    for(int i = 0; i < 0; i++ ){
             if ((asteroid[i].active) && collision(player.col, player.row, player.width, player.height,
                         asteroid[i].col, asteroid[i].row, asteroid[i].width, asteroid[i].height)) {
 
@@ -646,7 +660,7 @@ void updatePlayer() {
 }
 void updatePrincess() {
 if (immunity == 0) {
-    for(int i = 0; i < 2; i++ ){
+    for(int i = 0; i < 5; i++ ){
             if ((alien[i].active) && collision(player.col, player.row, player.width, player.height,
                         alien[i].col, alien[i].row, alien[i].width, alien[i].height)) {
 
@@ -655,7 +669,7 @@ if (immunity == 0) {
                         hit+=4;
                 }
     }
-    for(int i = 0; i < 2; i++ ){
+    for(int i = 0; i < 0; i++ ){
             if ((car[i].active) && collision(princess.col, princess.row, princess.width, princess.height,
                         car[i].col, car[i].row, car[i].width, car[i].height)) {
 
@@ -664,7 +678,7 @@ if (immunity == 0) {
                         hit+=4;
                 }
     }
-    for(int i = 0; i < 3; i++ ){
+    for(int i = 0; i < 0; i++ ){
             if ((asteroid[i].active) && collision(princess.col, princess.row, princess.width, princess.height,
                         asteroid[i].col, asteroid[i].row, asteroid[i].width, asteroid[i].height)) {
 
@@ -689,16 +703,16 @@ void drawGame() {
         j++;
     }
 
-    for(int i = 0; i< 2; i++){
+    for(int i = 0; i< 0; i++){
         drawCars(&car[i], j);
         j++;
     }
 
-    for(int i = 0; i< 2; i++){
+    for(int i = 0; i< 5; i++){
         drawAlien(&alien[i], j);
         j++;
     }
-    for(int i = 0; i< 3; i++){
+    for(int i = 0; i< 0; i++){
         drawAsteroids(&asteroid[i], j);
         j++;
     }
@@ -725,11 +739,14 @@ void drawPlayer() {
 }
 
 void drawPrincess() {
-    shadowOAM[1].attr0 = princess.row | (0<<13) | (0<<14);
+    (*(volatile unsigned short*)0x04000052) = ((10)<<0) | ((0)<<8);
+    (*(volatile unsigned short*)0x04000054) = ((10)<<0);
  shadowOAM[1].attr1 = princess.col | (2<<14);
     if (immunity > 0) {
-        shadowOAM[1].attr2 = ((3)<<12) | ((0)*32+(8));
+        shadowOAM[1].attr0 = princess.row | (0<<13) | (0<<14) | (1<<10);
+        shadowOAM[1].attr2 = ((1)<<12) | ((0)*32+(8));
     } else {
+        shadowOAM[1].attr0 = princess.row | (0<<13) | (0<<14);
         shadowOAM[1].attr2 = ((1)<<12) | ((0)*32+(8));
     }
 }

@@ -68,10 +68,10 @@ typedef struct {
 
 
 
-extern ALIEN alien[2];
+extern ALIEN alien[5];
 extern ALIENLASER alienLaser[5];
-extern ASTEROID asteroid[3];
-extern CAR car[2];
+extern ASTEROID asteroid[0];
+extern CAR car[0];
 extern int enemiesRemaining;
 extern int timer;
 extern int timerShine;
@@ -109,7 +109,6 @@ typedef struct {
     int curFrame;
     int numFrames;
  int bulletTimer;
- int
 } PLAYER;
 
 typedef struct {
@@ -161,8 +160,6 @@ extern BULLET bullet[5];
 extern int livesRemaining;
 extern int timer;
 extern int enemiesKilled;
-extern enum {UP, DOWN, LEFT, RIGHT};
-extern enum {R, L};
 extern int movement;
 extern int toggle;
 extern int hit;
@@ -171,7 +168,7 @@ extern int prevMovement;
 extern int princessHealth;
 extern unsigned int rotTimer;
 extern int immunity;
-extern immunityWait;
+extern int immunityWait;
 
 
 
@@ -277,10 +274,10 @@ typedef struct {
 extern OBJ_AFFINE* shadowAffine;
 # 179 "myLib.h"
  void hideSprites();
-# 200 "myLib.h"
+# 228 "myLib.h"
 extern unsigned short oldButtons;
 extern unsigned short buttons;
-# 211 "myLib.h"
+# 239 "myLib.h"
 typedef volatile struct {
     volatile const void *src;
     volatile void *dst;
@@ -289,9 +286,9 @@ typedef volatile struct {
 
 
 extern DMA *dma;
-# 251 "myLib.h"
+# 279 "myLib.h"
 void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned int cnt);
-# 343 "myLib.h"
+# 371 "myLib.h"
 typedef struct{
     const unsigned char* data;
     int length;
@@ -337,17 +334,19 @@ void cutScene();
 void info();
 # 4 "enemies.c" 2
 
-ALIEN alien[2];
+ALIEN alien[5];
 ALIENLASER alienLaser[5];
-ASTEROID asteroid[3];
-CAR car[2];
+ASTEROID asteroid[0];
+CAR car[0];
 int enemiesRemaining;
 int timer;
 int timerShine;
+enum {UP, DOWN, LEFT, RIGHT};
+enum {R, L};
 
 void initAliens() {
     int j = 0;
-    for(int i=0; i < 2; i++){
+    for(int i=0; i < 5; i++){
         alien[i].height = 16;
         alien[i].width = 16;
         alien[i].cdel = 1;
@@ -387,7 +386,7 @@ void initAliens() {
 }
 void initCar() {
 
-    for(int i=0; i < 2; i++){
+    for(int i=0; i < 0; i++){
         car[i].height = 16;
         car[i].width = 16;
         car[i].cdel = 1;
@@ -403,7 +402,7 @@ void initCar() {
 }
 void initAsteroids() {
     int j = 0;
-    for(int i=0; i < 3; i++){
+    for(int i=0; i < 0; i++){
         asteroid[i].height = 16;
         asteroid[i].width = 16;
         asteroid[i].cdel = 1;
