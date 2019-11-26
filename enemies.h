@@ -58,10 +58,10 @@ typedef struct {
 	int direction;
 } ASTEROID;
 
-#define ALIENCOUNT 5
+#define ALIENCOUNT 2
 #define ALIENLASERCOUNT 5
-#define ASTEROIDCOUNT 0
-#define CARCOUNT 0
+#define ASTEROIDCOUNT 2
+#define CARCOUNT 2
 
 extern ALIEN alien[ALIENCOUNT];
 extern ALIENLASER alienLaser[ALIENLASERCOUNT];

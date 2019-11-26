@@ -36,13 +36,6 @@ FUTURE MODIFICATIONS
 - might have aliens have lasers to shoot at the player
 - might slow down enemies to make it easier for player to shoot
 - will modify immunity to be a transparancy instead of a color change
-
-
-
-
-
-
-
 */
 
 //internal .h files
@@ -69,9 +62,6 @@ void initialize();
 
 SOUND soundA;
 SOUND soundB;
-const unsigned char* spaceSound;
-int* spaceSoundLen;
-int spaceSoundToPlay = 0;
 
 unsigned short buttons;
 unsigned short oldButtons;
@@ -87,11 +77,12 @@ int enemiesKilled;
 int main() {
     
     initialize(); 
-    
+   
 	while(1) {
         oldButtons = buttons;
         buttons = BUTTONS;
         //state machine
+        
         switch(state) {
 
             case START:
@@ -122,6 +113,8 @@ int main() {
 
 
 void initialize() {
+    setupSounds();
+	setupInterrupts();
     
     enemiesKilled = 1;
 	goToStart();
@@ -132,11 +125,12 @@ void goToStart(){
 }
 //shows the start screen
 void start(){
+    
     REG_DISPCTL =  MODE0 | BG0_ENABLE;
     DMANow(3, moonArtPal, PALETTE, 256);
     DMANow(3, moonArtTiles, &CHARBLOCK[0], moonArtTilesLen / 2);
     DMANow(3,moonArtMap, &SCREENBLOCK[28], 1024 * 4);
-
+    
     REG_BG0CNT = BG_CHARBLOCK(0) | BG_SCREENBLOCK(28) | BG_4BPP | BG_SIZE_LARGE;
 
     //allows the player to start the game
@@ -152,7 +146,9 @@ void start(){
 void goToGame() {
     stopSound();
     REG_DISPCTL =  MODE0 | BG1_ENABLE | BG0_ENABLE | SPRITE_ENABLE;
+
     playSoundA(keepOnKeepingOn,KEEPONKEEPINGONLEN,KEEPONKEEPINGONFREQ, 0);
+    
 	//playSoundB(StartSFX,STARTSFXLEN,STARTSFXFREQ, 0);
     initGame();
     hOff = tmphOff;

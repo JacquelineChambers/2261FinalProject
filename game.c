@@ -383,7 +383,7 @@ void drawBullet(BULLET* bullet, int j) {//increment loc up
 
 void drawAlien(ALIEN* alien, int j) {//increment loc up
     if (alien->active) {
-        shadowOAM[j].attr0 = alien->row | ATTR0_4BPP | ATTR0_SQUARE; //| ATTR0_AFFINE;
+        shadowOAM[j].attr0 = alien->row | ATTR0_4BPP | ATTR0_SQUARE;
         shadowOAM[j].attr1 = alien->col | ATTR1_SMALL;
         shadowOAM[j].attr2 = ATTR2_PALROW(3) | ATTR2_TILEID(alien->alienAni,alien->shine);
     }
@@ -394,7 +394,7 @@ void drawAlien(ALIEN* alien, int j) {//increment loc up
 
 void drawCars(CAR* car, int j) {//increment loc up
     if (car->active) {
-        shadowOAM[j].attr0 = car->row | ATTR0_4BPP | ATTR0_SQUARE; //| ATTR0_AFFINE;
+        shadowOAM[j].attr0 = car->row | ATTR0_4BPP | ATTR0_SQUARE; 
         shadowOAM[j].attr1 = car->col | ATTR1_SMALL;
         shadowOAM[j].attr2 = ATTR2_PALROW(5) | ATTR2_TILEID(car->carAni,0);
     }
@@ -405,15 +405,11 @@ void drawCars(CAR* car, int j) {//increment loc up
 void drawAsteroids(ASTEROID* asteroid, int j) {//increment loc up
     rotTimer++;
     int deg = (rotTimer % 360);
-    
-
-    if (asteroid->active) {
         shadowAffine[0].a = sin_lut_fixed8[(deg + 90) % 360];
         shadowAffine[0].b = sin_lut_fixed8[(deg + 180) % 360];
         shadowAffine[0].c = sin_lut_fixed8[(deg) % 360];
         shadowAffine[0].d = sin_lut_fixed8[(deg + 90) % 360];
-       
-       
+    if (asteroid->active) {
         shadowOAM[j].attr0 = asteroid->row | ATTR0_4BPP | ATTR0_SQUARE | ATTR0_DOUBLEAFFINE;
         shadowOAM[j].attr1 = asteroid->col | ATTR1_SMALL | ATTR1_AFFINEINDEX(0); 
         shadowOAM[j].attr2 = ATTR2_PALROW(4) | ATTR2_TILEID(19,0);

@@ -68,10 +68,10 @@ typedef struct {
 
 
 
-extern ALIEN alien[5];
+extern ALIEN alien[2];
 extern ALIENLASER alienLaser[5];
-extern ASTEROID asteroid[0];
-extern CAR car[0];
+extern ASTEROID asteroid[2];
+extern CAR car[2];
 extern int enemiesRemaining;
 extern int timer;
 extern int timerShine;
@@ -334,10 +334,10 @@ void cutScene();
 void info();
 # 4 "enemies.c" 2
 
-ALIEN alien[5];
+ALIEN alien[2];
 ALIENLASER alienLaser[5];
-ASTEROID asteroid[0];
-CAR car[0];
+ASTEROID asteroid[2];
+CAR car[2];
 int enemiesRemaining;
 int timer;
 int timerShine;
@@ -346,7 +346,7 @@ enum {R, L};
 
 void initAliens() {
     int j = 0;
-    for(int i=0; i < 5; i++){
+    for(int i=0; i < 2; i++){
         alien[i].height = 16;
         alien[i].width = 16;
         alien[i].cdel = 1;
@@ -386,7 +386,7 @@ void initAliens() {
 }
 void initCar() {
 
-    for(int i=0; i < 0; i++){
+    for(int i=0; i < 2; i++){
         car[i].height = 16;
         car[i].width = 16;
         car[i].cdel = 1;
@@ -402,9 +402,9 @@ void initCar() {
 }
 void initAsteroids() {
     int j = 0;
-    for(int i=0; i < 0; i++){
-        asteroid[i].height = 16;
-        asteroid[i].width = 16;
+    for(int i=0; i < 2; i++){
+        asteroid[i].height = 20;
+        asteroid[i].width = 20;
         asteroid[i].cdel = 1;
         asteroid[i].rdel = 16;
         asteroid[i].active = 1;
@@ -541,10 +541,13 @@ void updateAlien(ALIEN *alien) {
                 alien->col = 239;
                 break;
         }
+        alien->row>>=2;
+        alien->col>>=2;
     }
     if (timer%50 == 0 && !alien->active) {
         alien->active = 1;
     }
+
 
 }
 
@@ -560,15 +563,15 @@ void updateCar(CAR *car) {
                 }
     }
     if(car->row > 0 && car->col > 0 && car->active) {
-        if(timer%2 == 0) {
+
+        if(timer%5 == 0) {
             car->col++;
         }
-        if(timer%5 == 0) {
-            car->col--;
+
+        if(timer%6 == 0) {
+            car->row++;
         }
-        if(timer%4 == 0) {
-            car->row--;
-        }
+
        timer++;
     } else {
         car->active = 0;
@@ -596,12 +599,15 @@ void updateAsteroid(ASTEROID *asteroid) {
     if(asteroid->row > 0 && asteroid->col > 0 && asteroid->active) {
          if(timer%3 == 0) {
             asteroid->col++;
+
         }
         if(timer%9 == 0) {
             asteroid->col--;
+
         }
         if(timer%4 == 0) {
             asteroid->row--;
+
         }
         timer++;
     } else {
@@ -619,4 +625,5 @@ void updateAsteroid(ASTEROID *asteroid) {
     if (timer%50 == 0 && !asteroid->active) {
         asteroid->active = 1;
     }
+
 }

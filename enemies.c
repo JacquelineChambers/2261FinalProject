@@ -209,10 +209,13 @@ void updateAlien(ALIEN *alien) {
                 alien->col = 239;
                 break;
         } 
+        alien->row>>=2;
+        alien->col>>=2;
     }
     if (timer%50 == 0 && !alien->active) {
         alien->active = 1;
     }
+    
 
 }
 
@@ -228,15 +231,15 @@ void updateCar(CAR *car) {
                 }
     }
     if(car->row > 0 && car->col > 0 && car->active) {
-        if(timer%2 == 0) {
+         
+        if(timer%5 == 0) {
             car->col++;
         }
-        if(timer%5 == 0) {
-            car->col--;
+        
+        if(timer%6 == 0) {
+            car->row++;
         }
-        if(timer%4 == 0) {
-            car->row--;
-        }
+        
        timer++;
     } else {
         car->active = 0;
@@ -247,7 +250,7 @@ void updateCar(CAR *car) {
     if (timer%50 == 0 && !car->active) {
         car->active = 1;
     }
-
+    
 }
 
 void updateAsteroid(ASTEROID *asteroid) {
@@ -264,12 +267,15 @@ void updateAsteroid(ASTEROID *asteroid) {
     if(asteroid->row > 0 && asteroid->col > 0 && asteroid->active) {
          if(timer%3 == 0) {
             asteroid->col++;
+            
         }
         if(timer%9 == 0) {
             asteroid->col--;
+            
         }
         if(timer%4 == 0) {
             asteroid->row--;
+            
         }
         timer++;
     } else {
@@ -287,4 +293,5 @@ void updateAsteroid(ASTEROID *asteroid) {
     if (timer%50 == 0 && !asteroid->active) {
         asteroid->active = 1;
     }
+    
 }

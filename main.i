@@ -2,7 +2,7 @@
 # 1 "<built-in>"
 # 1 "<command-line>"
 # 1 "main.c"
-# 49 "main.c"
+# 42 "main.c"
 # 1 "myLib.h" 1
 
 
@@ -137,7 +137,7 @@ void goToCutScene();
 void goToInfo();
 void cutScene();
 void info();
-# 50 "main.c" 2
+# 43 "main.c" 2
 # 1 "game.h" 1
 
 typedef struct {
@@ -242,7 +242,7 @@ void updateBullet(BULLET* bullet);
 void updateEnemies();
 
 void fireBullet(BULLET* bullet);
-# 51 "main.c" 2
+# 44 "main.c" 2
 # 1 "cutScene.h" 1
 
 
@@ -331,16 +331,16 @@ void initQuoteOne_letter();
 void initQuoteOne_setup();
 void drawQuoteOne();
 void drawBox();
-# 52 "main.c" 2
+# 45 "main.c" 2
 # 1 "font.h" 1
 
 extern const unsigned char fontdata_6x8[12288];
-# 53 "main.c" 2
+# 46 "main.c" 2
 # 1 "text.h" 1
 
 void drawChar(int, int, char, unsigned short);
 void drawString(int, int, char *, unsigned short);
-# 54 "main.c" 2
+# 47 "main.c" 2
 # 1 "sound.h" 1
 SOUND soundA;
 SOUND soundB;
@@ -355,7 +355,7 @@ void interruptHandler();
 void pauseSound();
 void unpauseSound();
 void stopSound();
-# 55 "main.c" 2
+# 48 "main.c" 2
 
 
 # 1 "loseScreen.h" 1
@@ -367,7 +367,7 @@ extern const unsigned short loseScreenMap[1024];
 
 
 extern const unsigned short loseScreenPal[256];
-# 58 "main.c" 2
+# 51 "main.c" 2
 # 1 "winScreen.h" 1
 # 22 "winScreen.h"
 extern const unsigned short winScreenTiles[608];
@@ -377,7 +377,7 @@ extern const unsigned short winScreenMap[1024];
 
 
 extern const unsigned short winScreenPal[256];
-# 59 "main.c" 2
+# 52 "main.c" 2
 # 1 "moonArt.h" 1
 # 22 "moonArt.h"
 extern const unsigned short moonArtTiles[7568];
@@ -387,7 +387,7 @@ extern const unsigned short moonArtMap[1024];
 
 
 extern const unsigned short moonArtPal[256];
-# 60 "main.c" 2
+# 53 "main.c" 2
 # 1 "bg0Space.h" 1
 # 22 "bg0Space.h"
 extern const unsigned short bg0SpaceTiles[1888];
@@ -397,7 +397,7 @@ extern const unsigned short bg0SpaceMap[2048];
 
 
 extern const unsigned short bg0SpacePal[256];
-# 61 "main.c" 2
+# 54 "main.c" 2
 # 1 "bg1Stars.h" 1
 # 22 "bg1Stars.h"
 extern const unsigned short bg1StarsTiles[544];
@@ -407,7 +407,7 @@ extern const unsigned short bg1StarsMap[1024];
 
 
 extern const unsigned short bg1StarsPal[256];
-# 62 "main.c" 2
+# 55 "main.c" 2
 # 1 "bg0SpacePause.h" 1
 # 22 "bg0SpacePause.h"
 extern const unsigned short bg0SpacePauseTiles[2352];
@@ -417,12 +417,12 @@ extern const unsigned short bg0SpacePauseMap[1024];
 
 
 extern const unsigned short bg0SpacePausePal[256];
-# 63 "main.c" 2
+# 56 "main.c" 2
 
 # 1 "keepOnKeepingOn.h" 1
 # 20 "keepOnKeepingOn.h"
 extern const unsigned char keepOnKeepingOn[2553696];
-# 65 "main.c" 2
+# 58 "main.c" 2
 
 
 
@@ -430,9 +430,6 @@ void initialize();
 
 SOUND soundA;
 SOUND soundB;
-const unsigned char* spaceSound;
-int* spaceSoundLen;
-int spaceSoundToPlay = 0;
 
 unsigned short buttons;
 unsigned short oldButtons;
@@ -452,6 +449,7 @@ int main() {
  while(1) {
         oldButtons = buttons;
         buttons = (*(volatile unsigned short *)0x04000130);
+
 
         switch(state) {
 
@@ -483,6 +481,8 @@ int main() {
 
 
 void initialize() {
+    setupSounds();
+ setupInterrupts();
 
     enemiesKilled = 1;
  goToStart();
@@ -493,6 +493,7 @@ void goToStart(){
 }
 
 void start(){
+
     (*(unsigned short *)0x4000000) = 0 | (1<<8);
     DMANow(3, moonArtPal, ((unsigned short *)0x5000000), 256);
     DMANow(3, moonArtTiles, &((charblock *)0x6000000)[0], 15136 / 2);
@@ -513,7 +514,9 @@ void start(){
 void goToGame() {
     stopSound();
     (*(unsigned short *)0x4000000) = 0 | (1<<9) | (1<<8) | (1<<12);
+
     playSoundA(keepOnKeepingOn,2553696,11025, 0);
+
 
     initGame();
     hOff = tmphOff;
