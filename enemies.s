@@ -114,17 +114,14 @@ initAsteroids:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	push	{r4, r5, lr}
+	push	{r4, lr}
 	mov	r2, #1
-	mov	r1, #20
-	mov	r5, #16
+	mov	r1, #16
 	mov	r4, #0
 	mov	lr, #19
 	mov	ip, #50
 	mov	r0, #224
 	ldr	r3, .L12
-	str	r5, [r3, #4]
-	str	r5, [r3, #56]
 	str	r4, [r3, #36]
 	str	r4, [r3, #88]
 	str	lr, [r3, #44]
@@ -134,56 +131,24 @@ initAsteroids:
 	str	r1, [r3, #68]
 	str	r1, [r3, #72]
 	str	r2, [r3]
+	str	r2, [r3, #4]
 	str	r2, [r3, #32]
 	str	r2, [r3, #48]
 	str	r2, [r3, #52]
+	str	r2, [r3, #56]
 	str	r2, [r3, #84]
 	str	r2, [r3, #100]
 	str	ip, [r3, #8]
 	str	ip, [r3, #60]
 	str	r0, [r3, #12]
 	str	r0, [r3, #64]
-	pop	{r4, r5, lr}
+	pop	{r4, lr}
 	bx	lr
 .L13:
 	.align	2
 .L12:
 	.word	asteroid
 	.size	initAsteroids, .-initAsteroids
-	.align	2
-	.global	initAlienLaser
-	.syntax unified
-	.arm
-	.fpu softvfp
-	.type	initAlienLaser, %function
-initAlienLaser:
-	@ Function supports interworking.
-	@ args = 0, pretend = 0, frame = 0
-	@ frame_needed = 0, uses_anonymous_args = 0
-	@ link register save eliminated.
-	mov	r2, #20
-	mov	r1, #16
-	mov	ip, #1
-	mov	r0, #0
-	ldr	r3, .L18
-.L15:
-	str	r1, [r3, #20]
-	str	r1, [r3, #16]
-	str	ip, [r3, #8]
-	str	r1, [r3, #12]
-	str	ip, [r3, #24]
-	str	r0, [r3, #28]
-	str	r0, [r3, #4]
-	str	r2, [r3], #32
-	add	r2, r2, #30
-	cmp	r2, #170
-	bne	.L15
-	bx	lr
-.L19:
-	.align	2
-.L18:
-	.word	alienLaser
-	.size	initAlienLaser, .-initAlienLaser
 	.align	2
 	.global	resetAlien
 	.syntax unified
@@ -224,19 +189,6 @@ resetAsteroid:
 	bx	lr
 	.size	resetAsteroid, .-resetAsteroid
 	.align	2
-	.global	resetAlienLaser
-	.syntax unified
-	.arm
-	.fpu softvfp
-	.type	resetAlienLaser, %function
-resetAlienLaser:
-	@ Function supports interworking.
-	@ args = 0, pretend = 0, frame = 0
-	@ frame_needed = 0, uses_anonymous_args = 0
-	@ link register save eliminated.
-	bx	lr
-	.size	resetAlienLaser, .-resetAlienLaser
-	.align	2
 	.global	updateAlien
 	.syntax unified
 	.arm
@@ -249,69 +201,69 @@ updateAlien:
 	push	{r4, r5, r6, r7, r8, r9, lr}
 	mov	r5, r0
 	mov	r9, #0
-	ldr	r4, .L68
+	ldr	r4, .L61
 	ldr	r1, [r0, #8]
-	ldr	r7, .L68+4
-	ldr	r8, .L68+8
+	ldr	r7, .L61+4
+	ldr	r8, .L61+8
 	sub	sp, sp, #20
 	add	r6, r4, #220
-.L27:
+.L20:
 	ldr	r3, [r4, #24]
 	cmp	r3, #0
-	beq	.L25
+	beq	.L18
 	ldr	r3, [r5, #28]
 	cmp	r3, #0
-	bne	.L67
-.L25:
+	bne	.L60
+.L18:
 	add	r4, r4, #44
 	cmp	r6, r4
-	bne	.L27
-	ldr	r2, .L68+12
-	ldr	r3, .L68+16
+	bne	.L20
+	ldr	r2, .L61+12
+	ldr	r3, .L61+16
 	ldr	r2, [r2]
 	smull	ip, r0, r3, r2
 	asr	r3, r2, #31
 	rsb	r3, r3, r0, asr #1
 	add	r3, r3, r3, lsl #2
 	subs	r3, r2, r3
-	bne	.L28
+	bne	.L21
 	ldr	r2, [r5, #36]
 	cmp	r2, #6
 	addne	r2, r2, #2
 	streq	r3, [r5, #36]
 	strne	r2, [r5, #36]
-.L28:
-	ldr	r0, .L68+20
+.L21:
+	ldr	r2, .L61+20
 	cmp	r1, #143
-	ldr	r2, [r0]
+	ldr	r0, [r2]
 	ldr	r3, [r5, #44]
-	bgt	.L30
+	bgt	.L23
 	ldr	ip, [r5, #12]
 	cmp	ip, #223
-	bgt	.L30
+	bgt	.L23
 	ldr	lr, [r5, #28]
 	cmp	lr, #0
-	beq	.L30
+	beq	.L23
 	cmp	r3, #3
 	ldrls	pc, [pc, r3, asl #2]
-	b	.L31
-.L33:
-	.word	.L36
-	.word	.L35
-	.word	.L34
-	.word	.L32
-.L30:
-	mov	r0, #0
-	str	r0, [r5, #28]
+	b	.L24
+.L26:
+	.word	.L29
+	.word	.L28
+	.word	.L27
+	.word	.L25
+.L23:
+	mov	r2, #0
+	str	r2, [r5, #28]
 	cmp	r3, #3
 	ldrls	pc, [pc, r3, asl #2]
-	b	.L44
-.L46:
-	.word	.L49
-	.word	.L51
-	.word	.L47
-	.word	.L45
-.L67:
+	b	.L37
+.L39:
+	.word	.L42
+	.word	.L44
+	.word	.L40
+	.word	.L38
+.L60:
 	add	r0, r4, #16
 	ldm	r0, {r0, ip}
 	ldr	r2, [r4, #4]
@@ -332,100 +284,100 @@ updateAlien:
 	strne	r9, [r5, #28]
 	strne	r3, [r8]
 	ldr	r1, [r5, #8]
-	b	.L25
-.L51:
+	b	.L18
+.L44:
 	mov	ip, #5
 	mov	r3, #39
-.L48:
-	ldr	r1, .L68+24
-	ldr	r0, .L68+28
-	mla	r2, r0, r2, r1
-	cmp	r1, r2, ror #1
+.L41:
+	ldr	r2, .L61+16
+	smull	lr, r1, r2, r0
+	asr	r2, r0, #31
+	rsb	r2, r2, r1, asr #1
+	add	r2, r2, r2, lsl #2
+	cmp	r0, r2
 	str	r3, [r5, #8]
-	movcs	r3, #1
+	moveq	r3, #1
 	str	ip, [r5, #12]
-	strcs	r3, [r5, #28]
+	streq	r3, [r5, #28]
 	add	sp, sp, #20
 	@ sp needed
 	pop	{r4, r5, r6, r7, r8, r9, lr}
 	bx	lr
-.L49:
+.L42:
 	mov	ip, #2
-	b	.L48
-.L47:
+	b	.L41
+.L40:
 	mov	ip, #0
-	b	.L48
-.L45:
+	b	.L41
+.L38:
 	mov	ip, #59
 	mov	r3, #25
-	b	.L48
-.L36:
-	tst	r2, #3
-	ldr	r3, .L68+16
+	b	.L41
+.L29:
+	tst	r0, #3
+	ldr	r3, .L61+16
 	addeq	ip, ip, #1
 	streq	ip, [r5, #12]
-	smull	lr, ip, r3, r2
-	asr	r3, r2, #31
+	smull	lr, ip, r3, r0
+	asr	r3, r0, #31
 	rsb	r3, r3, ip, asr #1
 	add	r3, r3, r3, lsl #2
-	cmp	r2, r3
-	bne	.L31
-.L64:
+	cmp	r0, r3
+	bne	.L24
+.L57:
 	add	r1, r1, #1
 	str	r1, [r5, #8]
-.L31:
-	add	r2, r2, #1
-	str	r2, [r0]
+.L24:
+	add	r0, r0, #1
+	str	r0, [r2]
 	add	sp, sp, #20
 	@ sp needed
 	pop	{r4, r5, r6, r7, r8, r9, lr}
 	bx	lr
-.L32:
-	tst	r2, #3
+.L25:
+	tst	r0, #3
 	subeq	ip, ip, #1
 	streq	ip, [r5, #12]
-.L42:
-	ldr	r3, .L68+16
-	smull	lr, ip, r3, r2
-	asr	r3, r2, #31
+.L35:
+	ldr	r3, .L61+16
+	smull	lr, ip, r3, r0
+	asr	r3, r0, #31
 	rsb	r3, r3, ip, asr #1
 	add	r3, r3, r3, lsl #2
-	cmp	r2, r3
+	cmp	r0, r3
 	subeq	r1, r1, #1
 	streq	r1, [r5, #8]
-	b	.L31
-.L35:
-	tst	r2, #3
+	b	.L24
+.L28:
+	tst	r0, #3
 	addeq	ip, ip, #1
 	streq	ip, [r5, #12]
-	b	.L42
-.L34:
-	tst	r2, #3
-	ldr	r3, .L68+32
+	b	.L35
+.L27:
+	tst	r0, #3
+	ldr	r3, .L61+24
 	addeq	ip, ip, #1
 	streq	ip, [r5, #12]
-	smull	ip, r3, r2, r3
-	sub	r3, r3, r2, asr #31
+	smull	ip, r3, r0, r3
+	sub	r3, r3, r0, asr #31
 	add	r3, r3, r3, lsl #1
-	cmp	r2, r3
-	bne	.L31
-	b	.L64
-.L44:
+	cmp	r0, r3
+	bne	.L24
+	b	.L57
+.L37:
 	ldr	ip, [r5, #12]
 	asr	r3, r1, #2
 	asr	ip, ip, #2
-	b	.L48
-.L69:
+	b	.L41
+.L62:
 	.align	2
-.L68:
+.L61:
 	.word	bullet
 	.word	collision
 	.word	enemiesKilled
 	.word	timerShine
 	.word	1717986919
 	.word	timer
-	.word	85899344
-	.word	-1030792151
 	.word	1431655766
 	.size	updateAlien, .-updateAlien
 	.align	2
@@ -441,51 +393,54 @@ updateCar:
 	push	{r4, r5, r6, r7, r8, r9, lr}
 	mov	r5, r0
 	mov	r9, #0
-	ldr	r4, .L93
+	ldr	r4, .L86
 	ldr	r1, [r0, #8]
-	ldr	r7, .L93+4
-	ldr	r8, .L93+8
+	ldr	r7, .L86+4
+	ldr	r8, .L86+8
 	sub	sp, sp, #20
 	add	r6, r4, #220
-.L73:
+.L66:
 	ldr	r3, [r4, #24]
 	cmp	r3, #0
-	beq	.L71
+	beq	.L64
 	ldr	r3, [r5, #32]
 	cmp	r3, #0
-	bne	.L91
-.L71:
+	bne	.L84
+.L64:
 	add	r4, r4, #44
 	cmp	r4, r6
-	bne	.L73
-	ldr	r2, .L93+12
+	bne	.L66
+	ldr	r0, .L86+12
+	ldr	r3, .L86+16
+	ldr	r2, [r0]
+	smull	ip, r3, r2, r3
+	asr	ip, r2, #31
+	rsb	r3, ip, r3, asr #1
+	add	r3, r3, r3, lsl #2
 	cmp	r1, #0
-	ldr	r3, [r2]
-	ble	.L74
+	sub	r3, r2, r3
+	ble	.L67
 	ldr	lr, [r5, #12]
 	cmp	lr, #0
-	ble	.L74
-	ldr	r0, [r5, #32]
-	cmp	r0, #0
-	bne	.L92
-.L74:
-	ldr	r2, .L93+16
-	ldr	lr, .L93+20
-	mla	r3, lr, r3, r2
-	cmp	r2, r3, ror #1
-	mov	ip, #0
-	mov	r0, #152
-	mov	r1, #60
-	movcs	r3, #1
-	str	ip, [r5, #32]
-	str	r0, [r5, #8]
-	str	r1, [r5, #12]
-	strcs	r3, [r5, #32]
+	ble	.L67
+	ldr	r4, [r5, #32]
+	cmp	r4, #0
+	bne	.L85
+.L67:
+	mov	r0, #0
+	cmp	r3, r0
+	mov	r1, #152
+	mov	r2, #60
+	moveq	r3, #1
+	str	r0, [r5, #32]
+	str	r1, [r5, #8]
+	str	r2, [r5, #12]
+	streq	r3, [r5, #32]
 	add	sp, sp, #20
 	@ sp needed
 	pop	{r4, r5, r6, r7, r8, r9, lr}
 	bx	lr
-.L91:
+.L84:
 	add	r0, r4, #16
 	ldm	r0, {r0, ip}
 	ldr	r2, [r4, #4]
@@ -506,38 +461,31 @@ updateCar:
 	strne	r9, [r5, #32]
 	strne	r3, [r8]
 	ldr	r1, [r5, #8]
-	b	.L71
-.L92:
-	ldr	ip, .L93+24
-	smull	r0, ip, r3, ip
-	asr	r4, r3, #31
-	rsb	ip, r4, ip, asr #1
-	ldr	r0, .L93+28
-	add	ip, ip, ip, lsl #2
-	cmp	r3, ip
-	smull	ip, r0, r3, r0
-	sub	r0, r0, r4
+	b	.L64
+.L85:
+	cmp	r3, #0
+	ldr	r3, .L86+20
 	addeq	lr, lr, #1
-	add	r0, r0, r0, lsl #1
 	streq	lr, [r5, #12]
-	cmp	r3, r0, lsl #1
+	smull	lr, r3, r2, r3
+	sub	ip, r3, ip
+	add	ip, ip, ip, lsl #1
+	cmp	r2, ip, lsl #1
 	addeq	r1, r1, #1
-	add	r3, r3, #1
+	add	r2, r2, #1
 	streq	r1, [r5, #8]
-	str	r3, [r2]
+	str	r2, [r0]
 	add	sp, sp, #20
 	@ sp needed
 	pop	{r4, r5, r6, r7, r8, r9, lr}
 	bx	lr
-.L94:
+.L87:
 	.align	2
-.L93:
+.L86:
 	.word	bullet
 	.word	collision
 	.word	enemiesKilled
 	.word	timer
-	.word	85899344
-	.word	-1030792151
 	.word	1717986919
 	.word	715827883
 	.size	updateCar, .-updateCar
@@ -554,54 +502,56 @@ updateAsteroid:
 	push	{r4, r5, r6, r7, r8, r9, lr}
 	mov	r5, r0
 	mov	r9, #0
-	ldr	r4, .L121
+	ldr	r4, .L114
 	ldr	r1, [r0, #8]
-	ldr	r7, .L121+4
-	ldr	r8, .L121+8
+	ldr	r7, .L114+4
+	ldr	r8, .L114+8
 	sub	sp, sp, #20
 	add	r6, r4, #220
-.L98:
+.L91:
 	ldr	r3, [r4, #24]
 	cmp	r3, #0
-	beq	.L96
+	beq	.L89
 	ldr	r3, [r5, #32]
 	cmp	r3, #0
-	bne	.L119
-.L96:
+	bne	.L112
+.L89:
 	add	r4, r4, #44
 	cmp	r4, r6
-	bne	.L98
-	ldr	r2, .L121+12
+	bne	.L91
+	ldr	r3, .L114+12
 	cmp	r1, #0
-	ldr	r3, [r2]
-	ble	.L99
+	ldr	r2, [r3]
+	ble	.L92
 	ldr	ip, [r5, #12]
 	cmp	ip, #0
-	ble	.L99
+	ble	.L92
 	ldr	r0, [r5, #32]
 	cmp	r0, #0
-	bne	.L120
-.L99:
-	mov	r2, #0
+	bne	.L113
+.L92:
+	mov	r3, #0
 	ldr	r1, [r5, #48]
-	cmp	r1, r2
+	cmp	r1, r3
+	str	r3, [r5, #32]
+	moveq	r3, #50
+	movne	r3, #224
 	moveq	r1, #124
 	movne	r1, #50
-	str	r2, [r5, #32]
-	moveq	r2, #50
-	movne	r2, #224
+	str	r3, [r5, #12]
+	ldr	r3, .L114+16
 	str	r1, [r5, #8]
-	str	r2, [r5, #12]
-	ldr	r1, .L121+16
-	ldr	r2, .L121+20
-	mla	r3, r1, r3, r2
-	cmp	r2, r3, ror #1
-	bcs	.L106
+	smull	r0, r1, r3, r2
+	asr	r3, r2, #31
+	rsb	r3, r3, r1, asr #1
+	add	r3, r3, r3, lsl #2
+	cmp	r2, r3
+	beq	.L99
 	add	sp, sp, #20
 	@ sp needed
 	pop	{r4, r5, r6, r7, r8, r9, lr}
 	bx	lr
-.L119:
+.L112:
 	add	r0, r4, #16
 	ldm	r0, {r0, ip}
 	ldr	r2, [r4, #4]
@@ -622,49 +572,48 @@ updateAsteroid:
 	strne	r9, [r5, #32]
 	strne	r3, [r8]
 	ldr	r1, [r5, #8]
-	b	.L96
-.L106:
+	b	.L89
+.L99:
 	mov	r3, #1
 	str	r3, [r5, #32]
 	add	sp, sp, #20
 	@ sp needed
 	pop	{r4, r5, r6, r7, r8, r9, lr}
 	bx	lr
-.L120:
-	ldr	r0, .L121+24
-	smull	lr, r0, r3, r0
-	sub	r0, r0, r3, asr #31
+.L113:
+	ldr	r0, .L114+20
+	smull	lr, r0, r2, r0
+	sub	r0, r0, r2, asr #31
 	add	r0, r0, r0, lsl #1
-	cmp	r3, r0
+	cmp	r2, r0
 	addeq	ip, ip, #1
 	streq	ip, [r5, #12]
-	ldr	ip, .L121+28
-	smull	lr, ip, r3, ip
-	asr	r0, r3, #31
+	ldr	ip, .L114+24
+	smull	lr, ip, r2, ip
+	asr	r0, r2, #31
 	rsb	r0, r0, ip, asr #1
 	add	r0, r0, r0, lsl #3
-	cmp	r3, r0
+	cmp	r2, r0
 	ldreq	r0, [r5, #12]
 	subeq	r0, r0, #1
 	streq	r0, [r5, #12]
-	tst	r3, #3
+	tst	r2, #3
 	subeq	r1, r1, #1
-	add	r3, r3, #1
+	add	r2, r2, #1
 	streq	r1, [r5, #8]
-	str	r3, [r2]
+	str	r2, [r3]
 	add	sp, sp, #20
 	@ sp needed
 	pop	{r4, r5, r6, r7, r8, r9, lr}
 	bx	lr
-.L122:
+.L115:
 	.align	2
-.L121:
+.L114:
 	.word	bullet
 	.word	collision
 	.word	enemiesKilled
 	.word	timer
-	.word	-1030792151
-	.word	85899344
+	.word	1717986919
 	.word	1431655766
 	.word	954437177
 	.size	updateAsteroid, .-updateAsteroid
@@ -673,6 +622,5 @@ updateAsteroid:
 	.comm	enemiesRemaining,4,4
 	.comm	car,96,4
 	.comm	asteroid,104,4
-	.comm	alienLaser,160,4
 	.comm	alien,96,4
 	.ident	"GCC: (devkitARM release 53) 9.1.0"

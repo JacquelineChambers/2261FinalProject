@@ -3,7 +3,7 @@
 #include "myLib.h"
 
 ALIEN alien[ALIENCOUNT];
-ALIENLASER alienLaser[ALIENLASERCOUNT];
+//ALIENLASER alienLaser[ALIENLASERCOUNT];
 ASTEROID asteroid[ASTEROIDCOUNT];
 CAR car[CARCOUNT];
 int enemiesRemaining;
@@ -74,7 +74,7 @@ void initAsteroids() {//creates asteroids
         asteroid[i].height = 16;
         asteroid[i].width = 16;
         asteroid[i].cdel = 1;
-        asteroid[i].rdel = 16;
+        asteroid[i].rdel = 1;
         asteroid[i].active = 1;
         asteroid[i].erased = 0;
         asteroid[i].asteroidAni = 19;
@@ -93,7 +93,7 @@ void initAsteroids() {//creates asteroids
     }
        
 }
-
+/*
 void initAlienLaser() {//creates alien's lasers
     for(int i=0; i < ALIENLASERCOUNT; i++){
         alienLaser[i].height = 16;
@@ -107,6 +107,7 @@ void initAlienLaser() {//creates alien's lasers
     }
        
 }
+*/
 void resetAlien() {//allows the alien to move
     
 }
@@ -116,10 +117,11 @@ void resetCar() {//allows the car to move
 void resetAsteroid() {//allows the asteroid to move
 
 }
+/*
 void resetAlienLaser() {//allows the alien's laser to move
 
 }
-
+*/
 void updateAlien(ALIEN *alien) {
     for(int i = 0 ;i< BULLETCOUNT;i++ ){
             if ((bullet[i].active && alien->active) && collision(alien->col, alien->row, alien->width, alien->height,
@@ -212,7 +214,7 @@ void updateAlien(ALIEN *alien) {
         alien->row>>=2;
         alien->col>>=2;
     }
-    if (timer%50 == 0 && !alien->active) {
+    if (timer%5 == 0 && !alien->active) {
         alien->active = 1;
     }
     
@@ -247,7 +249,7 @@ void updateCar(CAR *car) {
         car->col = 60; 
             
     }
-    if (timer%50 == 0 && !car->active) {
+    if (timer%5 == 0 && !car->active) {
         car->active = 1;
     }
     
@@ -290,7 +292,7 @@ void updateAsteroid(ASTEROID *asteroid) {
        
             
     }
-    if (timer%50 == 0 && !asteroid->active) {
+    if (timer%5 == 0 && !asteroid->active) {
         asteroid->active = 1;
     }
     

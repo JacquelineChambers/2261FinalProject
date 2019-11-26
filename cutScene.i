@@ -205,8 +205,8 @@ extern ALPHABET alphabet;
 extern TEXT text[22];
 extern BOX boxSide[2];
 extern BOX boxCorner[4];
-extern BOX boxCenter[25];
-
+extern BOX boxTop[22];
+extern BOX boxBottom[22];
 extern NOOT noot;
 
 void initCharacter();
@@ -223,6 +223,7 @@ void initBoxLeftSide();
 void initBoxRightSide();
 void initQuoteOne_letter();
 void initQuoteOne_setup();
+void initBoxEdgeTop();
 void drawQuoteOne();
 void drawBox();
 # 3 "cutScene.c" 2
@@ -330,7 +331,24 @@ void updateBullet(BULLET* bullet);
 void updateEnemies();
 
 void fireBullet(BULLET* bullet);
+
+void chooseSound();
 # 4 "cutScene.c" 2
+# 1 "sound.h" 1
+SOUND soundA;
+SOUND soundB;
+
+void setupSounds();
+void playSoundA( const unsigned char* sound, int length, int frequency, int loops);
+void playSoundB( const unsigned char* sound, int length, int frequency, int loops);
+
+void setupInterrupts();
+void interruptHandler();
+
+void pauseSound();
+void unpauseSound();
+void stopSound();
+# 5 "cutScene.c" 2
 
 # 1 "bg0Space.h" 1
 # 22 "bg0Space.h"
@@ -341,7 +359,7 @@ extern const unsigned short bg0SpaceMap[2048];
 
 
 extern const unsigned short bg0SpacePal[256];
-# 6 "cutScene.c" 2
+# 7 "cutScene.c" 2
 # 1 "bg1Stars.h" 1
 # 22 "bg1Stars.h"
 extern const unsigned short bg1StarsTiles[544];
@@ -351,29 +369,36 @@ extern const unsigned short bg1StarsMap[1024];
 
 
 extern const unsigned short bg1StarsPal[256];
-# 7 "cutScene.c" 2
+# 8 "cutScene.c" 2
 # 1 "sprites.h" 1
 # 21 "sprites.h"
 extern const unsigned short spritesTiles[16384];
 
 
 extern const unsigned short spritesPal[256];
-# 8 "cutScene.c" 2
+# 9 "cutScene.c" 2
+# 1 "grenzlinie.h" 1
+# 20 "grenzlinie.h"
+extern const unsigned char grenzlinie[415842];
+# 10 "cutScene.c" 2
+
 NOOT noot;
-BOX boxLeftSide[25/5 - 2];
-BOX boxRightSide[25/5 - 2];
+BOX boxLeftSide[22/5 - 2];
+BOX boxRightSide[22/5 - 2];
 BOX boxCorner[4];
-BOX boxCenter[25];
+BOX boxTop[22];
 BOX boxBlack;
 OBJ_ATTR shadowOAM[128];
 ALPHABET alphabet;
 TEXT text[22];
 
 void initCutScene() {
+    playSoundB(grenzlinie,415842,11025, 1);
     dispBackground();
     initBoxLeftSide();
     initBoxRightSide();
     initBoxCorner();
+    initBoxEdgeTop();
     initQuoteOne_letter();
     for (int i = 0; i< 22; i++) {
         initQuoteOne_setup(&text[i], i);
@@ -468,7 +493,7 @@ void initBoxLeftSide() {
 void initBoxRightSide() {
         for(int i = 0; i <2; i++) {
         boxRightSide[i].row = 130 + (i*8);
-        boxRightSide[i].col = 200;
+        boxRightSide[i].col = 202;
         boxRightSide[i].width = 8;
         boxRightSide[i].height = 32;
         boxRightSide[i].y = 8;
@@ -486,7 +511,7 @@ void initBoxCorner() {
         boxCorner[0].y = 7;
 
         boxCorner[1].row = 125;
-        boxCorner[1].col = 200;
+        boxCorner[1].col = 202;
         boxCorner[1].width = 8;
         boxCorner[1].height = 8;
         boxCorner[1].x = 4;
@@ -500,15 +525,35 @@ void initBoxCorner() {
         boxCorner[2].y = 10;
 
         boxCorner[3].row = 140;
-        boxCorner[3].col = 200;
+        boxCorner[3].col = 202;
         boxCorner[3].width = 8;
         boxCorner[3].height = 8;
         boxCorner[3].x = 4;
         boxCorner[3].y = 10;
 }
-# 168 "cutScene.c"
-void boxEdgeBottom() {
 
+
+void initBoxEdgeTop() {
+     for(int i = 0; i <22; i++) {
+    boxTop[i].row = 122;
+    boxTop[i].col = 25 + (i*8);
+    boxTop[i].width = 8;
+    boxTop[i].height = 8;
+    boxTop[i].x = 1;
+    boxTop[i].y = 7;
+     }
+
+}
+
+void boxEdgeBottom() {
+    for(int i = 0; i <22; i++) {
+    boxTop[i].row = 122;
+    boxTop[i].col = 25 + (i*8);
+    boxTop[i].width = 8;
+    boxTop[i].height = 8;
+    boxTop[i].x = 1;
+    boxTop[i].y = 7;
+     }
 }
 void boxEdgeRight() {
 
@@ -533,6 +578,10 @@ void drawCutScene() {
     }
     for(int i = 0; i <2; i++) {
         drawBox(&boxRightSide[i], j);
+        j++;
+    }
+    for(int i = 0; i <22; i++) {
+        drawBox(&boxTop[i], j);
         j++;
     }
 

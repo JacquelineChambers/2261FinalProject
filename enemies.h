@@ -59,12 +59,12 @@ typedef struct {
 } ASTEROID;
 
 #define ALIENCOUNT 2
-#define ALIENLASERCOUNT 5
+//#define ALIENLASERCOUNT 5
 #define ASTEROIDCOUNT 2
 #define CARCOUNT 2
 
 extern ALIEN alien[ALIENCOUNT];
-extern ALIENLASER alienLaser[ALIENLASERCOUNT];
+//extern ALIENLASER alienLaser[ALIENLASERCOUNT];
 extern ASTEROID asteroid[ASTEROIDCOUNT];
 extern CAR car[CARCOUNT];
 extern int enemiesRemaining;

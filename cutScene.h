@@ -57,7 +57,7 @@ typedef struct {
 } TEXT;
 
 #define QUOTELENGTH 22
-#define BOXSIZE 25
+#define BOXSIZE 22
 #define SIDESIZE 2
 #define NUMCORNERS 4
 
@@ -65,8 +65,8 @@ extern ALPHABET alphabet;
 extern TEXT text[QUOTELENGTH];
 extern BOX boxSide[SIDESIZE];
 extern BOX boxCorner[NUMCORNERS];
-extern BOX boxCenter[BOXSIZE];
-//extern BOX boxCenter[3];
+extern BOX boxTop[BOXSIZE];
+extern BOX boxBottom[BOXSIZE];
 extern NOOT noot;
 
 void initCharacter();
@@ -83,6 +83,7 @@ void initBoxLeftSide();
 void initBoxRightSide();
 void initQuoteOne_letter();
 void initQuoteOne_setup();
+void initBoxEdgeTop(); 
 void drawQuoteOne();
 void drawBox();
 

@@ -61,7 +61,6 @@ FUTURE MODIFICATIONS
 void initialize();
 
 SOUND soundA;
-SOUND soundB;
 
 unsigned short buttons;
 unsigned short oldButtons;
@@ -144,10 +143,10 @@ void start(){
 	
 }
 void goToGame() {
-    stopSound();
+    
     REG_DISPCTL =  MODE0 | BG1_ENABLE | BG0_ENABLE | SPRITE_ENABLE;
 
-    playSoundA(keepOnKeepingOn,KEEPONKEEPINGONLEN,KEEPONKEEPINGONFREQ, 0);
+    playSoundA(keepOnKeepingOn,KEEPONKEEPINGONLEN,KEEPONKEEPINGONFREQ, 1);
     
 	//playSoundB(StartSFX,STARTSFXLEN,STARTSFXFREQ, 0);
     initGame();
@@ -176,7 +175,7 @@ void game() {
 		goToLose();
 	}
     //goes to cutscene if a certain amount of enemies are killed
-    if(enemiesKilled%8 == 0) { //|| BUTTON_PRESSED(BUTTON_B)) {
+    if(enemiesKilled%8 == 0 || BUTTON_PRESSED(BUTTON_SELECT)) { //|| BUTTON_PRESSED(BUTTON_B)) {
         enemiesKilled++;
         tmphOff = hOff;
         REG_BG0HOFF = 0;
@@ -237,6 +236,7 @@ void cutScene() {
         REG_BG0HOFF = 0;
         REG_BG1HOFF = 0;
         dispBackground();
+        unpauseSound();
 		goToGame();
 	}
 }
@@ -257,6 +257,7 @@ void pause() {
 	if(BUTTON_PRESSED(BUTTON_START)) {
        
 		dispBackground();
+        unpauseSound();
 		goToGame();
 	}
     if(BUTTON_PRESSED(BUTTON_SELECT)) {

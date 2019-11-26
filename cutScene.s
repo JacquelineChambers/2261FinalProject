@@ -233,7 +233,7 @@ initBoxRightSide:
 	mov	r2, #8
 	mov	r4, #130
 	mov	lr, #138
-	mov	ip, #200
+	mov	ip, #202
 	mov	r0, #32
 	mov	r1, #4
 	ldr	r3, .L20
@@ -272,7 +272,7 @@ initBoxCorner:
 	mov	r6, #17
 	mov	r5, #0
 	mov	r4, #7
-	mov	lr, #200
+	mov	lr, #202
 	mov	ip, #4
 	mov	r0, #140
 	mov	r1, #10
@@ -318,62 +318,88 @@ initCutScene:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	push	{r4, r5, r6, lr}
-	ldr	r3, .L30
+	push	{r4, r5, r6, r7, r8, lr}
+	ldr	r2, .L32
+	ldr	r1, .L32+4
+	ldr	r0, .L32+8
+	mov	r3, #1
+	ldr	r4, .L32+12
+	mov	lr, pc
+	bx	r4
+	ldr	r3, .L32+16
 	mov	lr, pc
 	bx	r3
-	mov	r4, #130
-	mov	r2, #8
+	mov	r4, #8
 	mov	r1, #32
 	mov	lr, #138
+	mov	ip, #202
+	mov	r0, #4
+	mov	r7, #130
 	mov	r6, #17
 	mov	r5, #0
-	mov	r0, #4
-	mov	ip, #200
-	ldr	r3, .L30+4
-	str	r2, [r3, #8]
-	str	r2, [r3, #20]
-	str	r2, [r3, #32]
-	str	r2, [r3, #44]
+	ldr	r2, .L32+20
+	ldr	r3, .L32+24
+	str	r4, [r2, #8]
+	str	r4, [r2, #20]
+	str	r4, [r2, #32]
+	str	r4, [r2, #44]
+	str	r4, [r3, #8]
+	str	r4, [r3, #20]
+	str	r4, [r3, #32]
+	str	r4, [r3, #44]
+	str	r1, [r2, #12]
+	str	r1, [r2, #36]
 	str	r1, [r3, #12]
 	str	r1, [r3, #36]
-	stm	r3, {r4, r6}
+	str	lr, [r2, #24]
 	str	lr, [r3, #24]
-	str	r6, [r3, #28]
-	str	r5, [r3, #16]
-	str	r5, [r3, #40]
-	ldr	r3, .L30+8
-	str	r2, [r3, #8]
-	str	r1, [r3, #12]
-	str	r2, [r3, #20]
-	str	r2, [r3, #32]
-	str	r1, [r3, #36]
-	str	r2, [r3, #44]
-	str	r0, [r3, #16]
-	str	r0, [r3, #40]
-	str	lr, [r3, #24]
-	str	r4, [r3]
 	str	ip, [r3, #4]
 	str	ip, [r3, #28]
+	str	r0, [r3, #16]
+	str	r0, [r3, #40]
+	str	r7, [r2]
+	str	r7, [r3]
+	str	r6, [r2, #4]
+	str	r6, [r2, #28]
+	str	r5, [r2, #16]
+	str	r5, [r2, #40]
 	bl	initBoxCorner
-	bl	initQuoteOne_letter
 	mov	r1, r4
 	mov	r2, #25
-	ldr	r3, .L30+12
-	add	r0, r3, #264
+	mov	r4, #122
+	mov	lr, #1
+	mov	ip, #7
+	ldr	r3, .L32+28
+	add	r0, r3, #528
 .L27:
-	stmib	r3, {r1, r2}
-	add	r3, r3, #12
-	cmp	r3, r0
+	str	r2, [r3, #4]
+	str	r4, [r3]
+	str	r1, [r3, #8]
+	str	r1, [r3, #12]
+	str	lr, [r3, #16]
+	str	ip, [r3, #20]
+	add	r3, r3, #24
+	cmp	r0, r3
 	add	r2, r2, #8
 	bne	.L27
+	bl	initQuoteOne_letter
+	mov	r2, #25
+	mov	r0, #130
+	ldr	r3, .L32+32
+	add	r1, r3, #264
+.L28:
+	stmib	r3, {r0, r2}
+	add	r3, r3, #12
+	cmp	r1, r3
+	add	r2, r2, #8
+	bne	.L28
 	bl	initAlphabet
 	mov	lr, #100
 	mov	r2, #64
 	mov	ip, #50
 	mov	r0, #13
-	ldr	r3, .L30+16
-	ldr	r1, .L30+20
+	ldr	r3, .L32+36
+	ldr	r1, .L32+40
 	str	lr, [r3]
 	str	ip, [r3, #4]
 	str	r0, [r3, #16]
@@ -381,18 +407,59 @@ initCutScene:
 	str	r2, [r3, #12]
 	mov	lr, pc
 	bx	r1
-	pop	{r4, r5, r6, lr}
+	pop	{r4, r5, r6, r7, r8, lr}
 	bx	lr
-.L31:
+.L33:
 	.align	2
-.L30:
+.L32:
+	.word	11025
+	.word	415842
+	.word	grenzlinie
+	.word	playSoundB
 	.word	dispBackground
 	.word	boxLeftSide
 	.word	boxRightSide
+	.word	boxTop
 	.word	text
 	.word	noot
 	.word	hideSprites
 	.size	initCutScene, .-initCutScene
+	.align	2
+	.global	initBoxEdgeTop
+	.syntax unified
+	.arm
+	.fpu softvfp
+	.type	initBoxEdgeTop, %function
+initBoxEdgeTop:
+	@ Function supports interworking.
+	@ args = 0, pretend = 0, frame = 0
+	@ frame_needed = 0, uses_anonymous_args = 0
+	push	{r4, lr}
+	mov	r2, #25
+	mov	r4, #122
+	mov	r1, #8
+	mov	lr, #1
+	mov	ip, #7
+	ldr	r3, .L38
+	add	r0, r3, #528
+.L35:
+	str	r2, [r3, #4]
+	str	r4, [r3]
+	str	r1, [r3, #8]
+	str	r1, [r3, #12]
+	str	lr, [r3, #16]
+	str	ip, [r3, #20]
+	add	r3, r3, #24
+	cmp	r3, r0
+	add	r2, r2, #8
+	bne	.L35
+	pop	{r4, lr}
+	bx	lr
+.L39:
+	.align	2
+.L38:
+	.word	boxTop
+	.size	initBoxEdgeTop, .-initBoxEdgeTop
 	.align	2
 	.global	boxEdgeBottom
 	.syntax unified
@@ -404,7 +471,7 @@ boxEdgeBottom:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	@ link register save eliminated.
-	bx	lr
+	b	initBoxEdgeTop
 	.size	boxEdgeBottom, .-boxEdgeBottom
 	.align	2
 	.global	boxEdgeRight
@@ -443,14 +510,14 @@ updateCutScene:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r4, lr}
-	ldr	r3, .L37
+	ldr	r3, .L45
 	mov	lr, pc
 	bx	r3
 	pop	{r4, lr}
 	bx	lr
-.L38:
+.L46:
 	.align	2
-.L37:
+.L45:
 	.word	parallax
 	.size	updateCutScene, .-updateCutScene
 	.align	2
@@ -464,105 +531,125 @@ drawCutScene:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r4, r5, r6, lr}
-	ldr	r3, .L45
-	ldr	r5, .L45+4
+	ldr	r3, .L55
+	ldr	r5, .L55+4
 	mov	lr, pc
 	bx	r3
-	ldr	r3, .L45+8
+	ldr	r3, .L55+8
 	mov	lr, pc
 	bx	r3
-	ldr	r4, [r5, #4]
-	mvn	r4, r4, lsl #17
-	mvn	r4, r4, lsr #17
-	ldr	r2, .L45+12
+	ldr	ip, [r5, #4]
+	mvn	ip, ip, lsl #17
+	mvn	ip, ip, lsr #17
+	ldr	r2, .L55+12
 	mov	r1, r2
-	mov	r0, r2
-	ldr	ip, .L45+16
+	ldr	r0, .L55+16
+	add	r4, r0, #16
+	ldm	r4, {r4, lr}
+	add	r4, r4, lr, lsl #5
 	ldr	lr, [r5]
-	ldr	r6, [ip, #20]
-	strh	r4, [r2, #42]	@ movhi
+	ldr	r6, [r0, #44]
 	strh	lr, [r2, #40]	@ movhi
-	ldr	r4, [r5, #16]
-	ldr	lr, [ip, #16]
-	strh	r4, [r2, #44]	@ movhi
+	ldr	lr, [r0, #40]
 	add	lr, lr, r6, lsl #5
-	ldr	r4, [ip, #40]
-	ldr	r6, [ip, #44]
-	add	r4, r4, r6, lsl #5
-	ldr	r5, [ip]
 	orr	r4, r4, #8192
-	ldr	r3, .L45+20
-	strh	r4, [r2, #60]	@ movhi
-	add	r4, ip, #24
-	strh	r5, [r2, #48]	@ movhi
 	orr	lr, lr, #8192
-	ldr	r5, [ip, #4]
-	ldm	r4, {r4, ip}
+	ldr	r3, .L55+20
+	strh	ip, [r2, #42]	@ movhi
+	strh	r4, [r2, #52]	@ movhi
+	ldr	ip, [r5, #16]
+	ldr	r4, [r0, #4]
+	ldr	r5, [r0]
+	strh	lr, [r2, #60]	@ movhi
+	ldr	lr, [r0, #24]
+	ldr	r0, [r0, #28]
+	strh	r0, [r2, #58]	@ movhi
+	ldr	r0, [r3, #4]
 	ldr	r6, [r3, #20]
-	strh	lr, [r2, #52]	@ movhi
-	ldr	lr, [r3, #16]
-	strh	ip, [r2, #58]	@ movhi
-	ldr	ip, [r3, #4]
-	add	lr, lr, r6, lsl #5
-	strh	ip, [r2, #66]	@ movhi
-	orr	lr, lr, #8192
-	ldr	ip, [r3, #28]
-	strh	r4, [r2, #56]	@ movhi
-	strh	lr, [r2, #68]	@ movhi
-	ldr	r4, [r3]
-	ldr	lr, [r3, #24]
-	strh	ip, [r2, #74]	@ movhi
-	add	ip, r3, #40
-	strh	r4, [r2, #64]	@ movhi
-	strh	r5, [r2, #50]	@ movhi
-	strh	lr, [r2, #72]	@ movhi
-	ldm	ip, {ip, lr}
-	add	ip, ip, lr, lsl #5
-	ldr	r3, .L45+24
-	orr	ip, ip, #8192
-	strh	ip, [r2, #76]	@ movhi
-	add	r4, r3, #96
-.L40:
-	add	r2, r3, #16
-	ldm	r2, {r2, ip}
+	strh	ip, [r2, #44]	@ movhi
+	strh	lr, [r2, #56]	@ movhi
+	ldr	ip, [r3, #16]
 	ldr	lr, [r3]
-	add	r2, r2, ip, lsl #5
+	strh	r0, [r2, #66]	@ movhi
+	ldr	r0, [r3, #28]
+	strh	lr, [r2, #64]	@ movhi
+	add	ip, ip, r6, lsl #5
+	ldr	lr, [r3, #24]
+	strh	r0, [r2, #74]	@ movhi
+	orr	ip, ip, #8192
+	add	r0, r3, #40
+	strh	lr, [r2, #72]	@ movhi
+	strh	r5, [r2, #48]	@ movhi
+	strh	r4, [r2, #50]	@ movhi
+	strh	ip, [r2, #68]	@ movhi
+	ldm	r0, {r0, ip}
+	add	r0, r0, ip, lsl #5
+	ldr	r3, .L55+24
+	orr	r0, r0, #8192
+	strh	r0, [r2, #76]	@ movhi
+	add	lr, r3, #528
+.L48:
+	ldr	r0, [r3, #20]
+	ldr	r2, [r3, #16]
+	ldr	ip, [r3]
+	add	r2, r2, r0, lsl #5
 	add	r3, r3, #24
-	ldr	ip, [r3, #-20]
+	ldr	r0, [r3, #-20]
 	orr	r2, r2, #8192
-	cmp	r4, r3
-	strh	r2, [r0, #84]	@ movhi
-	strh	lr, [r0, #80]	@ movhi
-	strh	ip, [r0, #82]	@ movhi
-	add	r0, r0, #8
-	bne	.L40
-	ldr	r2, .L45+28
+	cmp	lr, r3
+	strh	r2, [r1, #84]	@ movhi
+	strh	ip, [r1, #80]	@ movhi
+	strh	r0, [r1, #82]	@ movhi
+	add	r1, r1, #8
+	bne	.L48
+	ldr	r3, .L55+28
+	ldr	r1, .L55+32
+	add	lr, r3, #96
+.L49:
+	ldr	r0, [r3, #20]
+	ldr	r2, [r3, #16]
+	ldr	ip, [r3]
+	add	r2, r2, r0, lsl #5
+	add	r3, r3, #24
+	ldr	r0, [r3, #-20]
+	orr	r2, r2, #8192
+	cmp	lr, r3
+	strh	r2, [r1, #4]	@ movhi
+	strh	ip, [r1]	@ movhi
+	strh	r0, [r1, #2]	@ movhi
+	add	r1, r1, #8
+	bne	.L49
+	ldr	r2, .L55+36
+	ldr	r1, .L55+40
 	add	lr, r2, #264
-.L41:
+.L50:
 	ldr	ip, [r2, #4]
 	ldr	r0, [r2, #8]
 	ldr	r3, [r2], #12
 	add	r3, r3, #448
 	orr	r3, r3, #8192
 	cmp	lr, r2
-	strh	ip, [r1, #112]	@ movhi
-	strh	r0, [r1, #114]	@ movhi
-	strh	r3, [r1, #116]	@ movhi
+	strh	ip, [r1]	@ movhi
+	strh	r0, [r1, #2]	@ movhi
+	strh	r3, [r1, #4]	@ movhi
 	add	r1, r1, #8
-	bne	.L41
+	bne	.L50
 	pop	{r4, r5, r6, lr}
 	bx	lr
-.L46:
+.L56:
 	.align	2
-.L45:
+.L55:
 	.word	drawPlayer
 	.word	noot
 	.word	drawPrincess
 	.word	shadowOAM
 	.word	boxLeftSide
 	.word	boxRightSide
+	.word	boxTop
 	.word	boxCorner
+	.word	shadowOAM+256
 	.word	text
+	.word	shadowOAM+288
 	.size	drawCutScene, .-drawCutScene
 	.align	2
 	.global	drawCharacter
@@ -574,11 +661,11 @@ drawCharacter:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	ldr	r2, .L49
+	ldr	r2, .L59
 	ldr	r3, [r2, #4]
 	mvn	r3, r3, lsl #17
 	mvn	r3, r3, lsr #17
-	ldr	r1, .L49+4
+	ldr	r1, .L59+4
 	str	lr, [sp, #-4]!
 	ldr	ip, [r2, #16]
 	ldr	lr, [r2]
@@ -589,9 +676,9 @@ drawCharacter:
 	strh	ip, [r2, #4]	@ movhi
 	ldr	lr, [sp], #4
 	bx	lr
-.L50:
+.L60:
 	.align	2
-.L49:
+.L59:
 	.word	noot
 	.word	shadowOAM
 	.size	drawCharacter, .-drawCharacter
@@ -607,7 +694,7 @@ drawBox:
 	@ frame_needed = 0, uses_anonymous_args = 0
 	add	r3, r0, #16
 	ldm	r3, {r3, ip}
-	ldr	r2, .L53
+	ldr	r2, .L63
 	str	lr, [sp, #-4]!
 	add	r3, r3, ip, lsl #5
 	ldm	r0, {ip, lr}
@@ -619,9 +706,9 @@ drawBox:
 	strh	ip, [r2, r1]	@ movhi
 	ldr	lr, [sp], #4
 	bx	lr
-.L54:
+.L64:
 	.align	2
-.L53:
+.L63:
 	.word	shadowOAM
 	.size	drawBox, .-drawBox
 	.align	2
@@ -635,7 +722,7 @@ drawQuoteOne:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	ldr	r3, [r0]
-	ldr	r2, .L57
+	ldr	r2, .L67
 	str	lr, [sp, #-4]!
 	add	r3, r3, #448
 	ldmib	r0, {ip, lr}
@@ -647,18 +734,20 @@ drawQuoteOne:
 	strh	ip, [r2, r1]	@ movhi
 	ldr	lr, [sp], #4
 	bx	lr
-.L58:
+.L68:
 	.align	2
-.L57:
+.L67:
 	.word	shadowOAM
 	.size	drawQuoteOne, .-drawQuoteOne
 	.comm	text,264,4
 	.comm	alphabet,108,4
 	.comm	shadowOAM,1024,4
 	.comm	boxBlack,24,4
-	.comm	boxCenter,600,4
+	.comm	boxTop,528,4
 	.comm	boxCorner,96,4
-	.comm	boxRightSide,72,4
-	.comm	boxLeftSide,72,4
+	.comm	boxRightSide,48,4
+	.comm	boxLeftSide,48,4
 	.comm	noot,20,4
+	.comm	soundB,32,4
+	.comm	soundA,32,4
 	.ident	"GCC: (devkitARM release 53) 9.1.0"

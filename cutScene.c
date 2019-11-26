@@ -1,25 +1,30 @@
 #include "myLib.h"
 #include "cutScene.h"
 #include "game.h"
+#include "sound.h"
 
 #include "bg0Space.h"
 #include "bg1Stars.h"
 #include "sprites.h"
+#include "grenzlinie.h"
+
 NOOT noot;
 BOX boxLeftSide[BOXSIZE/5 - 2];
 BOX boxRightSide[BOXSIZE/5 - 2];
 BOX boxCorner[NUMCORNERS];
-BOX boxCenter[BOXSIZE];
+BOX boxTop[BOXSIZE];
 BOX boxBlack;
 OBJ_ATTR shadowOAM[128];
 ALPHABET alphabet;
 TEXT text[QUOTELENGTH];
 
 void initCutScene() {
+    playSoundB(grenzlinie,GRENZLINIELEN,GRENZLINIEFREQ, 1);
     dispBackground();
     initBoxLeftSide();
     initBoxRightSide();
     initBoxCorner();
+    initBoxEdgeTop();
     initQuoteOne_letter();
     for (int i = 0; i< QUOTELENGTH; i++) {
         initQuoteOne_setup(&text[i], i);
@@ -114,7 +119,7 @@ void initBoxLeftSide() {
 void initBoxRightSide() {
         for(int i = 0; i <SIDESIZE; i++) {
         boxRightSide[i].row = 130 + (i*8);
-        boxRightSide[i].col = 200;
+        boxRightSide[i].col = 202;
         boxRightSide[i].width = 8;
         boxRightSide[i].height = 32;
         boxRightSide[i].y = 8;
@@ -132,7 +137,7 @@ void initBoxCorner() {
         boxCorner[0].y = 7;
   
         boxCorner[1].row = 125;
-        boxCorner[1].col = 200;
+        boxCorner[1].col = 202;
         boxCorner[1].width = 8;
         boxCorner[1].height = 8;
         boxCorner[1].x = 4;
@@ -146,27 +151,35 @@ void initBoxCorner() {
         boxCorner[2].y = 10;
 
         boxCorner[3].row = 140;
-        boxCorner[3].col = 200;
+        boxCorner[3].col = 202;
         boxCorner[3].width = 8;
         boxCorner[3].height = 8;
         boxCorner[3].x = 4;
         boxCorner[3].y = 10;
 }
 
-/*
+
 void initBoxEdgeTop() {
-    
-    boxCenter->row = 120;
-    boxCenter->col = 50;
-    boxCenter->width = 8;
-    boxCenter->height = 8;
-    boxCenter->x = 6;
-    boxCenter->y = 1;
+     for(int i = 0; i <BOXSIZE; i++) {
+    boxTop[i].row = 122;
+    boxTop[i].col = 25 + (i*8);
+    boxTop[i].width = 8;
+    boxTop[i].height = 8;
+    boxTop[i].x = 1;
+    boxTop[i].y = 7;
+     }
      
 }
-*/
+
 void boxEdgeBottom() {
-    
+    for(int i = 0; i <BOXSIZE; i++) {
+    boxTop[i].row = 122;
+    boxTop[i].col = 25 + (i*8);
+    boxTop[i].width = 8;
+    boxTop[i].height = 8;
+    boxTop[i].x = 1;
+    boxTop[i].y = 7;
+     }
 }
 void boxEdgeRight() {
 
@@ -191,6 +204,10 @@ void drawCutScene() {
     }
     for(int i = 0; i <SIDESIZE; i++) {
         drawBox(&boxRightSide[i], j);
+        j++;
+    }
+    for(int i = 0; i <BOXSIZE; i++) {
+        drawBox(&boxTop[i], j);
         j++;
     }
     

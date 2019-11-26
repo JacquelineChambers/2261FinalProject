@@ -251,6 +251,8 @@ void updateBullet(BULLET* bullet);
 void updateEnemies();
 
 void fireBullet(BULLET* bullet);
+
+void chooseSound();
 # 4 "movement.c" 2
 
  int movement;

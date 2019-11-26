@@ -242,6 +242,8 @@ void updateBullet(BULLET* bullet);
 void updateEnemies();
 
 void fireBullet(BULLET* bullet);
+
+void chooseSound();
 # 44 "main.c" 2
 # 1 "cutScene.h" 1
 
@@ -311,8 +313,8 @@ extern ALPHABET alphabet;
 extern TEXT text[22];
 extern BOX boxSide[2];
 extern BOX boxCorner[4];
-extern BOX boxCenter[25];
-
+extern BOX boxTop[22];
+extern BOX boxBottom[22];
 extern NOOT noot;
 
 void initCharacter();
@@ -329,6 +331,7 @@ void initBoxLeftSide();
 void initBoxRightSide();
 void initQuoteOne_letter();
 void initQuoteOne_setup();
+void initBoxEdgeTop();
 void drawQuoteOne();
 void drawBox();
 # 45 "main.c" 2
@@ -429,7 +432,6 @@ extern const unsigned char keepOnKeepingOn[2553696];
 void initialize();
 
 SOUND soundA;
-SOUND soundB;
 
 unsigned short buttons;
 unsigned short oldButtons;
@@ -512,10 +514,10 @@ void start(){
 
 }
 void goToGame() {
-    stopSound();
+
     (*(unsigned short *)0x4000000) = 0 | (1<<9) | (1<<8) | (1<<12);
 
-    playSoundA(keepOnKeepingOn,2553696,11025, 0);
+    playSoundA(keepOnKeepingOn,2553696,11025, 1);
 
 
     initGame();
@@ -544,7 +546,7 @@ void game() {
   goToLose();
  }
 
-    if(enemiesKilled%8 == 0) {
+    if(enemiesKilled%8 == 0 || (!(~(oldButtons)&((1<<2))) && (~buttons & ((1<<2))))) {
         enemiesKilled++;
         tmphOff = hOff;
         (*(volatile unsigned short *)0x04000010) = 0;
@@ -605,6 +607,7 @@ void cutScene() {
         (*(volatile unsigned short *)0x04000010) = 0;
         (*(volatile unsigned short *)0x04000014) = 0;
         dispBackground();
+        unpauseSound();
   goToGame();
  }
 }
@@ -625,6 +628,7 @@ void pause() {
  if((!(~(oldButtons)&((1<<3))) && (~buttons & ((1<<3))))) {
 
   dispBackground();
+        unpauseSound();
   goToGame();
  }
     if((!(~(oldButtons)&((1<<2))) && (~buttons & ((1<<2))))) {

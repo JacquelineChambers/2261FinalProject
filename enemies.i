@@ -69,7 +69,7 @@ typedef struct {
 
 
 extern ALIEN alien[2];
-extern ALIENLASER alienLaser[5];
+
 extern ASTEROID asteroid[2];
 extern CAR car[2];
 extern int enemiesRemaining;
@@ -197,6 +197,8 @@ void updateBullet(BULLET* bullet);
 void updateEnemies();
 
 void fireBullet(BULLET* bullet);
+
+void chooseSound();
 # 3 "enemies.c" 2
 # 1 "myLib.h" 1
 
@@ -335,7 +337,7 @@ void info();
 # 4 "enemies.c" 2
 
 ALIEN alien[2];
-ALIENLASER alienLaser[5];
+
 ASTEROID asteroid[2];
 CAR car[2];
 int enemiesRemaining;
@@ -403,10 +405,10 @@ void initCar() {
 void initAsteroids() {
     int j = 0;
     for(int i=0; i < 2; i++){
-        asteroid[i].height = 20;
-        asteroid[i].width = 20;
+        asteroid[i].height = 16;
+        asteroid[i].width = 16;
         asteroid[i].cdel = 1;
-        asteroid[i].rdel = 16;
+        asteroid[i].rdel = 1;
         asteroid[i].active = 1;
         asteroid[i].erased = 0;
         asteroid[i].asteroidAni = 19;
@@ -425,20 +427,7 @@ void initAsteroids() {
     }
 
 }
-
-void initAlienLaser() {
-    for(int i=0; i < 5; i++){
-        alienLaser[i].height = 16;
-        alienLaser[i].width = 16;
-        alienLaser[i].cdel = 1;
-        alienLaser[i].rdel = 16;
-        alienLaser[i].active = 1;
-        alienLaser[i].erased = 0;
-        alienLaser[i].row = 0;
-        alienLaser[i].col = 20 + (i*30);
-    }
-
-}
+# 111 "enemies.c"
 void resetAlien() {
 
 }
@@ -448,9 +437,10 @@ void resetCar() {
 void resetAsteroid() {
 
 }
-void resetAlienLaser() {
 
-}
+
+
+
 
 void updateAlien(ALIEN *alien) {
     for(int i = 0 ;i< 5;i++ ){
@@ -544,7 +534,7 @@ void updateAlien(ALIEN *alien) {
         alien->row>>=2;
         alien->col>>=2;
     }
-    if (timer%50 == 0 && !alien->active) {
+    if (timer%5 == 0 && !alien->active) {
         alien->active = 1;
     }
 
@@ -579,7 +569,7 @@ void updateCar(CAR *car) {
         car->col = 60;
 
     }
-    if (timer%50 == 0 && !car->active) {
+    if (timer%5 == 0 && !car->active) {
         car->active = 1;
     }
 
@@ -622,7 +612,7 @@ void updateAsteroid(ASTEROID *asteroid) {
 
 
     }
-    if (timer%50 == 0 && !asteroid->active) {
+    if (timer%5 == 0 && !asteroid->active) {
         asteroid->active = 1;
     }
 

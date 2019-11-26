@@ -8,6 +8,9 @@
 #include "sprites.h"
 #include "sine.h"
 #include "sound.h"
+#include "noot5.h"
+#include "noot7.h"
+#include "fucking-noot-noot.h"
 //s->spriteCol = s->baseState + (s->aniState + (s->width/8));
 
 unsigned short hOff;
@@ -30,9 +33,11 @@ int immunity;
 int immunityWait;
 enum {UP, DOWN, LEFT, RIGHT};
 enum {R, L};
+SOUND soundB;
 
 void initGame() {
      REG_BLDCNT = BLD_BDa | BLD_BG0b | BLD_BG1b | BLD_STD;
+     
      immunity = 0;
      immunityWait = 0;
      princessHealth = 1;
@@ -51,7 +56,7 @@ void initGame() {
 }
 
 void dispBackground() {
-
+    
     DMANow(3, bg0SpacePal, PALETTE, 256);
 
     REG_BG1CNT = BG_CHARBLOCK(0) | BG_SCREENBLOCK(31) | BG_SIZE_SMALL;
@@ -179,6 +184,7 @@ void fireBullet(BULLET* bullet) {//player can fire bullet
         
 
 		if (bullet->active == 0 && bullet->tetherBullet == 0) {
+            chooseSound();
             switch(bullet->shotDirection) {
             case UP:
                 bullet->col = player.col+8;
@@ -201,6 +207,7 @@ void fireBullet(BULLET* bullet) {//player can fire bullet
          shootAni = 4;
 		}
         if (bullet->active == 0 && bullet->tetherBullet == 1) {
+             chooseSound();
             switch(prevMovement) {
             case UP:
                 bullet->col = player.col+8;
@@ -222,6 +229,13 @@ void fireBullet(BULLET* bullet) {//player can fire bullet
 		 bullet->active = 1;
 		}
      
+}
+void chooseSound() {
+    if(timer%2 == 0) {
+        playSoundB(noot5,NOOT5LEN,NOOT5FREQ, 0);
+    } else {
+        playSoundB(noot7,NOOT7LEN,NOOT7FREQ, 0);
+    } 
 }
 
 void updatePlayer() {//updates player's movement and actions based on user input
@@ -248,65 +262,68 @@ void updatePlayer() {//updates player's movement and actions based on user input
         immunityWait += 100;
     }
     if (immunity == 0) {
-    for(int i = 0; i < ALIENCOUNT; i++ ){
-            if ((alien[i].active) && collision(player.col, player.row, player.width, player.height,
-                        alien[i].col, alien[i].row, alien[i].width, alien[i].height)) {
+        for(int i = 0; i < ALIENCOUNT; i++ ){
+                    if ((alien[i].active) && collision(player.col, player.row, player.width, player.height,
+                                alien[i].col, alien[i].row, alien[i].width, alien[i].height)) {
 
-                        alien[i].active = 0;
-                        playerHealth--;
-                        hit+=4;
-                }
-    }
-    for(int i = 0; i < CARCOUNT; i++ ){
-            if ((car[i].active) && collision(player.col, player.row, player.width, player.height,
-                        car[i].col, car[i].row, car[i].width, car[i].height)) {
+                                alien[i].active = 0;
+                                playerHealth--;
+                                hit+=4;
+                                playSoundB(fucking_noot_noot,FUCKING_NOOT_NOOTLEN,FUCKING_NOOT_NOOTFREQ, 0);
+                        }
+        }
+        for(int i = 0; i < CARCOUNT; i++ ){
+                if ((car[i].active) && collision(player.col, player.row, player.width, player.height,
+                            car[i].col, car[i].row, car[i].width, car[i].height)) {
 
-                        car[i].active = 0;
-                        playerHealth--;
-                        hit+=4;
-                }
-    }
-    for(int i = 0; i < ASTEROIDCOUNT; i++ ){
-            if ((asteroid[i].active) && collision(player.col, player.row, player.width, player.height,
-                        asteroid[i].col, asteroid[i].row, asteroid[i].width, asteroid[i].height)) {
+                            car[i].active = 0;
+                            playerHealth--;
+                            hit+=4;
+                            playSoundB(fucking_noot_noot,FUCKING_NOOT_NOOTLEN,FUCKING_NOOT_NOOTFREQ, 0);
+                    }
+        }
+        for(int i = 0; i < ASTEROIDCOUNT; i++ ){
+                if ((asteroid[i].active) && collision(player.col, player.row, player.width, player.height,
+                            asteroid[i].col, asteroid[i].row, asteroid[i].width, asteroid[i].height)) {
 
-                        asteroid[i].active = 0;
-                        playerHealth--;
-                        hit+=4;
-                }
-    }
+                            asteroid[i].active = 0;
+                            playerHealth--;
+                            hit+=4;
+                            playSoundB(fucking_noot_noot,FUCKING_NOOT_NOOTLEN,FUCKING_NOOT_NOOTFREQ, 0);
+                    }
+        }
     }
 }
 void updatePrincess() {
-if (immunity == 0) {
-    for(int i = 0; i < ALIENCOUNT; i++ ){
-            if ((alien[i].active) && collision(player.col, player.row, player.width, player.height,
-                        alien[i].col, alien[i].row, alien[i].width, alien[i].height)) {
+    if (immunity == 0) {
+        for(int i = 0; i < ALIENCOUNT; i++ ){
+                if ((alien[i].active) && collision(player.col, player.row, player.width, player.height,
+                            alien[i].col, alien[i].row, alien[i].width, alien[i].height)) {
 
-                        alien[i].active = 0;
-                        playerHealth--;
-                        hit+=4;
-                }
-    }
-    for(int i = 0; i < CARCOUNT; i++ ){
-            if ((car[i].active) && collision(princess.col, princess.row, princess.width, princess.height,
-                        car[i].col, car[i].row, car[i].width, car[i].height)) {
+                            alien[i].active = 0;
+                            playerHealth--;
+                            hit+=4;
+                    }
+        }
+        for(int i = 0; i < CARCOUNT; i++ ){
+                if ((car[i].active) && collision(princess.col, princess.row, princess.width, princess.height,
+                            car[i].col, car[i].row, car[i].width, car[i].height)) {
 
-                        car[i].active = 0;
-                        princessHealth--;
-                        hit+=4;
-                }
-    }
-    for(int i = 0; i < ASTEROIDCOUNT; i++ ){
-            if ((asteroid[i].active) && collision(princess.col, princess.row, princess.width, princess.height,
-                        asteroid[i].col, asteroid[i].row, asteroid[i].width, asteroid[i].height)) {
+                            car[i].active = 0;
+                            princessHealth--;
+                            hit+=4;
+                    }
+        }
+        for(int i = 0; i < ASTEROIDCOUNT; i++ ){
+                if ((asteroid[i].active) && collision(princess.col, princess.row, princess.width, princess.height,
+                            asteroid[i].col, asteroid[i].row, asteroid[i].width, asteroid[i].height)) {
 
-                        asteroid[i].active = 0;
-                        princessHealth--;
-                        hit+=4;
-                }
+                            asteroid[i].active = 0;
+                            princessHealth--;
+                            hit+=4;
+                    }
+        }
     }
-}
 }
 void drawGame() {//draws all sprite in the game
     int j = 2;

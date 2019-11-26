@@ -101,5 +101,7 @@ void updateBullet(BULLET* bullet);
 void updateEnemies();
 //fire bullet methods
 void fireBullet(BULLET* bullet);
+//sound
+void chooseSound();
 
 
