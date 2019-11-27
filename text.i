@@ -78,10 +78,10 @@ typedef struct {
 extern OBJ_AFFINE* shadowAffine;
 # 179 "myLib.h"
  void hideSprites();
-# 228 "myLib.h"
+# 231 "myLib.h"
 extern unsigned short oldButtons;
 extern unsigned short buttons;
-# 239 "myLib.h"
+# 242 "myLib.h"
 typedef volatile struct {
     volatile const void *src;
     volatile void *dst;
@@ -90,9 +90,9 @@ typedef volatile struct {
 
 
 extern DMA *dma;
-# 279 "myLib.h"
+# 282 "myLib.h"
 void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned int cnt);
-# 371 "myLib.h"
+# 374 "myLib.h"
 typedef struct{
     const unsigned char* data;
     int length;

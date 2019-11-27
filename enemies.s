@@ -120,7 +120,7 @@ initAsteroids:
 	mov	r4, #0
 	mov	lr, #19
 	mov	ip, #50
-	mov	r0, #224
+	mov	r0, #40
 	ldr	r3, .L12
 	str	r4, [r3, #36]
 	str	r4, [r3, #88]

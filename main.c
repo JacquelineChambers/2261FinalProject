@@ -14,13 +14,13 @@ Press B for temporary immunity
 
 WHAT IT CAN DO
 ----------------------------------
-- can shoot at enemies
+- can shoot at enemies with the A key
 - after a certain amount enemies are shot then a cut scene with 
 text is shown
 - if princess is hit once game ends
 - if player is hit 3 times the game ends
 - if 20 enemies are killed then the player wins
-- the cheat is implemented so if the player hits A 
+- the cheat is implemented so if the player hits B 
 then they are immune to enemies for a certain amount of time
 
 CURRENT BUGS
@@ -45,6 +45,7 @@ FUTURE MODIFICATIONS
 #include "font.h"
 #include "text.h"
 #include "sound.h"
+#include "winGame.h"
 
 //external .h files
 #include "loseScreen.h"
@@ -161,7 +162,7 @@ void game() {
     waitForVBlank();
     DMANow(3, shadowOAM, OAM, 128*4);
     //lets the player win if all of the enemies have been killedenemiesRemaining == 0
-	if(enemiesKilled > 20) { 
+	if(enemiesKilled > 20 || BUTTON_PRESSED(BUTTON_SELECT)) { 
         REG_BG0HOFF = 0;
         REG_BG1HOFF = 0;
         stopSound();
@@ -175,7 +176,7 @@ void game() {
 		goToLose();
 	}
     //goes to cutscene if a certain amount of enemies are killed
-    if(enemiesKilled%8 == 0 || BUTTON_PRESSED(BUTTON_SELECT)) { //|| BUTTON_PRESSED(BUTTON_B)) {
+    if(enemiesKilled%8 == 0) { //|| BUTTON_PRESSED(BUTTON_SELECT)) { 
         enemiesKilled++;
         tmphOff = hOff;
         REG_BG0HOFF = 0;
@@ -209,6 +210,8 @@ void info() {
     drawString(10, 90, "from side to side", WHITE);
     drawString(10, 100, "Press SELECT to return", WHITE);
     drawString(10, 110, "to splash Screen", WHITE);
+    drawString(10, 120, "Press B for temporary immunity", WHITE);
+    
     oldButtons = buttons;
     buttons = BUTTONS;
     if(BUTTON_PRESSED(BUTTON_SELECT)) {
@@ -268,17 +271,15 @@ void pause() {
 }
 void goToWin() {
     
-    REG_DISPCTL =  MODE0 | BG0_ENABLE;
+    initWinGame();
 	state = WIN;
 }
 //shows the win screen
 void win() {
-     REG_DISPCTL =  MODE0 | BG0_ENABLE;
-	DMANow(3, winScreenPal, PALETTE, 256);
-    DMANow(3, winScreenTiles, &CHARBLOCK[0], winScreenTilesLen / 2);
-    DMANow(3, winScreenMap, &SCREENBLOCK[28], 1024 * 4);
-
-    REG_BG0CNT = BG_CHARBLOCK(0) | BG_SCREENBLOCK(28) | BG_4BPP | BG_SIZE_LARGE;
+    drawWinGame();
+    parallax();
+    waitForVBlank();
+    DMANow(3, shadowOAM, OAM, 128*4);
     //allows the player to play the game again
     if(BUTTON_PRESSED(BUTTON_START)) {
 		initialize();

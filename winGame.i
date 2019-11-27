@@ -1,17 +1,7 @@
-# 1 "movement.c"
+# 1 "winGame.c"
 # 1 "<built-in>"
 # 1 "<command-line>"
-# 1 "movement.c"
-# 1 "movement.h" 1
-
-
-
-
-void rotateLeft();
-void rotateRight();
-void slideRight();
-void slideLeft();
-# 2 "movement.c" 2
+# 1 "winGame.c"
 # 1 "myLib.h" 1
 
 
@@ -146,7 +136,131 @@ void goToCutScene();
 void goToInfo();
 void cutScene();
 void info();
-# 3 "movement.c" 2
+# 2 "winGame.c" 2
+# 1 "winGame.h" 1
+typedef struct {
+ int row;
+ int col;
+ int width;
+    int height;
+    int x;
+    int y;
+} PRINCESSNOOT;
+
+typedef struct {
+ int row;
+ int col;
+ int width;
+    int height;
+    int x;
+    int y;
+} CLIFF;
+
+extern PRINCESSNOOT princessNoot;
+extern CLIFF cliff;
+
+void initWinGame();
+void initCliff();
+void initPrincessNoot();
+
+void drawWinGame();
+void drawCliff();
+void drawPrincessNoot();
+# 3 "winGame.c" 2
+# 1 "cutScene.h" 1
+
+
+void initCutScene();
+
+typedef struct {
+ int row;
+ int col;
+ int width;
+    int height;
+    int aniState;
+} NOOT;
+
+typedef struct {
+ int row;
+ int col;
+ int width;
+    int height;
+    int x;
+ int y;
+} BOX;
+
+typedef struct {
+ int a;
+ int b;
+ int c;
+    int d;
+    int e;
+ int f;
+ int g;
+ int h;
+ int i;
+ int j;
+ int k;
+ int l;
+ int m;
+ int n;
+ int o;
+ int p;
+ int q;
+ int r;
+ int s;
+ int t;
+ int u;
+ int v;
+ int w;
+ int x;
+ int y;
+ int z;
+ int space;
+
+} ALPHABET;
+
+typedef struct {
+ int letter;
+ int row;
+ int col;
+} TEXT;
+
+
+
+
+
+
+extern ALPHABET alphabet;
+extern TEXT text[22];
+extern BOX boxSide[2];
+extern BOX boxCorner[4];
+extern BOX boxTop[22];
+extern BOX boxBottom[22];
+extern NOOT noot;
+
+void initCharacter();
+void drawCutScene();
+void parallax();
+void drawDialogBox();
+void initDialogBox();
+void initChar();
+void initBoxCorner();
+void drawCharacter();
+void initAlphabet();
+void updateCutScene();
+void initBoxLeftSide();
+void initBoxRightSide();
+void initQuoteOne_letter();
+void initQuoteOne_setup();
+void initBoxEdgeTop();
+void drawQuoteOne();
+void drawBox();
+# 4 "winGame.c" 2
+# 1 "grenzlinie.h" 1
+# 20 "grenzlinie.h"
+extern const unsigned char grenzlinie[415842];
+# 5 "winGame.c" 2
 # 1 "game.h" 1
 
 typedef struct {
@@ -253,155 +367,66 @@ void updateEnemies();
 void fireBullet(BULLET* bullet);
 
 void chooseSound();
-# 4 "movement.c" 2
+# 6 "winGame.c" 2
 
- int movement;
- int toggle;
- int prevMovement;
- enum {UP, DOWN, LEFT, RIGHT};
- enum {R, L};
 
-void rotateLeft() {
-     if(toggle == R) {
-             switch(movement) {
-            case UP:
-                movement = DOWN;
-                break;
-            case RIGHT:
-                movement = LEFT;
-                break;
-            case DOWN:
-                movement = UP;
-                break;
-            case LEFT:
-                movement = RIGHT;
-                break;
-            }
-        }
-        prevMovement = movement;
-        switch(movement) {
-            case UP:
-                player.col = 110;
-             player.row = 60;
-                player.sprite = 0;
-                movement = LEFT;
-                break;
-            case LEFT:
-                player.col = 90;
-             player.row = 80;
-                player.sprite = 2;
-                movement = DOWN;
-                break;
-            case DOWN:
-                player.col = 110;
-             player.row = 100;
-                player.sprite = 4;
-                movement = RIGHT;
-                break;
-            case RIGHT:
-                player.col = 130;
-             player.row = 80;
-                player.sprite = 6;
-                movement = UP;
-                break;
-        }
-        toggle = L;
+PRINCESSNOOT princessNoot;
+CLIFF cliff;
+OBJ_ATTR shadowOAM[128];
+
+void initWinGame() {
+    dispBackground();
+    clearShadowOAM();
+    initCliff();
+    initPrincessNoot();
 }
 
-void rotateRight() {
-    if(toggle == L) {
-           switch(movement) {
-            case UP:
-                movement = DOWN;
-                break;
-            case RIGHT:
-                movement = LEFT;
-                break;
-            case DOWN:
-                movement = UP;
-                break;
-            case LEFT:
-                movement = RIGHT;
-                break;
-            }
-        }
-        prevMovement = movement;
-        switch(movement) {
-            case UP:
-                player.col = 110;
-             player.row = 60;
-                player.sprite = 0;
-                movement = RIGHT;
-                break;
-            case RIGHT:
-                player.col = 130;
-             player.row = 80;
-                player.sprite = 6;
-                movement = DOWN;
-                break;
-            case DOWN:
-                player.col = 110;
-             player.row = 100;
-                player.sprite = 4;
-                movement = LEFT;
-                break;
-            case LEFT:
-                player.col = 90;
-             player.row = 80;
-                player.sprite = 2;
-                movement = UP;
-                break;
-        }
-        toggle = R;
+void clearShadowOAM() {
+    for(int i = 0; i < 129; i++) {
+        shadowOAM[i].attr0 = 0;
+     shadowOAM[i].attr1 = 0;
+        shadowOAM[i].attr2 = 0;
+    }
+    hideSprites();
+     DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 128*4);
 }
 
-void slideRight() {
-     switch(prevMovement) {
-            case UP:
-                if(player.width + player.col < 140) {
-                    player.col++;
-                }
-               break;
-            case RIGHT:
-                if(player.height + player.row < 105) {
-                    player.row++;
-                }
-               break;
-            case DOWN:
-                if(player.width + player.col < 140) {
-                    player.col++;
-                }
-                break;
-            case LEFT:
-                if(player.height + player.row < 105) {
-                    player.row++;
-                }
-                break;
-        }
+
+void initCliff() {
+    princessNoot.row = 61;
+ princessNoot.col = 185;
+ princessNoot.width = 64;
+    princessNoot.height = 64;
+    princessNoot.x = 24;
+    princessNoot.y = 0;
 
 }
+void initPrincessNoot() {
+    cliff.row = 105;
+ cliff.col = 185;
+ cliff.width = 64;
+    cliff.height = 32;
+    cliff.x = 24;
+    cliff.y = 8;
+}
+void drawWinGame() {
 
-void slideLeft() {
-    switch(prevMovement) {
-            case UP:
-                if(player.col > 95) {
-                    player.col--;
-                }
-               break;
-            case RIGHT:
-                if(player.row > 65) {
-                    player.row--;
-                }
-               break;
-            case DOWN:
-                if(player.col > 95) {
-                    player.col--;
-                }
-                break;
-            case LEFT:
-                if(player.row > 65) {
-                    player.row--;
-                }
-                break;
-        }
+    int j = 0;
+    drawPrincessNoot(j);
+    j++;
+    drawCliff(j);
+    j++;
+
+}
+void drawCliff(int j) {
+    shadowOAM[j].attr0 = cliff.row | (0<<13) | (1<<14);
+ shadowOAM[j].attr1 = cliff.col | (3<<14);
+    shadowOAM[j].attr2 = ((4)<<12) | ((cliff.y)*32+(cliff.x));
+
+}
+void drawPrincessNoot(int j) {
+    shadowOAM[j].attr0 = princessNoot.row | (0<<13) | (0<<14);
+ shadowOAM[j].attr1 = princessNoot.col | (3<<14);
+    shadowOAM[j].attr2 = ((6)<<12) | ((princessNoot.y)*32+(princessNoot.x));
+
 }

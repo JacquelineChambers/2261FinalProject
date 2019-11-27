@@ -79,14 +79,14 @@ void initAsteroids() {//creates asteroids
         asteroid[i].erased = 0;
         asteroid[i].asteroidAni = 19;
         if (j == 0) {
-            asteroid[i].row = 124;
+            asteroid[i].row = 20;
             asteroid[i].col = 20 + (i * 10);
             asteroid[i].direction = j;
             j = 1;
         }
         if (j == 1) {
             asteroid[i].row = 50;
-            asteroid[i].col = 224;
+            asteroid[i].col = 40;
             asteroid[i].direction = j;
             j = 0;
         }

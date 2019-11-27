@@ -177,6 +177,9 @@ extern OBJ_AFFINE* shadowAffine;
 
 // Sprite 
  void hideSprites();
+
+#define ROWMASK 0xFF
+#define COLMASK 0x1FF
 //==============================BLENDING REGISTERS=====================
 
 #define REG_BLDCNT (*(volatile unsigned short*)0x04000050)

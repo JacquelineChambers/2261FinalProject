@@ -275,35 +275,38 @@ initGame:
 	ldr	r2, .L41+8
 	ldr	r3, .L41+12
 	strh	lr, [ip, #80]	@ movhi
-	ldr	fp, .L41+16
 	str	r4, [r0]
 	str	r4, [r1]
 	str	r5, [r2]
 	str	r9, [r3]
 	bl	dispBackground
-	ldr	r3, .L41+20
-	ldr	r6, .L41+24
+	ldr	r3, .L41+16
+	ldr	r6, .L41+20
+	ldr	fp, .L41+24
 	str	r4, [r3]
 	mov	lr, pc
 	bx	r6
+	ldr	r3, .L41+28
+	mov	lr, pc
+	bx	r3
 	str	r9, [fp]
-	ldr	r9, .L41+28
-	str	r4, [r9]
 	ldr	r9, .L41+32
 	str	r4, [r9]
 	ldr	r9, .L41+36
-	str	r5, [r9]
+	str	r4, [r9]
 	ldr	r9, .L41+40
+	str	r5, [r9]
+	ldr	r9, .L41+44
 	mov	r1, r5
 	str	r5, [r9, #12]
 	str	r5, [r9, #8]
 	mov	r5, #60
 	mov	r10, #110
 	str	r5, [r9]
-	ldr	r5, .L41+44
+	ldr	r5, .L41+48
 	mov	r8, #16
 	mov	r7, #32
-	ldr	lr, .L41+48
+	ldr	lr, .L41+52
 	mov	r2, r4
 	str	r4, [r9, #28]
 	str	r10, [r9, #4]
@@ -337,10 +340,10 @@ initGame:
 	str	r1, [lr, #40]
 	mov	lr, pc
 	bx	r6
-	ldr	r3, .L41+52
+	ldr	r3, .L41+56
 	mov	lr, pc
 	bx	r3
-	ldr	r3, .L41+56
+	ldr	r3, .L41+60
 	mov	lr, pc
 	bx	r3
 	pop	{r3, r4, r5, r6, r7, r8, r9, r10, fp, lr}
@@ -352,9 +355,10 @@ initGame:
 	.word	immunityWait
 	.word	princessHealth
 	.word	playerHealth
-	.word	livesRemaining
 	.word	timer
 	.word	initAliens
+	.word	livesRemaining
+	.word	initAsteroids
 	.word	movement
 	.word	prevMovement
 	.word	toggle
@@ -1219,15 +1223,18 @@ drawBullet:
 	ldr	r3, [r0, #24]
 	cmp	r3, #0
 	beq	.L191
-	ldr	r3, .L197
+	ldr	r3, [r0]
+	ldr	ip, .L197
 	str	lr, [sp, #-4]!
-	ldr	r2, [r0, #32]
-	ldm	r0, {ip, lr}
-	lsl	r0, r1, #3
-	add	r1, r3, r1, lsl #3
-	strh	lr, [r3, r0]	@ movhi
-	strh	ip, [r1, #2]	@ movhi
-	strh	r2, [r1, #4]	@ movhi
+	lsl	r3, r3, #23
+	ldrb	lr, [r0, #4]	@ zero_extendqisi2
+	ldr	r0, [r0, #32]
+	add	r2, ip, r1, lsl #3
+	lsr	r3, r3, #23
+	lsl	r1, r1, #3
+	strh	lr, [ip, r1]	@ movhi
+	strh	r3, [r2, #2]	@ movhi
+	strh	r0, [r2, #4]	@ movhi
 	ldr	lr, [sp], #4
 	bx	lr
 .L191:
@@ -1254,21 +1261,23 @@ drawAlien:
 	ldr	r3, [r0, #28]
 	cmp	r3, #0
 	beq	.L200
-	str	lr, [sp, #-4]!
-	ldr	r3, [r0, #40]
-	ldr	lr, [r0, #36]
-	ldr	r2, [r0, #12]
+	push	{r4, lr}
+	ldr	r3, [r0, #12]
+	ldr	r4, [r0, #36]
+	ldr	r2, [r0, #40]
 	ldr	ip, .L206
-	add	r3, r3, lr, lsl #5
-	ldr	lr, [r0, #8]
-	orr	r3, r3, #12288
+	lsl	r3, r3, #23
+	ldrb	lr, [r0, #8]	@ zero_extendqisi2
+	add	r2, r2, r4, lsl #5
+	lsr	r3, r3, #23
 	add	r0, ip, r1, lsl #3
-	orr	r2, r2, #16384
+	orr	r3, r3, #16384
 	lsl	r1, r1, #3
+	orr	r2, r2, #12288
 	strh	lr, [ip, r1]	@ movhi
-	strh	r3, [r0, #4]	@ movhi
-	strh	r2, [r0, #2]	@ movhi
-	ldr	lr, [sp], #4
+	strh	r3, [r0, #2]	@ movhi
+	strh	r2, [r0, #4]	@ movhi
+	pop	{r4, lr}
 	bx	lr
 .L200:
 	mov	r2, #512
@@ -1294,18 +1303,20 @@ drawCars:
 	ldr	r3, [r0, #32]
 	cmp	r3, #0
 	beq	.L209
-	ldr	r2, [r0, #12]
-	ldr	r3, [r0, #44]
+	ldr	r3, [r0, #12]
+	ldr	r2, [r0, #44]
 	ldr	ip, .L215
+	lsl	r3, r3, #23
 	str	lr, [sp, #-4]!
-	ldr	lr, [r0, #8]
-	orr	r2, r2, #16384
-	lsl	r0, r1, #3
-	orr	r3, r3, #20480
-	add	r1, ip, r1, lsl #3
-	strh	lr, [ip, r0]	@ movhi
-	strh	r2, [r1, #2]	@ movhi
-	strh	r3, [r1, #4]	@ movhi
+	lsr	r3, r3, #23
+	ldrb	lr, [r0, #8]	@ zero_extendqisi2
+	orr	r3, r3, #16384
+	add	r0, ip, r1, lsl #3
+	orr	r2, r2, #20480
+	lsl	r1, r1, #3
+	strh	lr, [ip, r1]	@ movhi
+	strh	r3, [r0, #2]	@ movhi
+	strh	r2, [r0, #4]	@ movhi
 	ldr	lr, [sp], #4
 	bx	lr
 .L209:
@@ -1412,8 +1423,8 @@ drawGame:
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r4, r5, r6, lr}
 	bl	drawPlayer
-	ldr	r0, .L254
-	ldr	r3, .L254+4
+	ldr	r0, .L255
+	ldr	r3, .L255+4
 	ldr	r2, [r0]
 	smull	ip, r1, r3, r2
 	asr	r3, r2, #31
@@ -1421,7 +1432,7 @@ drawGame:
 	add	r3, r3, r3, lsl #2
 	cmp	r2, r3
 	bne	.L252
-	ldr	r1, .L254+8
+	ldr	r1, .L255+8
 	ldr	r3, [r1]
 	cmp	r3, #0
 	bne	.L226
@@ -1430,121 +1441,138 @@ drawGame:
 .L225:
 	str	r2, [r0]
 	bl	drawPrincess
-	ldr	r0, .L254+12
-	mov	r5, #512
+	ldr	r0, .L255+12
+	mov	r6, #512
 	mov	r2, r0
-	ldr	r3, .L254+16
+	ldr	r3, .L255+16
+	ldr	r5, .L255+20
 	add	ip, r3, #220
 .L229:
 	ldr	r1, [r3, #24]
 	cmp	r1, #0
-	ldrne	r4, [r3, #4]
-	ldrne	lr, [r3]
-	ldrne	r1, [r3, #32]
+	ldrne	r1, [r3]
+	ldrbne	r4, [r3, #4]	@ zero_extendqisi2
+	ldrne	lr, [r3, #32]
+	andne	r1, r1, r5
 	add	r3, r3, #44
+	strhne	r1, [r2, #18]	@ movhi
 	strhne	r4, [r2, #16]	@ movhi
-	strhne	lr, [r2, #18]	@ movhi
-	strhne	r1, [r2, #20]	@ movhi
-	strheq	r5, [r2, #16]	@ movhi
+	strhne	lr, [r2, #20]	@ movhi
+	strheq	r6, [r2, #16]	@ movhi
 	cmp	ip, r3
 	add	r2, r2, #8
 	bne	.L229
-	ldr	r3, .L254+20
+	ldr	r3, .L255+24
 	ldr	r2, [r3, #32]
 	cmp	r2, #0
 	moveq	r2, #512
-	ldrne	r2, [r3, #44]
-	ldrne	r1, [r3, #12]
-	orrne	r2, r2, #20480
-	ldrne	ip, [r3, #8]
 	strheq	r2, [r0, #56]	@ movhi
-	strhne	r2, [r0, #60]	@ movhi
+	bne	.L253
+.L231:
 	ldr	r2, [r3, #80]
-	orrne	r1, r1, #16384
-	strhne	r1, [r0, #58]	@ movhi
-	strhne	ip, [r0, #56]	@ movhi
 	cmp	r2, #0
 	moveq	r3, #512
-	ldrne	r2, [r3, #92]
-	ldrne	r1, [r3, #60]
-	ldrne	ip, [r3, #56]
-	orrne	r3, r2, #20480
-	strhne	r3, [r0, #68]	@ movhi
 	strheq	r3, [r0, #64]	@ movhi
-	ldr	r3, .L254+24
+	bne	.L254
+.L233:
+	ldr	r3, .L255+28
 	ldr	r2, [r3, #28]
-	orrne	r1, r1, #16384
-	strhne	r1, [r0, #66]	@ movhi
-	strhne	ip, [r0, #64]	@ movhi
 	cmp	r2, #0
 	moveq	r2, #512
 	strheq	r2, [r0, #72]	@ movhi
-	bne	.L253
+	beq	.L235
+	ldr	r2, [r3, #12]
+	ldr	ip, [r3, #36]
+	ldr	r1, [r3, #40]
+	lsl	r2, r2, #23
+	add	r1, r1, ip, lsl #5
+	lsr	r2, r2, #23
+	ldrb	ip, [r3, #8]	@ zero_extendqisi2
+	orr	r2, r2, #16384
+	orr	r1, r1, #12288
+	strh	r2, [r0, #74]	@ movhi
+	strh	r1, [r0, #76]	@ movhi
+	strh	ip, [r0, #72]	@ movhi
 .L235:
 	ldr	r2, [r3, #76]
 	cmp	r2, #0
 	moveq	r3, #512
 	strheq	r3, [r0, #80]	@ movhi
 	beq	.L237
+	ldr	r2, [r3, #60]
 	ldr	ip, [r3, #84]
-	ldr	r2, [r3, #88]
-	ldr	r1, [r3, #60]
-	add	r2, r2, ip, lsl #5
-	ldr	ip, [r3, #56]
-	orr	r3, r2, #12288
-	orr	r2, r1, #16384
-	strh	r3, [r0, #84]	@ movhi
+	ldr	r1, [r3, #88]
+	lsl	r2, r2, #23
+	add	r1, r1, ip, lsl #5
+	lsr	r2, r2, #23
+	ldrb	ip, [r3, #56]	@ zero_extendqisi2
+	orr	r2, r2, #16384
+	orr	r3, r1, #12288
 	strh	r2, [r0, #82]	@ movhi
+	strh	r3, [r0, #84]	@ movhi
 	strh	ip, [r0, #80]	@ movhi
 .L237:
 	mov	r1, #11
-	ldr	r0, .L254+28
+	ldr	r0, .L255+32
 	bl	drawAsteroids
 	mov	r1, #12
-	ldr	r0, .L254+32
+	ldr	r0, .L255+36
 	bl	drawAsteroids
-	ldr	r2, .L254+36
+	ldr	r2, .L255+40
 	ldr	r3, [r2]
 	cmp	r3, #0
 	subne	r3, r3, #1
 	strne	r3, [r2]
-	ldr	r2, .L254+40
+	ldr	r2, .L255+44
 	ldr	r3, [r2]
 	cmp	r3, #0
 	subne	r3, r3, #1
 	strne	r3, [r2]
-	ldr	r2, .L254+44
+	ldr	r2, .L255+48
 	ldr	r3, [r2]
 	cmp	r3, #0
 	subne	r3, r3, #1
 	strne	r3, [r2]
 	pop	{r4, r5, r6, lr}
 	bx	lr
+.L254:
+	ldr	r2, [r3, #60]
+	ldr	r1, [r3, #92]
+	lsl	r2, r2, #23
+	ldrb	ip, [r3, #56]	@ zero_extendqisi2
+	lsr	r2, r2, #23
+	orr	r2, r2, #16384
+	orr	r3, r1, #20480
+	strh	r2, [r0, #66]	@ movhi
+	strh	r3, [r0, #68]	@ movhi
+	strh	ip, [r0, #64]	@ movhi
+	b	.L233
 .L253:
-	ldr	ip, [r3, #36]
-	ldr	r2, [r3, #40]
-	ldr	r1, [r3, #12]
-	add	r2, r2, ip, lsl #5
-	ldr	ip, [r3, #8]
-	orr	r2, r2, #12288
-	orr	r1, r1, #16384
-	strh	r2, [r0, #76]	@ movhi
-	strh	r1, [r0, #74]	@ movhi
-	strh	ip, [r0, #72]	@ movhi
-	b	.L235
+	ldr	r2, [r3, #12]
+	ldr	r1, [r3, #44]
+	lsl	r2, r2, #23
+	ldrb	ip, [r3, #8]	@ zero_extendqisi2
+	lsr	r2, r2, #23
+	orr	r2, r2, #16384
+	orr	r1, r1, #20480
+	strh	r2, [r0, #58]	@ movhi
+	strh	r1, [r0, #60]	@ movhi
+	strh	ip, [r0, #56]	@ movhi
+	b	.L231
 .L226:
 	sub	r3, r3, #2
 	mov	r2, #1
 	str	r3, [r1]
 	b	.L225
-.L255:
+.L256:
 	.align	2
-.L254:
+.L255:
 	.word	timerShooting
 	.word	1717986919
 	.word	shootAni
 	.word	shadowOAM
 	.word	bullet
+	.word	511
 	.word	car
 	.word	alien
 	.word	asteroid

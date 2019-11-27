@@ -78,10 +78,10 @@ typedef struct {
 extern OBJ_AFFINE* shadowAffine;
 # 179 "myLib.h"
  void hideSprites();
-# 228 "myLib.h"
+# 231 "myLib.h"
 extern unsigned short oldButtons;
 extern unsigned short buttons;
-# 239 "myLib.h"
+# 242 "myLib.h"
 typedef volatile struct {
     volatile const void *src;
     volatile void *dst;
@@ -90,9 +90,9 @@ typedef volatile struct {
 
 
 extern DMA *dma;
-# 279 "myLib.h"
+# 282 "myLib.h"
 void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned int cnt);
-# 371 "myLib.h"
+# 374 "myLib.h"
 typedef struct{
     const unsigned char* data;
     int length;
@@ -437,6 +437,7 @@ void initGame() {
      dispBackground();
      timer = 0;
      initAliens();
+     initAsteroids();
      initPlayer();
      initPrincess();
      initBullet();
@@ -781,8 +782,8 @@ void drawPrincess() {
 
 void drawBullet(BULLET* bullet, int j) {
     if (bullet->active) {
-        shadowOAM[j].attr0 = bullet->row | (0<<13) | (0<<14);
-        shadowOAM[j].attr1 = bullet->col | (0<<14);
+        shadowOAM[j].attr0 = (0xFF & bullet->row) | (0<<13) | (0<<14);
+        shadowOAM[j].attr1 = (0x1FF & bullet->col) | (0<<14);
         shadowOAM[j].attr2 = ((0)<<12) | ((0)*32+(bullet->sprite));
     }
     else {
@@ -792,8 +793,8 @@ void drawBullet(BULLET* bullet, int j) {
 
 void drawAlien(ALIEN* alien, int j) {
     if (alien->active) {
-        shadowOAM[j].attr0 = alien->row | (0<<13) | (0<<14);
-        shadowOAM[j].attr1 = alien->col | (1<<14);
+        shadowOAM[j].attr0 = (0xFF & alien->row) | (0<<13) | (0<<14);
+        shadowOAM[j].attr1 = (0x1FF & alien->col) | (1<<14);
         shadowOAM[j].attr2 = ((3)<<12) | ((alien->shine)*32+(alien->alienAni));
     }
     else {
@@ -803,8 +804,8 @@ void drawAlien(ALIEN* alien, int j) {
 
 void drawCars(CAR* car, int j) {
     if (car->active) {
-        shadowOAM[j].attr0 = car->row | (0<<13) | (0<<14);
-        shadowOAM[j].attr1 = car->col | (1<<14);
+        shadowOAM[j].attr0 = (0xFF & car->row) | (0<<13) | (0<<14);
+        shadowOAM[j].attr1 = (0x1FF & car->col) | (1<<14);
         shadowOAM[j].attr2 = ((5)<<12) | ((0)*32+(car->carAni));
     }
     else {

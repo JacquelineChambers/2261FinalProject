@@ -276,10 +276,10 @@ typedef struct {
 extern OBJ_AFFINE* shadowAffine;
 # 179 "myLib.h"
  void hideSprites();
-# 228 "myLib.h"
+# 231 "myLib.h"
 extern unsigned short oldButtons;
 extern unsigned short buttons;
-# 239 "myLib.h"
+# 242 "myLib.h"
 typedef volatile struct {
     volatile const void *src;
     volatile void *dst;
@@ -288,9 +288,9 @@ typedef volatile struct {
 
 
 extern DMA *dma;
-# 279 "myLib.h"
+# 282 "myLib.h"
 void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned int cnt);
-# 371 "myLib.h"
+# 374 "myLib.h"
 typedef struct{
     const unsigned char* data;
     int length;
@@ -413,14 +413,14 @@ void initAsteroids() {
         asteroid[i].erased = 0;
         asteroid[i].asteroidAni = 19;
         if (j == 0) {
-            asteroid[i].row = 124;
+            asteroid[i].row = 20;
             asteroid[i].col = 20 + (i * 10);
             asteroid[i].direction = j;
             j = 1;
         }
         if (j == 1) {
             asteroid[i].row = 50;
-            asteroid[i].col = 224;
+            asteroid[i].col = 40;
             asteroid[i].direction = j;
             j = 0;
         }

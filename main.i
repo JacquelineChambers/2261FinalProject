@@ -79,10 +79,10 @@ typedef struct {
 extern OBJ_AFFINE* shadowAffine;
 # 179 "myLib.h"
  void hideSprites();
-# 228 "myLib.h"
+# 231 "myLib.h"
 extern unsigned short oldButtons;
 extern unsigned short buttons;
-# 239 "myLib.h"
+# 242 "myLib.h"
 typedef volatile struct {
     volatile const void *src;
     volatile void *dst;
@@ -91,9 +91,9 @@ typedef volatile struct {
 
 
 extern DMA *dma;
-# 279 "myLib.h"
+# 282 "myLib.h"
 void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned int cnt);
-# 371 "myLib.h"
+# 374 "myLib.h"
 typedef struct{
     const unsigned char* data;
     int length;
@@ -359,6 +359,36 @@ void pauseSound();
 void unpauseSound();
 void stopSound();
 # 48 "main.c" 2
+# 1 "winGame.h" 1
+typedef struct {
+ int row;
+ int col;
+ int width;
+    int height;
+    int x;
+    int y;
+} PRINCESSNOOT;
+
+typedef struct {
+ int row;
+ int col;
+ int width;
+    int height;
+    int x;
+    int y;
+} CLIFF;
+
+extern PRINCESSNOOT princessNoot;
+extern CLIFF cliff;
+
+void initWinGame();
+void initCliff();
+void initPrincessNoot();
+
+void drawWinGame();
+void drawCliff();
+void drawPrincessNoot();
+# 49 "main.c" 2
 
 
 # 1 "loseScreen.h" 1
@@ -370,7 +400,7 @@ extern const unsigned short loseScreenMap[1024];
 
 
 extern const unsigned short loseScreenPal[256];
-# 51 "main.c" 2
+# 52 "main.c" 2
 # 1 "winScreen.h" 1
 # 22 "winScreen.h"
 extern const unsigned short winScreenTiles[608];
@@ -380,7 +410,7 @@ extern const unsigned short winScreenMap[1024];
 
 
 extern const unsigned short winScreenPal[256];
-# 52 "main.c" 2
+# 53 "main.c" 2
 # 1 "moonArt.h" 1
 # 22 "moonArt.h"
 extern const unsigned short moonArtTiles[7568];
@@ -390,7 +420,7 @@ extern const unsigned short moonArtMap[1024];
 
 
 extern const unsigned short moonArtPal[256];
-# 53 "main.c" 2
+# 54 "main.c" 2
 # 1 "bg0Space.h" 1
 # 22 "bg0Space.h"
 extern const unsigned short bg0SpaceTiles[1888];
@@ -400,7 +430,7 @@ extern const unsigned short bg0SpaceMap[2048];
 
 
 extern const unsigned short bg0SpacePal[256];
-# 54 "main.c" 2
+# 55 "main.c" 2
 # 1 "bg1Stars.h" 1
 # 22 "bg1Stars.h"
 extern const unsigned short bg1StarsTiles[544];
@@ -410,7 +440,7 @@ extern const unsigned short bg1StarsMap[1024];
 
 
 extern const unsigned short bg1StarsPal[256];
-# 55 "main.c" 2
+# 56 "main.c" 2
 # 1 "bg0SpacePause.h" 1
 # 22 "bg0SpacePause.h"
 extern const unsigned short bg0SpacePauseTiles[2352];
@@ -420,12 +450,12 @@ extern const unsigned short bg0SpacePauseMap[1024];
 
 
 extern const unsigned short bg0SpacePausePal[256];
-# 56 "main.c" 2
+# 57 "main.c" 2
 
 # 1 "keepOnKeepingOn.h" 1
 # 20 "keepOnKeepingOn.h"
 extern const unsigned char keepOnKeepingOn[2553696];
-# 58 "main.c" 2
+# 59 "main.c" 2
 
 
 
@@ -532,7 +562,7 @@ void game() {
     waitForVBlank();
     DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 128*4);
 
- if(enemiesKilled > 20) {
+ if(enemiesKilled > 20 || (!(~(oldButtons)&((1<<2))) && (~buttons & ((1<<2))))) {
         (*(volatile unsigned short *)0x04000010) = 0;
         (*(volatile unsigned short *)0x04000014) = 0;
         stopSound();
@@ -546,7 +576,7 @@ void game() {
   goToLose();
  }
 
-    if(enemiesKilled%8 == 0 || (!(~(oldButtons)&((1<<2))) && (~buttons & ((1<<2))))) {
+    if(enemiesKilled%8 == 0) {
         enemiesKilled++;
         tmphOff = hOff;
         (*(volatile unsigned short *)0x04000010) = 0;
@@ -580,6 +610,8 @@ void info() {
     drawString(10, 90, "from side to side", ((31) | (31)<<5 | (31)<<10));
     drawString(10, 100, "Press SELECT to return", ((31) | (31)<<5 | (31)<<10));
     drawString(10, 110, "to splash Screen", ((31) | (31)<<5 | (31)<<10));
+    drawString(10, 120, "Press B for temporary immunity", ((31) | (31)<<5 | (31)<<10));
+
     oldButtons = buttons;
     buttons = (*(volatile unsigned short *)0x04000130);
     if((!(~(oldButtons)&((1<<2))) && (~buttons & ((1<<2))))) {
@@ -639,17 +671,15 @@ void pause() {
 }
 void goToWin() {
 
-    (*(unsigned short *)0x4000000) = 0 | (1<<8);
+    initWinGame();
  state = WIN;
 }
 
 void win() {
-     (*(unsigned short *)0x4000000) = 0 | (1<<8);
- DMANow(3, winScreenPal, ((unsigned short *)0x5000000), 256);
-    DMANow(3, winScreenTiles, &((charblock *)0x6000000)[0], 1216 / 2);
-    DMANow(3, winScreenMap, &((screenblock *)0x6000000)[28], 1024 * 4);
-
-    (*(volatile unsigned short*)0x4000008) = ((0)<<2) | ((28)<<8) | (0<<7) | (3<<14);
+    drawWinGame();
+    parallax();
+    waitForVBlank();
+    DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 128*4);
 
     if((!(~(oldButtons)&((1<<3))) && (~buttons & ((1<<3))))) {
   initialize();

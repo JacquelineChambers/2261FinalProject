@@ -45,6 +45,7 @@ void initGame() {
      dispBackground();
      timer = 0;
      initAliens();
+     initAsteroids();
      initPlayer();
      initPrincess();
      initBullet();
@@ -389,8 +390,8 @@ void drawPrincess() {//draws princess sprite
 
 void drawBullet(BULLET* bullet, int j) {//increment loc up
     if (bullet->active) {
-        shadowOAM[j].attr0 = bullet->row | ATTR0_4BPP | ATTR0_SQUARE; //| ATTR0_AFFINE;
-        shadowOAM[j].attr1 = bullet->col | ATTR1_TINY;
+        shadowOAM[j].attr0 = (ROWMASK & bullet->row) | ATTR0_4BPP | ATTR0_SQUARE; //| ATTR0_AFFINE;
+        shadowOAM[j].attr1 = (COLMASK & bullet->col) | ATTR1_TINY;
         shadowOAM[j].attr2 = ATTR2_PALROW(0) | ATTR2_TILEID(bullet->sprite,0);
     }
     else {
@@ -400,8 +401,8 @@ void drawBullet(BULLET* bullet, int j) {//increment loc up
 
 void drawAlien(ALIEN* alien, int j) {//increment loc up
     if (alien->active) {
-        shadowOAM[j].attr0 = alien->row | ATTR0_4BPP | ATTR0_SQUARE;
-        shadowOAM[j].attr1 = alien->col | ATTR1_SMALL;
+        shadowOAM[j].attr0 = (ROWMASK & alien->row) | ATTR0_4BPP | ATTR0_SQUARE;
+        shadowOAM[j].attr1 = (COLMASK & alien->col) | ATTR1_SMALL;
         shadowOAM[j].attr2 = ATTR2_PALROW(3) | ATTR2_TILEID(alien->alienAni,alien->shine);
     }
     else {
@@ -411,8 +412,8 @@ void drawAlien(ALIEN* alien, int j) {//increment loc up
 
 void drawCars(CAR* car, int j) {//increment loc up
     if (car->active) {
-        shadowOAM[j].attr0 = car->row | ATTR0_4BPP | ATTR0_SQUARE; 
-        shadowOAM[j].attr1 = car->col | ATTR1_SMALL;
+        shadowOAM[j].attr0 = (ROWMASK & car->row) | ATTR0_4BPP | ATTR0_SQUARE; 
+        shadowOAM[j].attr1 = (COLMASK & car->col) | ATTR1_SMALL;
         shadowOAM[j].attr2 = ATTR2_PALROW(5) | ATTR2_TILEID(car->carAni,0);
     }
     else {
