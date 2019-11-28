@@ -334,6 +334,7 @@ void initQuoteOne_setup();
 void initBoxEdgeTop();
 void drawQuoteOne();
 void drawBox();
+void initBoxEdgeBottom();
 # 45 "main.c" 2
 # 1 "font.h" 1
 
@@ -378,8 +379,14 @@ typedef struct {
     int y;
 } CLIFF;
 
+
+
+
+
+
 extern PRINCESSNOOT princessNoot;
 extern CLIFF cliff;
+
 
 void initWinGame();
 void initCliff();
@@ -388,29 +395,43 @@ void initPrincessNoot();
 void drawWinGame();
 void drawCliff();
 void drawPrincessNoot();
+
+
+void initWinQuote();
+
+void clearShadowOAM();
+
+void initWinQuote_setup();
+void initAgainQuote_setup();
+
+void initPlayAgainQuote();
 # 49 "main.c" 2
+# 1 "loseGame.h" 1
+typedef struct {
+ int row;
+ int col;
+ int width;
+    int height;
+    int x;
+    int y;
+} DEADPRINCESS;
 
 
-# 1 "loseScreen.h" 1
-# 22 "loseScreen.h"
-extern const unsigned short loseScreenTiles[720];
 
 
-extern const unsigned short loseScreenMap[1024];
+extern DEADPRINCESS deadPrincess;
+
+void drawLoseGame();
+void initDeadPrincess();
+void initLoseQuote();
+void drawDeadPrincess(int j);
+void initLoseQuote_setup();
+void initLoseGame();
+
+void initPlayAgainQuoteLose();
+# 50 "main.c" 2
 
 
-extern const unsigned short loseScreenPal[256];
-# 52 "main.c" 2
-# 1 "winScreen.h" 1
-# 22 "winScreen.h"
-extern const unsigned short winScreenTiles[608];
-
-
-extern const unsigned short winScreenMap[1024];
-
-
-extern const unsigned short winScreenPal[256];
-# 53 "main.c" 2
 # 1 "moonArt.h" 1
 # 22 "moonArt.h"
 extern const unsigned short moonArtTiles[7568];
@@ -420,7 +441,7 @@ extern const unsigned short moonArtMap[1024];
 
 
 extern const unsigned short moonArtPal[256];
-# 54 "main.c" 2
+# 53 "main.c" 2
 # 1 "bg0Space.h" 1
 # 22 "bg0Space.h"
 extern const unsigned short bg0SpaceTiles[1888];
@@ -430,7 +451,7 @@ extern const unsigned short bg0SpaceMap[2048];
 
 
 extern const unsigned short bg0SpacePal[256];
-# 55 "main.c" 2
+# 54 "main.c" 2
 # 1 "bg1Stars.h" 1
 # 22 "bg1Stars.h"
 extern const unsigned short bg1StarsTiles[544];
@@ -440,7 +461,7 @@ extern const unsigned short bg1StarsMap[1024];
 
 
 extern const unsigned short bg1StarsPal[256];
-# 56 "main.c" 2
+# 55 "main.c" 2
 # 1 "bg0SpacePause.h" 1
 # 22 "bg0SpacePause.h"
 extern const unsigned short bg0SpacePauseTiles[2352];
@@ -450,13 +471,12 @@ extern const unsigned short bg0SpacePauseMap[1024];
 
 
 extern const unsigned short bg0SpacePausePal[256];
-# 57 "main.c" 2
+# 56 "main.c" 2
 
 # 1 "keepOnKeepingOn.h" 1
 # 20 "keepOnKeepingOn.h"
 extern const unsigned char keepOnKeepingOn[2553696];
-# 59 "main.c" 2
-
+# 58 "main.c" 2
 
 
 void initialize();
@@ -524,7 +544,7 @@ void goToStart(){
  state = START;
 }
 
-void start(){
+void start() {
 
     (*(unsigned short *)0x4000000) = 0 | (1<<8);
     DMANow(3, moonArtPal, ((unsigned short *)0x5000000), 256);
@@ -562,7 +582,7 @@ void game() {
     waitForVBlank();
     DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 128*4);
 
- if(enemiesKilled > 20 || (!(~(oldButtons)&((1<<2))) && (~buttons & ((1<<2))))) {
+ if(enemiesKilled > 20) {
         (*(volatile unsigned short *)0x04000010) = 0;
         (*(volatile unsigned short *)0x04000014) = 0;
         stopSound();
@@ -682,22 +702,25 @@ void win() {
     DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 128*4);
 
     if((!(~(oldButtons)&((1<<3))) && (~buttons & ((1<<3))))) {
-  initialize();
+  (*(unsigned short *)0x4000000) = 0;
+        initialize();
+        goToStart();
  }
 }
 void goToLose() {
-    (*(unsigned short *)0x4000000) = 0 | (1<<8);
+    initLoseGame();
  state = LOSE;
 }
 
 void lose() {
- DMANow(3, loseScreenPal, ((unsigned short *)0x5000000), 256);
-    DMANow(3, loseScreenTiles, &((charblock *)0x6000000)[0], 1440 / 2);
-    DMANow(3, loseScreenMap, &((screenblock *)0x6000000)[28], 1024 * 4);
-
-    (*(volatile unsigned short*)0x4000008) = ((0)<<2) | ((28)<<8) | (0<<7) | (3<<14);
+ drawLoseGame();
+    parallax();
+    waitForVBlank();
+    DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 128*4);
 
     if ((!(~(oldButtons)&((1<<3))) && (~buttons & ((1<<3))))) {
-  initialize();
+  (*(unsigned short *)0x4000000) = 0;
+        initialize();
+        goToStart();
  }
 }

@@ -46,17 +46,15 @@ FUTURE MODIFICATIONS
 #include "text.h"
 #include "sound.h"
 #include "winGame.h"
+#include "loseGame.h"
 
 //external .h files
-#include "loseScreen.h"
-#include "winScreen.h"
 #include "moonArt.h"
 #include "bg0Space.h"
 #include "bg1Stars.h"
 #include "bg0SpacePause.h"
 
 #include "keepOnKeepingOn.h"
-
 
 
 void initialize();
@@ -124,7 +122,7 @@ void goToStart(){
 	state = START;
 }
 //shows the start screen
-void start(){
+void start() {
     
     REG_DISPCTL =  MODE0 | BG0_ENABLE;
     DMANow(3, moonArtPal, PALETTE, 256);
@@ -162,7 +160,7 @@ void game() {
     waitForVBlank();
     DMANow(3, shadowOAM, OAM, 128*4);
     //lets the player win if all of the enemies have been killedenemiesRemaining == 0
-	if(enemiesKilled > 20 || BUTTON_PRESSED(BUTTON_SELECT)) { 
+	if(enemiesKilled > 20) { 
         REG_BG0HOFF = 0;
         REG_BG1HOFF = 0;
         stopSound();
@@ -176,7 +174,7 @@ void game() {
 		goToLose();
 	}
     //goes to cutscene if a certain amount of enemies are killed
-    if(enemiesKilled%8 == 0) { //|| BUTTON_PRESSED(BUTTON_SELECT)) { 
+    if(enemiesKilled%8 == 0) { 
         enemiesKilled++;
         tmphOff = hOff;
         REG_BG0HOFF = 0;
@@ -282,22 +280,25 @@ void win() {
     DMANow(3, shadowOAM, OAM, 128*4);
     //allows the player to play the game again
     if(BUTTON_PRESSED(BUTTON_START)) {
-		initialize();
+		REG_DISPCTL = 0;
+        initialize(); 
+        goToStart();
 	}
 }
 void goToLose() {
-    REG_DISPCTL =  MODE0 | BG0_ENABLE;
+    initLoseGame();
 	state = LOSE;
 }
 //shows the lose screen
 void lose() {
-	DMANow(3, loseScreenPal, PALETTE, 256);
-    DMANow(3, loseScreenTiles, &CHARBLOCK[0], loseScreenTilesLen / 2);
-    DMANow(3, loseScreenMap, &SCREENBLOCK[28], 1024 * 4);
-
-    REG_BG0CNT = BG_CHARBLOCK(0) | BG_SCREENBLOCK(28) | BG_4BPP | BG_SIZE_LARGE;
+	drawLoseGame();
+    parallax();
+    waitForVBlank();
+    DMANow(3, shadowOAM, OAM, 128*4);
     //allows the player to play the game again
     if (BUTTON_PRESSED(BUTTON_START)) {
-		initialize();
+		REG_DISPCTL = 0;
+        initialize(); 
+        goToStart();
 	}
 }

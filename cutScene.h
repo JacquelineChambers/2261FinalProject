@@ -86,5 +86,6 @@ void initQuoteOne_setup();
 void initBoxEdgeTop(); 
 void drawQuoteOne();
 void drawBox();
+void initBoxEdgeBottom();
 
 

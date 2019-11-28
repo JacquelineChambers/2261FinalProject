@@ -226,6 +226,7 @@ void initQuoteOne_setup();
 void initBoxEdgeTop();
 void drawQuoteOne();
 void drawBox();
+void initBoxEdgeBottom();
 # 3 "cutScene.c" 2
 # 1 "game.h" 1
 
@@ -387,6 +388,7 @@ BOX boxLeftSide[22/5 - 2];
 BOX boxRightSide[22/5 - 2];
 BOX boxCorner[4];
 BOX boxTop[22];
+BOX boxBottom[22];
 BOX boxBlack;
 OBJ_ATTR shadowOAM[128];
 ALPHABET alphabet;
@@ -399,11 +401,12 @@ void initCutScene() {
     initBoxRightSide();
     initBoxCorner();
     initBoxEdgeTop();
+    initBoxEdgeBottom();
     initQuoteOne_letter();
     for (int i = 0; i< 22; i++) {
         initQuoteOne_setup(&text[i], i);
     }
-    initAlphabet();
+
     initCharacter();
     hideSprites();
 }
@@ -414,35 +417,7 @@ void initCharacter() {
     noot.height = 64;
     noot.aniState = 13;
 }
-void initAlphabet() {
-    alphabet.a = 0;
- alphabet.b = 1;
- alphabet.c = 2;
-    alphabet.d = 3;
- alphabet.e = 4;
- alphabet.f = 5;
-    alphabet.g = 6;
- alphabet.h = 7;
- alphabet.i = 8;
-    alphabet.j = 9;
- alphabet.k = 10;
- alphabet.l = 11;
-    alphabet.m = 12;
- alphabet.n = 13;
- alphabet.o = 14;
-    alphabet.p = 15;
- alphabet.q = 16;
- alphabet.r = 17;
-    alphabet.s = 18;
- alphabet.t = 19;
- alphabet.u = 20;
-    alphabet.v = 21;
- alphabet.w = 22;
- alphabet.x = 23;
-    alphabet.y = 24;
- alphabet.z = 25;
-    alphabet.space = 27;
-}
+# 76 "cutScene.c"
 void initQuoteOne_letter() {
     text[0].letter = 22;
     text[1].letter = 7;
@@ -535,32 +510,27 @@ void initBoxCorner() {
 
 void initBoxEdgeTop() {
      for(int i = 0; i <22; i++) {
-    boxTop[i].row = 122;
-    boxTop[i].col = 25 + (i*8);
-    boxTop[i].width = 8;
-    boxTop[i].height = 8;
-    boxTop[i].x = 1;
-    boxTop[i].y = 7;
+        boxTop[i].row = 122;
+        boxTop[i].col = 25 + (i*8);
+        boxTop[i].width = 8;
+        boxTop[i].height = 8;
+        boxTop[i].x = 1;
+        boxTop[i].y = 7;
      }
 
 }
 
-void boxEdgeBottom() {
+void initBoxEdgeBottom() {
     for(int i = 0; i <22; i++) {
-    boxTop[i].row = 122;
-    boxTop[i].col = 25 + (i*8);
-    boxTop[i].width = 8;
-    boxTop[i].height = 8;
-    boxTop[i].x = 1;
-    boxTop[i].y = 7;
+        boxBottom[i].row = 140;
+        boxBottom[i].col = 25 + (i*8);
+        boxBottom[i].width = 8;
+        boxBottom[i].height = 8;
+        boxBottom[i].x = 1;
+        boxBottom[i].y = 10;
      }
 }
-void boxEdgeRight() {
 
-}
-void boxEdgeLeft() {
-
-}
 void updateCutScene() {
     parallax();
 }
@@ -582,6 +552,10 @@ void drawCutScene() {
     }
     for(int i = 0; i <22; i++) {
         drawBox(&boxTop[i], j);
+        j++;
+    }
+    for(int i = 0; i <22; i++) {
+        drawBox(&boxBottom[i], j);
         j++;
     }
 

@@ -13,6 +13,7 @@ BOX boxLeftSide[BOXSIZE/5 - 2];
 BOX boxRightSide[BOXSIZE/5 - 2];
 BOX boxCorner[NUMCORNERS];
 BOX boxTop[BOXSIZE];
+BOX boxBottom[BOXSIZE];
 BOX boxBlack;
 OBJ_ATTR shadowOAM[128];
 ALPHABET alphabet;
@@ -25,11 +26,12 @@ void initCutScene() {
     initBoxRightSide();
     initBoxCorner();
     initBoxEdgeTop();
+    initBoxEdgeBottom();
     initQuoteOne_letter();
     for (int i = 0; i< QUOTELENGTH; i++) {
         initQuoteOne_setup(&text[i], i);
     }
-    initAlphabet();
+    //initAlphabet();
     initCharacter();
     hideSprites();
 }
@@ -40,6 +42,7 @@ void initCharacter() {
     noot.height = 64;
     noot.aniState = 13;
 }
+/*
 void initAlphabet() {
     alphabet.a = 0;
 	alphabet.b = 1;
@@ -69,6 +72,7 @@ void initAlphabet() {
 	alphabet.z = 25;  
     alphabet.space = 27;
 }
+*/
 void initQuoteOne_letter() {
     text[0].letter = 22;//w
     text[1].letter = 7;//h
@@ -161,32 +165,27 @@ void initBoxCorner() {
 
 void initBoxEdgeTop() {
      for(int i = 0; i <BOXSIZE; i++) {
-    boxTop[i].row = 122;
-    boxTop[i].col = 25 + (i*8);
-    boxTop[i].width = 8;
-    boxTop[i].height = 8;
-    boxTop[i].x = 1;
-    boxTop[i].y = 7;
+        boxTop[i].row = 122;
+        boxTop[i].col = 25 + (i*8);
+        boxTop[i].width = 8;
+        boxTop[i].height = 8;
+        boxTop[i].x = 1;
+        boxTop[i].y = 7;
      }
      
 }
 
-void boxEdgeBottom() {
+void initBoxEdgeBottom() {
     for(int i = 0; i <BOXSIZE; i++) {
-    boxTop[i].row = 122;
-    boxTop[i].col = 25 + (i*8);
-    boxTop[i].width = 8;
-    boxTop[i].height = 8;
-    boxTop[i].x = 1;
-    boxTop[i].y = 7;
+        boxBottom[i].row = 140;
+        boxBottom[i].col = 25 + (i*8);
+        boxBottom[i].width = 8;
+        boxBottom[i].height = 8;
+        boxBottom[i].x = 1;
+        boxBottom[i].y = 10;
      }
 }
-void boxEdgeRight() {
 
-}
-void boxEdgeLeft() {
-
-}
 void updateCutScene() {
     parallax();
 }
@@ -208,6 +207,10 @@ void drawCutScene() {
     }
     for(int i = 0; i <BOXSIZE; i++) {
         drawBox(&boxTop[i], j);
+        j++;
+    }
+    for(int i = 0; i <BOXSIZE; i++) {
+        drawBox(&boxBottom[i], j);
         j++;
     }
     

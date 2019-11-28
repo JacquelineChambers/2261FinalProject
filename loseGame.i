@@ -1,7 +1,7 @@
-# 1 "winGame.c"
+# 1 "loseGame.c"
 # 1 "<built-in>"
 # 1 "<command-line>"
-# 1 "winGame.c"
+# 1 "loseGame.c"
 # 1 "myLib.h" 1
 
 
@@ -136,8 +136,8 @@ void goToCutScene();
 void goToInfo();
 void cutScene();
 void info();
-# 2 "winGame.c" 2
-# 1 "winGame.h" 1
+# 2 "loseGame.c" 2
+# 1 "loseGame.h" 1
 typedef struct {
  int row;
  int col;
@@ -145,48 +145,26 @@ typedef struct {
     int height;
     int x;
     int y;
-} PRINCESSNOOT;
-
-typedef struct {
- int row;
- int col;
- int width;
-    int height;
-    int x;
-    int y;
-} CLIFF;
+} DEADPRINCESS;
 
 
 
 
+extern DEADPRINCESS deadPrincess;
 
+void drawLoseGame();
+void initDeadPrincess();
+void initLoseQuote();
+void drawDeadPrincess(int j);
+void initLoseQuote_setup();
+void initLoseGame();
 
-extern PRINCESSNOOT princessNoot;
-extern CLIFF cliff;
-
-
-void initWinGame();
-void initCliff();
-void initPrincessNoot();
-
-void drawWinGame();
-void drawCliff();
-void drawPrincessNoot();
-
-
-void initWinQuote();
-
-void clearShadowOAM();
-
-void initWinQuote_setup();
-void initAgainQuote_setup();
-
-void initPlayAgainQuote();
-# 3 "winGame.c" 2
+void initPlayAgainQuoteLose();
+# 3 "loseGame.c" 2
 # 1 "grenzlinie.h" 1
 # 20 "grenzlinie.h"
 extern const unsigned char grenzlinie[415842];
-# 4 "winGame.c" 2
+# 4 "loseGame.c" 2
 # 1 "game.h" 1
 
 typedef struct {
@@ -293,7 +271,7 @@ void updateEnemies();
 void fireBullet(BULLET* bullet);
 
 void chooseSound();
-# 5 "winGame.c" 2
+# 5 "loseGame.c" 2
 # 1 "cutScene.h" 1
 
 
@@ -384,99 +362,104 @@ void initBoxEdgeTop();
 void drawQuoteOne();
 void drawBox();
 void initBoxEdgeBottom();
-# 6 "winGame.c" 2
+# 6 "loseGame.c" 2
+# 1 "winGame.h" 1
+typedef struct {
+ int row;
+ int col;
+ int width;
+    int height;
+    int x;
+    int y;
+} PRINCESSNOOT;
+
+typedef struct {
+ int row;
+ int col;
+ int width;
+    int height;
+    int x;
+    int y;
+} CLIFF;
 
 
-PRINCESSNOOT princessNoot;
-CLIFF cliff;
+
+
+
+
+extern PRINCESSNOOT princessNoot;
+extern CLIFF cliff;
+
+
+void initWinGame();
+void initCliff();
+void initPrincessNoot();
+
+void drawWinGame();
+void drawCliff();
+void drawPrincessNoot();
+
+
+void initWinQuote();
+
+void clearShadowOAM();
+
+void initWinQuote_setup();
+void initAgainQuote_setup();
+
+void initPlayAgainQuote();
+# 7 "loseGame.c" 2
+
+
+DEADPRINCESS deadPrincess;
 OBJ_ATTR shadowOAM[128];
-TEXT textWin[19];
+TEXT textLose[8];
 TEXT playAgain[23];
 
-void initWinGame() {
-    dispBackground();
+void initLoseGame() {
     clearShadowOAM();
-    initCliff();
-    initPrincessNoot();
-    initWinQuote();
+    dispBackground();
+    initDeadPrincess();
+    initLoseQuote();
     initPlayAgainQuote();
     for (int i = 0; i < 22; i++) {
-        initWinQuote_setup(&textWin[i], i);
+        initLoseQuote_setup(&textLose[i], i);
     }
     for (int i = 0; i < 23; i++) {
         initAgainQuote_setup(&playAgain[i], i);
     }
 }
 
-void clearShadowOAM() {
-    for(int i = 0; i < 40; i++) {
-        shadowOAM[i].attr0 = 0;
-     shadowOAM[i].attr1 = 0;
-        shadowOAM[i].attr2 = 0;
-    }
-    hideSprites();
-     DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 128*4);
-}
-void initWinQuote_setup(TEXT* textWin, int i) {
-    textWin->row = 20;
-    textWin->col = 10 + (i * 8);
+void initLoseQuote_setup(TEXT* textLose, int i) {
+    textLose->row = 20;
+    textLose->col = 10 + (i * 8);
 }
 
-void initAgainQuote_setup(TEXT* playAgain, int i) {
-    playAgain->row = 50;
-    playAgain->col = 10 + (i * 8);
-}
-
-void initCliff() {
-    princessNoot.row = 61;
- princessNoot.col = 185;
- princessNoot.width = 64;
-    princessNoot.height = 64;
-    princessNoot.x = 24;
-    princessNoot.y = 0;
+void initDeadPrincess() {
+    deadPrincess.row = 100;
+ deadPrincess.col = 190;
+ deadPrincess.width = 32;
+    deadPrincess.height = 64;
+    deadPrincess.x = 0;
+    deadPrincess.y = 17;
 
 }
 
-void initPrincessNoot() {
-    cliff.row = 105;
- cliff.col = 185;
- cliff.width = 64;
-    cliff.height = 32;
-    cliff.x = 24;
-    cliff.y = 8;
-}
+void initLoseQuote() {
+    textLose[0].letter = 18;
+    textLose[1].letter = 7;
+    textLose[2].letter = 4;
 
+    textLose[3].letter = 27;
 
-void initWinQuote() {
-    textWin[0].letter = 19;
-    textWin[1].letter = 7;
-    textWin[2].letter = 0;
-    textWin[3].letter = 13;
-    textWin[4].letter = 10;
-
-    textWin[5].letter = 27;
-
-    textWin[6].letter = 24;
-    textWin[7].letter = 14;
-    textWin[8].letter = 20;
-
-    textWin[9].letter = 27;
-
-    textWin[10].letter = 13;
-    textWin[11].letter = 14;
-    textWin[12].letter = 14;
-    textWin[13].letter = 19;
-
-    textWin[14].letter = 27;
-
-    textWin[15].letter = 13;
-    textWin[16].letter = 14;
-    textWin[17].letter = 14;
-    textWin[18].letter = 19;
+    textLose[4].letter = 3;
+    textLose[5].letter = 8;
+    textLose[6].letter = 4;
+    textLose[7].letter = 3;
 
 }
 
-void initPlayAgainQuoteLose() {
+void initPlayAgainQuote() {
     playAgain[0].letter = 7;
     playAgain[1].letter = 8;
     playAgain[2].letter = 19;
@@ -510,15 +493,13 @@ void initPlayAgainQuoteLose() {
     playAgain[22].letter = 13;
 }
 
-void drawWinGame() {
+void drawLoseGame() {
 
     int j = 0;
-    drawPrincessNoot(j);
+    drawDeadPrincess(j);
     j++;
-    drawCliff(j);
-    j++;
-    for (int i = 0; i < 19; i++) {
-        drawQuoteOne(&textWin[i], j);
+    for (int i = 0; i < 8; i++) {
+        drawQuoteOne(&textLose[i], j);
         j++;
     }
     for (int i = 0; i < 23; i++) {
@@ -526,16 +507,11 @@ void drawWinGame() {
         j++;
     }
 
-}
-void drawCliff(int j) {
-    shadowOAM[j].attr0 = cliff.row | (0<<13) | (1<<14);
- shadowOAM[j].attr1 = cliff.col | (3<<14);
-    shadowOAM[j].attr2 = ((4)<<12) | ((cliff.y)*32+(cliff.x));
 
 }
-void drawPrincessNoot(int j) {
-    shadowOAM[j].attr0 = princessNoot.row | (0<<13) | (0<<14);
- shadowOAM[j].attr1 = princessNoot.col | (3<<14);
-    shadowOAM[j].attr2 = ((6)<<12) | ((princessNoot.y)*32+(princessNoot.x));
+void drawDeadPrincess(int j) {
+    shadowOAM[j].attr0 = 80 | (0<<13) | (0<<14);
+ shadowOAM[j].attr1 = 90 | (3<<14);
+    shadowOAM[j].attr2 = ((6)<<12) | ((17)*32+(0));
 
 }
