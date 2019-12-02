@@ -2,6 +2,7 @@
 #include "game.h"
 #include "enemies.h"
 #include "movement.h"
+#include "cutScene.h"
 
 #include "bg0Space.h"
 #include "bg1Stars.h"
@@ -20,6 +21,12 @@ int enemiesKilled;
 PLAYER player;
 PRINCESS princess;
 BULLET bullet[BULLETCOUNT];
+LIVES liveCount[LIVECOUNT];
+SHIELD shield[SHEILDCOUNT];
+
+TEXT text3[DESCRPLENGTH];
+TEXT text4[DESCRPLENGTH];
+
 OBJ_ATTR shadowOAM[128];
 OBJ_AFFINE* shadowAffine = (OBJ_AFFINE*)(shadowOAM);
 int shotDirection;
@@ -46,12 +53,21 @@ void initGame() {
      timer = 0;
      initAliens();
      initAsteroids();
+     initCar();
      initPlayer();
      initPrincess();
      initBullet();
+     initLifeCount();
+     initShield();
+     initLifeText();
+     initShieldText();
+     for( int i = 0; i < DESCRPLENGTH; i++) {
+        lifeText_setup(&text3[i], i);
+     }
+     for( int i = 0; i < DESCRPLENGTH; i++) {
+        shieldText_setup(&text4[i], i);
+     }
      bullet[0].tetherBullet = 1;
-     initAliens();
-     initCar();
      hideSprites();
      
 }
@@ -76,7 +92,6 @@ void dispBackground() {
 }
 
 void initPlayer() {
-   
     livesRemaining = 3;
     player.width = 16;
     player.height = 16;
@@ -87,9 +102,9 @@ void initPlayer() {
     player.sprite = 0;
     movement = UP;
     prevMovement = movement;
-    toggle = L;
-    
+    toggle = L; 
 }
+
 void initPrincess() {
     princess.hit = 0;
     princess.row = 70 ;
@@ -97,6 +112,7 @@ void initPrincess() {
     princess.width = 32;
     princess.height = 32;
 }
+
 void initBullet() {
     for(int i=0; i < BULLETCOUNT; i++){
         bullet[i].col = 0;
@@ -115,6 +131,53 @@ void initBullet() {
     
 }
 
+void initLifeCount() {
+    for (int i = 0; i < LIVECOUNT; i++) {
+        liveCount[i].row = 150 ;
+        liveCount[i].col = 20 + (i * 8);
+        liveCount[i].x = 5;
+        liveCount[i].y = 9;
+    }
+}
+
+void initShield() {
+    for (int i = 0; i < SHEILDCOUNT; i++) {
+        shield[i].row = 150;
+        shield[i].col = 100 + (i * 8);
+        shield[i].x = 5;
+        shield[i].y = 10;
+    }
+}
+
+void initLifeText() {
+    text3[0].letter = 11;//l
+    text3[1].letter = 8;//i
+    text3[2].letter = 21;//v
+    text3[3].letter = 4;//e
+    text3[4].letter = 18;//s
+    text3[5].letter = 27;//space
+     
+}
+void initShieldText() {
+    text4[0].letter = 18;//s
+    text4[1].letter = 7;//h
+    text4[2].letter = 8;//i
+    text4[3].letter = 4;//e
+    text4[4].letter = 11;//l   
+    text4[5].letter = 3;//d  
+    
+}
+
+void lifeText_setup(TEXT* text3, int i) {
+    text3->row = 140;
+    text3->col = 10 + (i * 8);
+}
+
+void shieldText_setup(TEXT* text4, int i) {
+    text4->row = 140;
+    text4->col = 90 + (i * 8);
+}
+
 void updateGame() {
 
     parallax();
@@ -127,6 +190,7 @@ void updateGame() {
         updateBullet(&bullet[i]);
     }
 }
+
 void updateEnemies() {//collissions with alien
     for(int i = 0; i< ALIENCOUNT; i++){
         updateAlien(&alien[i]);
@@ -135,6 +199,7 @@ void updateEnemies() {//collissions with alien
     for(int i = 0; i< CARCOUNT; i++) {
         updateCar(&car[i]);
     }
+    timerShine2++;
     for(int i = 0; i< ASTEROIDCOUNT; i++) {
         updateAsteroid(&asteroid[i]);
     }
@@ -231,12 +296,9 @@ void fireBullet(BULLET* bullet) {//player can fire bullet
 		}
      
 }
+
 void chooseSound() {
-    if(timer%2 == 0) {
-        playSoundB(noot5,NOOT5LEN,NOOT5FREQ, 0);
-    } else {
-        playSoundB(noot7,NOOT7LEN,NOOT7FREQ, 0);
-    } 
+    playSoundB(noot5,NOOT5LEN,NOOT5FREQ, 0);
 }
 
 void updatePlayer() {//updates player's movement and actions based on user input
@@ -259,8 +321,8 @@ void updatePlayer() {//updates player's movement and actions based on user input
         slideLeft();
     }
     if(BUTTON_PRESSED(BUTTON_B) && immunityWait == 0) {//slide the player to the left
-        immunity = 100;
-        immunityWait += 100;
+        immunity = 800;
+        immunityWait += 800;
     }
     if (immunity == 0) {
         for(int i = 0; i < ALIENCOUNT; i++ ){
@@ -295,6 +357,7 @@ void updatePlayer() {//updates player's movement and actions based on user input
         }
     }
 }
+
 void updatePrincess() {
     if (immunity == 0) {
         for(int i = 0; i < ALIENCOUNT; i++ ){
@@ -326,6 +389,7 @@ void updatePrincess() {
         }
     }
 }
+
 void drawGame() {//draws all sprite in the game
     int j = 2;
     drawPlayer();
@@ -348,9 +412,68 @@ void drawGame() {//draws all sprite in the game
     for(int i = 0; i< ALIENCOUNT; i++){
         drawAlien(&alien[i], j);
         j++;
-    } 
+    }
+
     for(int i = 0; i< ASTEROIDCOUNT; i++){
         drawAsteroids(&asteroid[i], j);
+        j++;
+    }
+    int x = 0;
+    if (playerHealth >= 3) {
+        drawLives(&liveCount[x], j);
+       x++;
+        
+    } else {
+         shadowOAM[j].attr0 = ATTR0_HIDE; 
+    } 
+    j++;
+    if (playerHealth >= 2) {
+        drawLives(&liveCount[x], j);
+        x++;
+        
+    } else {
+         shadowOAM[j].attr0 = ATTR0_HIDE; 
+    }
+    j++;
+    if (playerHealth >= 1) {
+        drawLives(&liveCount[x], j);
+       
+    } else {
+         shadowOAM[j].attr0 = ATTR0_HIDE; 
+    }
+    j++;
+    int i = 0;
+    if (immunity > 600) {
+            drawShield(&shield[i], j);
+            
+            i++;
+    } else {
+       shadowOAM[j].attr0 = ATTR0_HIDE; 
+    }
+    j++;
+    if (immunity > 400) {
+            drawShield(&shield[i], j);
+            
+            i++;
+    }  else {
+        shadowOAM[j].attr0 = ATTR0_HIDE;
+        
+    }
+    j++;
+    if (immunity > 100) {
+            drawShield(&shield[i], j);
+            
+    } else {
+        shadowOAM[j].attr0 = ATTR0_HIDE;
+        
+    }
+    j++;
+    for (int i = 0; i< DESCRPLENGTH; i++) {
+        drawQuoteOne(&text3[i],  j);
+        j++;
+    }
+    for (int i = 0; i< DESCRPLENGTH; i++) {
+        drawQuoteOne(&text4[i],  j);
         j++;
     }
     if(hit != 0) {
@@ -414,7 +537,7 @@ void drawCars(CAR* car, int j) {//increment loc up
     if (car->active) {
         shadowOAM[j].attr0 = (ROWMASK & car->row) | ATTR0_4BPP | ATTR0_SQUARE; 
         shadowOAM[j].attr1 = (COLMASK & car->col) | ATTR1_SMALL;
-        shadowOAM[j].attr2 = ATTR2_PALROW(5) | ATTR2_TILEID(car->carAni,0);
+        shadowOAM[j].attr2 = ATTR2_PALROW(5) | ATTR2_TILEID(car->carAni,car->carShine);
     }
     else {
         shadowOAM[j].attr0 = ATTR0_HIDE;
@@ -435,6 +558,20 @@ void drawAsteroids(ASTEROID* asteroid, int j) {//increment loc up
     else {
         shadowOAM[j].attr0 = ATTR0_HIDE;
     }
+}
+void drawLives(LIVES* liveCount, int j) {//increment loc up
+   
+        shadowOAM[j].attr0 = (ROWMASK & liveCount->row) | ATTR0_4BPP | ATTR0_SQUARE; 
+        shadowOAM[j].attr1 = (COLMASK & liveCount->col) | ATTR1_TINY;
+        shadowOAM[j].attr2 = ATTR2_PALROW(0) | ATTR2_TILEID(liveCount->x,liveCount->y);
+   
+}
+void drawShield(SHIELD* shield, int j) {//increment loc up
+   
+        shadowOAM[j].attr0 = (ROWMASK & shield->row) | ATTR0_4BPP | ATTR0_SQUARE; 
+        shadowOAM[j].attr1 = (COLMASK & shield->col) | ATTR1_TINY;
+        shadowOAM[j].attr2 = ATTR2_PALROW(6) | ATTR2_TILEID(shield->x,shield->y);
+   
 }
 
 

@@ -187,21 +187,22 @@ typedef struct {
 typedef struct {
  int row;
  int col;
- int height;
- int width;
- int frame;
-} LIVECOUNT;
+ int x;
+ int y;
+} LIVES;
 
-
-
-
-
-
-
+typedef struct {
+ int row;
+ int col;
+ int x;
+ int y;
+} SHIELD;
+# 69 "game.h"
 extern PLAYER player;
 extern PRINCESS princess;
-extern LIVECOUNT liveCount[3];
+extern LIVES liveCount[3];
 extern BULLET bullet[5];
+extern SHIELD shield[3];
 extern int livesRemaining;
 extern int timer;
 extern int enemiesKilled;
@@ -226,6 +227,12 @@ void initPrincess();
 void initBullet();
 void initCar();
 void initAsteroids();
+void initLifeCount();
+void initLifeText();
+void initShield();
+void initShieldText();
+void lifeText_setup();
+void shieldText_setup();
 
 void drawGame();
 void drawBullet(BULLET* bullet, int j);
@@ -234,6 +241,8 @@ void drawPrincess();
 void drawAsteroids();
 void drawAlien();
 void drawCars();
+void drawShield();
+void drawLives();
 
 void updateGame();
 void updatePlayer();
@@ -255,7 +264,8 @@ typedef struct {
  int col;
  int width;
     int height;
-    int aniState;
+    int x;
+ int y;
 } NOOT;
 
 typedef struct {
@@ -309,6 +319,7 @@ typedef struct {
 
 
 
+
 extern ALPHABET alphabet;
 extern TEXT text[22];
 extern BOX boxSide[2];
@@ -335,6 +346,10 @@ void initBoxEdgeTop();
 void drawQuoteOne();
 void drawBox();
 void initBoxEdgeBottom();
+void initQuoteTwo_setup();
+void initQuoteTwo_letter();
+void initQuoteThree_setup();
+void initQuoteThree_letter();
 # 45 "main.c" 2
 # 1 "font.h" 1
 
@@ -432,22 +447,22 @@ void initPlayAgainQuoteLose();
 # 50 "main.c" 2
 
 
-# 1 "moonArt.h" 1
-# 22 "moonArt.h"
-extern const unsigned short moonArtTiles[7568];
+# 1 "titleScreen.h" 1
+# 22 "titleScreen.h"
+extern const unsigned short titleScreenTiles[6512];
 
 
-extern const unsigned short moonArtMap[1024];
+extern const unsigned short titleScreenMap[1024];
 
 
-extern const unsigned short moonArtPal[256];
+extern const unsigned short titleScreenPal[256];
 # 53 "main.c" 2
 # 1 "bg0Space.h" 1
 # 22 "bg0Space.h"
-extern const unsigned short bg0SpaceTiles[1888];
+extern const unsigned short bg0SpaceTiles[3072];
 
 
-extern const unsigned short bg0SpaceMap[2048];
+extern const unsigned short bg0SpaceMap[3072];
 
 
 extern const unsigned short bg0SpacePal[256];
@@ -477,6 +492,10 @@ extern const unsigned short bg0SpacePausePal[256];
 # 20 "keepOnKeepingOn.h"
 extern const unsigned char keepOnKeepingOn[2553696];
 # 58 "main.c" 2
+# 1 "endThemeSong.h" 1
+# 20 "endThemeSong.h"
+extern const unsigned char endThemeSong[1164744];
+# 59 "main.c" 2
 
 
 void initialize();
@@ -533,9 +552,9 @@ int main() {
 
 
 void initialize() {
+    playSoundA(keepOnKeepingOn,2553696,11025, 1);
     setupSounds();
  setupInterrupts();
-
     enemiesKilled = 1;
  goToStart();
 }
@@ -547,9 +566,9 @@ void goToStart(){
 void start() {
 
     (*(unsigned short *)0x4000000) = 0 | (1<<8);
-    DMANow(3, moonArtPal, ((unsigned short *)0x5000000), 256);
-    DMANow(3, moonArtTiles, &((charblock *)0x6000000)[0], 15136 / 2);
-    DMANow(3,moonArtMap, &((screenblock *)0x6000000)[28], 1024 * 4);
+    DMANow(3, titleScreenPal, ((unsigned short *)0x5000000), 256);
+    DMANow(3, titleScreenTiles, &((charblock *)0x6000000)[0], 13024 / 2);
+    DMANow(3,titleScreenMap, &((screenblock *)0x6000000)[28], 1024 * 4);
 
     (*(volatile unsigned short*)0x4000008) = ((0)<<2) | ((28)<<8) | (0<<7) | (3<<14);
 
@@ -567,7 +586,7 @@ void goToGame() {
 
     (*(unsigned short *)0x4000000) = 0 | (1<<9) | (1<<8) | (1<<12);
 
-    playSoundA(keepOnKeepingOn,2553696,11025, 1);
+
 
 
     initGame();
@@ -582,12 +601,13 @@ void game() {
     waitForVBlank();
     DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 128*4);
 
- if(enemiesKilled > 20) {
+ if(enemiesKilled > 34) {
         (*(volatile unsigned short *)0x04000010) = 0;
         (*(volatile unsigned short *)0x04000014) = 0;
         stopSound();
   goToWin();
  }
+
 
  if(princessHealth == 0 || playerHealth == 0) {
         (*(volatile unsigned short *)0x04000010) = 0;
@@ -622,15 +642,16 @@ void goToInfo() {
     info();
 }
 void info() {
-    drawString(10, 40, "Press START to begin game", ((31) | (31)<<5 | (31)<<10));
-    drawString(10, 50, "Press L and R keys to toggle", ((31) | (31)<<5 | (31)<<10));
-     drawString(10, 60, " your direction to shoot", ((31) | (31)<<5 | (31)<<10));
-    drawString(10, 70, "Press A to shoot", ((31) | (31)<<5 | (31)<<10));
-    drawString(10, 80, "Press LEFT or RIGHT to slide", ((31) | (31)<<5 | (31)<<10));
-    drawString(10, 90, "from side to side", ((31) | (31)<<5 | (31)<<10));
-    drawString(10, 100, "Press SELECT to return", ((31) | (31)<<5 | (31)<<10));
-    drawString(10, 110, "to splash Screen", ((31) | (31)<<5 | (31)<<10));
-    drawString(10, 120, "Press B for temporary immunity", ((31) | (31)<<5 | (31)<<10));
+    drawString(20, 10, "Press START to begin game", ((31) | (31)<<5 | (31)<<10));
+    drawString(20, 20, "Press SELECT to return", ((31) | (31)<<5 | (31)<<10));
+     drawString(20, 30, "    to splash Screen", ((31) | (31)<<5 | (31)<<10));
+    drawString(20, 40, "Press L and R keys to toggle", ((31) | (31)<<5 | (0)<<10));
+    drawString(20, 50, "   your direction to shoot", ((31) | (31)<<5 | (0)<<10));
+    drawString(20, 60, "Press A to shoot", ((31) | (31)<<5 | (0)<<10));
+    drawString(20, 70, "Press LEFT or RIGHT to slide", ((31) | (31)<<5 | (0)<<10));
+    drawString(20, 80, "    from side to side", ((31) | (31)<<5 | (0)<<10));
+    drawString(20, 90, "YOU have 3 lives, however, the ", ((31) | (0)<<5 | (0)<<10));
+     drawString(20, 100, " princess can NEVER get hit", ((31) | (0)<<5 | (0)<<10));
 
     oldButtons = buttons;
     buttons = (*(volatile unsigned short *)0x04000130);
@@ -690,7 +711,7 @@ void pause() {
 
 }
 void goToWin() {
-
+    playSoundB(endThemeSong,1164744,11025, 1);
     initWinGame();
  state = WIN;
 }
@@ -701,10 +722,15 @@ void win() {
     waitForVBlank();
     DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 128*4);
 
+
     if((!(~(oldButtons)&((1<<3))) && (~buttons & ((1<<3))))) {
   (*(unsigned short *)0x4000000) = 0;
+        stopSound();
         initialize();
         goToStart();
+        tmphOff = 0;
+        (*(volatile unsigned short *)0x04000010) = 0;
+        (*(volatile unsigned short *)0x04000014) = 0;
  }
 }
 void goToLose() {
@@ -722,5 +748,8 @@ void lose() {
   (*(unsigned short *)0x4000000) = 0;
         initialize();
         goToStart();
+        tmphOff = 0;
+        (*(volatile unsigned short *)0x04000010) = 0;
+        (*(volatile unsigned short *)0x04000014) = 0;
  }
 }

@@ -49,12 +49,13 @@ FUTURE MODIFICATIONS
 #include "loseGame.h"
 
 //external .h files
-#include "moonArt.h"
+#include "titleScreen.h"
 #include "bg0Space.h"
 #include "bg1Stars.h"
 #include "bg0SpacePause.h"
 
 #include "keepOnKeepingOn.h"
+#include "endThemeSong.h"
 
 
 void initialize();
@@ -111,9 +112,9 @@ int main() {
 
 
 void initialize() {
+    playSoundA(keepOnKeepingOn,KEEPONKEEPINGONLEN,KEEPONKEEPINGONFREQ, 1);
     setupSounds();
 	setupInterrupts();
-    
     enemiesKilled = 1;
 	goToStart();
 }
@@ -125,9 +126,9 @@ void goToStart(){
 void start() {
     
     REG_DISPCTL =  MODE0 | BG0_ENABLE;
-    DMANow(3, moonArtPal, PALETTE, 256);
-    DMANow(3, moonArtTiles, &CHARBLOCK[0], moonArtTilesLen / 2);
-    DMANow(3,moonArtMap, &SCREENBLOCK[28], 1024 * 4);
+    DMANow(3, titleScreenPal, PALETTE, 256);
+    DMANow(3, titleScreenTiles, &CHARBLOCK[0], titleScreenTilesLen / 2);
+    DMANow(3,titleScreenMap, &SCREENBLOCK[28], 1024 * 4);
     
     REG_BG0CNT = BG_CHARBLOCK(0) | BG_SCREENBLOCK(28) | BG_4BPP | BG_SIZE_LARGE;
 
@@ -145,7 +146,7 @@ void goToGame() {
     
     REG_DISPCTL =  MODE0 | BG1_ENABLE | BG0_ENABLE | SPRITE_ENABLE;
 
-    playSoundA(keepOnKeepingOn,KEEPONKEEPINGONLEN,KEEPONKEEPINGONFREQ, 1);
+    
     
 	//playSoundB(StartSFX,STARTSFXLEN,STARTSFXFREQ, 0);
     initGame();
@@ -160,14 +161,15 @@ void game() {
     waitForVBlank();
     DMANow(3, shadowOAM, OAM, 128*4);
     //lets the player win if all of the enemies have been killedenemiesRemaining == 0
-	if(enemiesKilled > 20) { 
+	if(enemiesKilled > 34) { 
         REG_BG0HOFF = 0;
         REG_BG1HOFF = 0;
         stopSound();
 		goToWin();
 	}
+    
     //if the player has no lives lef then the player looses the game(livesRemaining == 0
-	if(princessHealth == 0 || playerHealth == 0) {
+	if(princessHealth == 0 || playerHealth == 0) {//
         REG_BG0HOFF = 0;
         REG_BG1HOFF = 0;
         stopSound();
@@ -200,15 +202,16 @@ void goToInfo() {
     info();
 }
 void info() {
-    drawString(10, 40, "Press START to begin game", WHITE);
-    drawString(10, 50, "Press L and R keys to toggle", WHITE);
-     drawString(10, 60, " your direction to shoot", WHITE);
-    drawString(10, 70, "Press A to shoot", WHITE);
-    drawString(10, 80, "Press LEFT or RIGHT to slide", WHITE); 
-    drawString(10, 90, "from side to side", WHITE);
-    drawString(10, 100, "Press SELECT to return", WHITE);
-    drawString(10, 110, "to splash Screen", WHITE);
-    drawString(10, 120, "Press B for temporary immunity", WHITE);
+    drawString(20, 10, "Press START to begin game", WHITE);
+    drawString(20, 20, "Press SELECT to return", WHITE);
+     drawString(20, 30, "    to splash Screen", WHITE);
+    drawString(20, 40, "Press L and R keys to toggle", YELLOW);
+    drawString(20, 50, "   your direction to shoot", YELLOW); 
+    drawString(20, 60, "Press A to shoot", YELLOW);
+    drawString(20, 70, "Press LEFT or RIGHT to slide", YELLOW);
+    drawString(20, 80, "    from side to side", YELLOW);
+    drawString(20, 90, "YOU have 3 lives, however, the ", RED);
+     drawString(20, 100, " princess can NEVER get hit", RED);
     
     oldButtons = buttons;
     buttons = BUTTONS;
@@ -268,7 +271,7 @@ void pause() {
     
 }
 void goToWin() {
-    
+    playSoundB(endThemeSong,ENDTHEMESONGLEN,ENDTHEMESONGFREQ, 1);
     initWinGame();
 	state = WIN;
 }
@@ -278,11 +281,16 @@ void win() {
     parallax();
     waitForVBlank();
     DMANow(3, shadowOAM, OAM, 128*4);
+    
     //allows the player to play the game again
     if(BUTTON_PRESSED(BUTTON_START)) {
 		REG_DISPCTL = 0;
+        stopSound();
         initialize(); 
         goToStart();
+        tmphOff = 0;
+        REG_BG0HOFF = 0;
+        REG_BG1HOFF = 0;
 	}
 }
 void goToLose() {
@@ -300,5 +308,8 @@ void lose() {
 		REG_DISPCTL = 0;
         initialize(); 
         goToStart();
+        tmphOff = 0;
+        REG_BG0HOFF = 0;
+        REG_BG1HOFF = 0;
 	}
 }

@@ -46,21 +46,31 @@ typedef struct {
 typedef struct {
 	int row;
 	int col;
-	int height;
-	int width;
-	int frame;
-} LIVECOUNT;
+	int x;
+	int y;
+} LIVES;
+
+typedef struct {
+	int row;
+	int col;
+	int x;
+	int y;
+} SHIELD;
+
 
 // Constants
 
 #define BULLETCOUNT 5
-#define LIVES 3
+#define LIVECOUNT 3
+#define SHEILDCOUNT 3
 
 //variables
+
 extern PLAYER player;
 extern PRINCESS princess;
-extern LIVECOUNT liveCount[LIVES];
+extern LIVES liveCount[LIVECOUNT];
 extern BULLET bullet[BULLETCOUNT];
+extern SHIELD shield[SHEILDCOUNT];
 extern int livesRemaining;
 extern int timer;
 extern int enemiesKilled;
@@ -85,6 +95,12 @@ void initPrincess();
 void initBullet();
 void initCar();
 void initAsteroids();
+void initLifeCount();
+void initLifeText();
+void initShield();
+void initShieldText();
+void lifeText_setup();
+void shieldText_setup();
 //draw methods
 void drawGame();
 void drawBullet(BULLET* bullet, int j);
@@ -93,6 +109,8 @@ void drawPrincess();
 void drawAsteroids();
 void drawAlien();
 void drawCars();
+void drawShield();
+void drawLives();
 //update methods
 void updateGame();
 void updatePlayer();

@@ -147,7 +147,8 @@ typedef struct {
  int col;
  int width;
     int height;
-    int aniState;
+    int x;
+ int y;
 } NOOT;
 
 typedef struct {
@@ -201,6 +202,7 @@ typedef struct {
 
 
 
+
 extern ALPHABET alphabet;
 extern TEXT text[22];
 extern BOX boxSide[2];
@@ -227,6 +229,10 @@ void initBoxEdgeTop();
 void drawQuoteOne();
 void drawBox();
 void initBoxEdgeBottom();
+void initQuoteTwo_setup();
+void initQuoteTwo_letter();
+void initQuoteThree_setup();
+void initQuoteThree_letter();
 # 3 "cutScene.c" 2
 # 1 "game.h" 1
 
@@ -277,21 +283,22 @@ typedef struct {
 typedef struct {
  int row;
  int col;
- int height;
- int width;
- int frame;
-} LIVECOUNT;
+ int x;
+ int y;
+} LIVES;
 
-
-
-
-
-
-
+typedef struct {
+ int row;
+ int col;
+ int x;
+ int y;
+} SHIELD;
+# 69 "game.h"
 extern PLAYER player;
 extern PRINCESS princess;
-extern LIVECOUNT liveCount[3];
+extern LIVES liveCount[3];
 extern BULLET bullet[5];
+extern SHIELD shield[3];
 extern int livesRemaining;
 extern int timer;
 extern int enemiesKilled;
@@ -316,6 +323,12 @@ void initPrincess();
 void initBullet();
 void initCar();
 void initAsteroids();
+void initLifeCount();
+void initLifeText();
+void initShield();
+void initShieldText();
+void lifeText_setup();
+void shieldText_setup();
 
 void drawGame();
 void drawBullet(BULLET* bullet, int j);
@@ -324,6 +337,8 @@ void drawPrincess();
 void drawAsteroids();
 void drawAlien();
 void drawCars();
+void drawShield();
+void drawLives();
 
 void updateGame();
 void updatePlayer();
@@ -353,10 +368,10 @@ void stopSound();
 
 # 1 "bg0Space.h" 1
 # 22 "bg0Space.h"
-extern const unsigned short bg0SpaceTiles[1888];
+extern const unsigned short bg0SpaceTiles[3072];
 
 
-extern const unsigned short bg0SpaceMap[2048];
+extern const unsigned short bg0SpaceMap[3072];
 
 
 extern const unsigned short bg0SpacePal[256];
@@ -393,6 +408,8 @@ BOX boxBlack;
 OBJ_ATTR shadowOAM[128];
 ALPHABET alphabet;
 TEXT text[22];
+TEXT text2[22];
+TEXT text3[22];
 
 void initCutScene() {
     playSoundB(grenzlinie,415842,11025, 1);
@@ -403,10 +420,17 @@ void initCutScene() {
     initBoxEdgeTop();
     initBoxEdgeBottom();
     initQuoteOne_letter();
+    initQuoteTwo_letter();
+    initQuoteThree_letter();
     for (int i = 0; i< 22; i++) {
         initQuoteOne_setup(&text[i], i);
     }
-
+    for (int i = 0; i< 22; i++) {
+        initQuoteTwo_setup(&text2[i], i);
+    }
+    for (int i = 0; i< 22; i++) {
+        initQuoteThree_setup(&text3[i], i);
+    }
     initCharacter();
     hideSprites();
 }
@@ -415,9 +439,11 @@ void initCharacter() {
  noot.col = 50;
  noot.width = 64;
     noot.height = 64;
-    noot.aniState = 13;
+    noot.x = 13;
+    noot.y = 0;
 }
-# 76 "cutScene.c"
+
+
 void initQuoteOne_letter() {
     text[0].letter = 22;
     text[1].letter = 7;
@@ -450,9 +476,83 @@ void initQuoteOne_letter() {
     text[20].letter = 14;
     text[21].letter = 17;
 }
+void initQuoteTwo_letter() {
+    text2[0].letter = 18;
+    text2[1].letter = 15;
+    text2[2].letter = 0;
+    text2[3].letter = 2;
+    text2[4].letter = 4;
+
+    text2[5].letter = 27;
+
+    text2[6].letter = 8;
+    text2[7].letter = 18;
+
+    text2[8].letter = 27;
+
+    text2[9].letter = 18;
+    text2[10].letter = 14;
+
+    text2[11].letter = 27;
+
+    text2[12].letter = 1;
+    text2[13].letter = 4;
+    text2[14].letter = 0;
+    text2[15].letter = 20;
+    text2[16].letter = 19;
+    text2[17].letter = 8;
+    text2[18].letter = 5;
+    text2[19].letter = 20;
+    text2[20].letter = 11;
+
+    text2[21].letter = 27;
+}
+void initQuoteThree_letter() {
+    text3[0].letter = 8;
+
+    text3[1].letter = 27;
+
+    text3[2].letter = 7;
+    text3[3].letter = 14;
+    text3[4].letter = 15;
+    text3[5].letter = 4;
+
+    text3[6].letter = 27;
+
+    text3[7].letter = 22;
+    text3[8].letter = 4;
+
+    text3[9].letter = 27;
+
+    text3[10].letter = 0;
+    text3[11].letter = 17;
+    text3[12].letter = 4;
+
+    text3[13].letter = 27;
+
+    text3[14].letter = 2;
+    text3[15].letter = 11;
+    text3[16].letter = 14;
+    text3[17].letter = 18;
+    text3[18].letter = 4;
+
+    text3[19].letter = 27;
+    text3[20].letter = 27;
+    text3[21].letter = 27;
+}
 void initQuoteOne_setup(TEXT* text, int i) {
     text->row = 130;
     text->col = 25 + (i * 8);
+}
+
+void initQuoteTwo_setup(TEXT* text2, int i) {
+    text2->row = 130;
+    text2->col = 25 + (i * 8);
+}
+
+void initQuoteThree_setup(TEXT* text3, int i) {
+    text3->row = 130;
+    text3->col = 25 + (i * 8);
 }
 
 void initBoxLeftSide() {
@@ -540,6 +640,17 @@ void drawCutScene() {
     drawPlayer();
     drawPrincess();
     int j = 5;
+    if (timer%2) {
+        noot.x = 13;
+        noot.y = 8;
+    }
+    else if (timer%3) {
+        noot.x = 9;
+        noot.y = 8;
+    } else {
+        noot.x = 13;
+        noot.y = 0;
+    }
     drawCharacter(j);
     j++;
     for(int i = 0; i <2; i++) {
@@ -563,17 +674,29 @@ void drawCutScene() {
         drawBox(&boxCorner[i], j);
         j++;
     }
-
-    for (int i = 0; i < 22; i++) {
-        drawQuoteOne(&text[i], j);
-        j++;
+    if (timer%2) {
+        for (int i = 0; i < 22; i++) {
+            drawQuoteOne(&text[i], j);
+            j++;
+        }
     }
-
+    else if (timer%3) {
+        for (int i = 0; i < 22; i++) {
+            drawQuoteOne(&text3[i], j);
+            j++;
+        }
+    }
+    else {
+        for (int i = 0; i < 22; i++) {
+            drawQuoteOne(&text2[i], j);
+            j++;
+        }
+    }
 }
 void drawCharacter(int j) {
     shadowOAM[j].attr0 = noot.row | (0<<13) | (0<<14);
  shadowOAM[j].attr1 = noot.col | (2<<14);
-    shadowOAM[j].attr2 = ((0)<<12) | ((0)*32+(noot.aniState));
+    shadowOAM[j].attr2 = ((0)<<12) | ((noot.y)*32+(noot.x));
 }
 
 void drawBox(BOX* side, int j) {

@@ -199,7 +199,7 @@ initLoseGame:
 .L16:
 	str	r2, [r3, #8]
 	add	r2, r2, #8
-	cmp	r2, #186
+	cmp	r2, #74
 	str	r1, [r3, #4]
 	add	r3, r3, #12
 	bne	.L16

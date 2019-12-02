@@ -196,21 +196,22 @@ typedef struct {
 typedef struct {
  int row;
  int col;
- int height;
- int width;
- int frame;
-} LIVECOUNT;
+ int x;
+ int y;
+} LIVES;
 
-
-
-
-
-
-
+typedef struct {
+ int row;
+ int col;
+ int x;
+ int y;
+} SHIELD;
+# 69 "game.h"
 extern PLAYER player;
 extern PRINCESS princess;
-extern LIVECOUNT liveCount[3];
+extern LIVES liveCount[3];
 extern BULLET bullet[5];
+extern SHIELD shield[3];
 extern int livesRemaining;
 extern int timer;
 extern int enemiesKilled;
@@ -235,6 +236,12 @@ void initPrincess();
 void initBullet();
 void initCar();
 void initAsteroids();
+void initLifeCount();
+void initLifeText();
+void initShield();
+void initShieldText();
+void lifeText_setup();
+void shieldText_setup();
 
 void drawGame();
 void drawBullet(BULLET* bullet, int j);
@@ -243,6 +250,8 @@ void drawPrincess();
 void drawAsteroids();
 void drawAlien();
 void drawCars();
+void drawShield();
+void drawLives();
 
 void updateGame();
 void updatePlayer();

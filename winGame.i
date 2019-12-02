@@ -236,21 +236,22 @@ typedef struct {
 typedef struct {
  int row;
  int col;
- int height;
- int width;
- int frame;
-} LIVECOUNT;
+ int x;
+ int y;
+} LIVES;
 
-
-
-
-
-
-
+typedef struct {
+ int row;
+ int col;
+ int x;
+ int y;
+} SHIELD;
+# 69 "game.h"
 extern PLAYER player;
 extern PRINCESS princess;
-extern LIVECOUNT liveCount[3];
+extern LIVES liveCount[3];
 extern BULLET bullet[5];
+extern SHIELD shield[3];
 extern int livesRemaining;
 extern int timer;
 extern int enemiesKilled;
@@ -275,6 +276,12 @@ void initPrincess();
 void initBullet();
 void initCar();
 void initAsteroids();
+void initLifeCount();
+void initLifeText();
+void initShield();
+void initShieldText();
+void lifeText_setup();
+void shieldText_setup();
 
 void drawGame();
 void drawBullet(BULLET* bullet, int j);
@@ -283,6 +290,8 @@ void drawPrincess();
 void drawAsteroids();
 void drawAlien();
 void drawCars();
+void drawShield();
+void drawLives();
 
 void updateGame();
 void updatePlayer();
@@ -304,7 +313,8 @@ typedef struct {
  int col;
  int width;
     int height;
-    int aniState;
+    int x;
+ int y;
 } NOOT;
 
 typedef struct {
@@ -358,6 +368,7 @@ typedef struct {
 
 
 
+
 extern ALPHABET alphabet;
 extern TEXT text[22];
 extern BOX boxSide[2];
@@ -384,6 +395,10 @@ void initBoxEdgeTop();
 void drawQuoteOne();
 void drawBox();
 void initBoxEdgeBottom();
+void initQuoteTwo_setup();
+void initQuoteTwo_letter();
+void initQuoteThree_setup();
+void initQuoteThree_letter();
 # 6 "winGame.c" 2
 
 
@@ -400,7 +415,7 @@ void initWinGame() {
     initPrincessNoot();
     initWinQuote();
     initPlayAgainQuote();
-    for (int i = 0; i < 22; i++) {
+    for (int i = 0; i < 19; i++) {
         initWinQuote_setup(&textWin[i], i);
     }
     for (int i = 0; i < 23; i++) {

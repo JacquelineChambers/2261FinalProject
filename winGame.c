@@ -18,7 +18,7 @@ void initWinGame() {
     initPrincessNoot();
     initWinQuote();
     initPlayAgainQuote();
-    for (int i = 0; i < QUOTELENGTH; i++) {
+    for (int i = 0; i < QUOTELENGTHWIN; i++) {
         initWinQuote_setup(&textWin[i], i);
     }
     for (int i = 0; i < QUOTELENGTHAGAIN; i++) {

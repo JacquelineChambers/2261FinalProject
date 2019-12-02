@@ -40,6 +40,8 @@ typedef struct {
 	int erased;
 	int num;
 	int carAni;
+	int carShine;
+	int direction;
 } CAR;
 
 typedef struct {
@@ -63,6 +65,7 @@ typedef struct {
 #define ASTEROIDCOUNT 2
 #define CARCOUNT 2
 
+
 extern ALIEN alien[ALIENCOUNT];
 //extern ALIENLASER alienLaser[ALIENLASERCOUNT];
 extern ASTEROID asteroid[ASTEROIDCOUNT];
@@ -70,6 +73,7 @@ extern CAR car[CARCOUNT];
 extern int enemiesRemaining;
 extern int timer;
 extern int timerShine;
+extern int timerShine2;
 
 void initAliens();
 void initCars();

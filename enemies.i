@@ -45,6 +45,8 @@ typedef struct {
  int erased;
  int num;
  int carAni;
+ int carShine;
+ int direction;
 } CAR;
 
 typedef struct {
@@ -68,6 +70,7 @@ typedef struct {
 
 
 
+
 extern ALIEN alien[2];
 
 extern ASTEROID asteroid[2];
@@ -75,6 +78,7 @@ extern CAR car[2];
 extern int enemiesRemaining;
 extern int timer;
 extern int timerShine;
+extern int timerShine2;
 
 void initAliens();
 void initCars();
@@ -142,21 +146,22 @@ typedef struct {
 typedef struct {
  int row;
  int col;
- int height;
- int width;
- int frame;
-} LIVECOUNT;
+ int x;
+ int y;
+} LIVES;
 
-
-
-
-
-
-
+typedef struct {
+ int row;
+ int col;
+ int x;
+ int y;
+} SHIELD;
+# 69 "game.h"
 extern PLAYER player;
 extern PRINCESS princess;
-extern LIVECOUNT liveCount[3];
+extern LIVES liveCount[3];
 extern BULLET bullet[5];
+extern SHIELD shield[3];
 extern int livesRemaining;
 extern int timer;
 extern int enemiesKilled;
@@ -181,6 +186,12 @@ void initPrincess();
 void initBullet();
 void initCar();
 void initAsteroids();
+void initLifeCount();
+void initLifeText();
+void initShield();
+void initShieldText();
+void lifeText_setup();
+void shieldText_setup();
 
 void drawGame();
 void drawBullet(BULLET* bullet, int j);
@@ -189,6 +200,8 @@ void drawPrincess();
 void drawAsteroids();
 void drawAlien();
 void drawCars();
+void drawShield();
+void drawLives();
 
 void updateGame();
 void updatePlayer();
@@ -343,6 +356,7 @@ CAR car[2];
 int enemiesRemaining;
 int timer;
 int timerShine;
+int timerShine2;
 enum {UP, DOWN, LEFT, RIGHT};
 enum {R, L};
 
@@ -362,32 +376,37 @@ void initAliens() {
             alien[i].direction = j;
             switch(j) {
                 case 0:
-                alien[i].row = 0;
+                alien[i].row = 1;
                 alien[i].col = 10;
+                j++;
                 continue;
                 case 1:
                 alien[i].row = 159;
                 alien[i].col = 20;
+                j++;
                 continue;
                 case 2:
                 alien[i].row = 10;
-                alien[i].col = 0;
+                alien[i].col = 1;
+                j++;
                 continue;
                 case 3:
                 alien[i].row = 100;
                 alien[i].col = 239;
+                j++;
                 continue;
             }
 
-            j++;
+
         } else {
             j = 0;
         }
     }
 
 }
-void initCar() {
 
+void initCar() {
+int j = 0;
     for(int i=0; i < 2; i++){
         car[i].height = 16;
         car[i].width = 16;
@@ -396,12 +415,41 @@ void initCar() {
         car[i].active = 1;
         car[i].erased = 0;
         car[i].carAni = 21;
-            car[i].row = 140;
-            car[i].col = 20 + (i * 20);
+        car[i].carShine = 0;
+        if(j < 4) {
+            car[i].direction = j;
+            switch(j) {
+                case 0:
+                car[i].row = 140;
+                car[i].col = 20;
+                 j++;
+                continue;
+                case 1:
+                car[i].row = 100;
+                car[i].col = 210;
+                 j++;
+                continue;
+                case 2:
+                car[i].row = 10;
+                car[i].col = 1;
+                 j++;
+                continue;
+                case 3:
+                car[i].row = 0;
+                car[i].col = 10;
+                 j++;
+                continue;
+            }
+
+
+        } else {
+            j = 0;
+        }
 
     }
 
 }
+
 void initAsteroids() {
     int j = 0;
     for(int i=0; i < 2; i++){
@@ -412,36 +460,38 @@ void initAsteroids() {
         asteroid[i].active = 1;
         asteroid[i].erased = 0;
         asteroid[i].asteroidAni = 19;
-        if (j == 0) {
-            asteroid[i].row = 20;
-            asteroid[i].col = 20 + (i * 10);
+        if(j < 4) {
             asteroid[i].direction = j;
-            j = 1;
-        }
-        if (j == 1) {
-            asteroid[i].row = 50;
-            asteroid[i].col = 40;
-            asteroid[i].direction = j;
+        switch(j) {
+                case 0:
+                asteroid[i].row = 159;
+                asteroid[i].col = 20;
+                j++;
+                continue;
+                case 1:
+                asteroid[i].row = 10;
+                asteroid[i].col = 1;
+                j++;
+                continue;
+                case 2:
+                asteroid[i].row = 100;
+                asteroid[i].col = 239;
+                j++;
+                continue;
+                case 3:
+                asteroid[i].row = 1;
+                asteroid[i].col = 10;
+                j++;
+                continue;
+            }
+
+        } else {
             j = 0;
         }
     }
 
 }
-# 111 "enemies.c"
-void resetAlien() {
-
-}
-void resetCar() {
-
-}
-void resetAsteroid() {
-
-}
-
-
-
-
-
+# 163 "enemies.c"
 void updateAlien(ALIEN *alien) {
     for(int i = 0 ;i< 5;i++ ){
             if ((bullet[i].active && alien->active) && collision(alien->col, alien->row, alien->width, alien->height,
@@ -515,7 +565,7 @@ void updateAlien(ALIEN *alien) {
 
             switch(alien->direction) {
                 case 0:
-                alien->row = 0;
+                alien->row = 1;
                 alien->col = 10;
                 break;
                 case 1:
@@ -524,7 +574,7 @@ void updateAlien(ALIEN *alien) {
                 break;
                 case 2:
                 alien->row = 10;
-                alien->col = 0;
+                alien->col = 1;
                 break;
                 case 3:
                 alien->row = 100;
@@ -533,9 +583,15 @@ void updateAlien(ALIEN *alien) {
         }
         alien->row>>=2;
         alien->col>>=2;
-    }
-    if (timer%5 == 0 && !alien->active) {
-        alien->active = 1;
+        if (timer%5 == 0) {
+            alien->active = 1;
+                if (alien->direction == 4) {
+                alien->direction = 0;
+                } else {
+                    alien->direction++;
+                }
+
+        }
     }
 
 
@@ -552,26 +608,95 @@ void updateCar(CAR *car) {
 
                 }
     }
-    if(car->row > 0 && car->col > 0 && car->active) {
+    if(timerShine2%5 == 0) {
+            if(car->carShine == 6) {
+                car->carShine = 0;
+            } else {
+                car->carShine+=2;
+            }
+        }
+    if((car->row > 0 && car->col > 0) && (car->row < 160 && car->col < 240)&& car->active) {
 
-        if(timer%5 == 0) {
-            car->col++;
+        switch(car->direction) {
+            case 0:
+                if(timer%4 == 0) {
+                car->col++;
+                }
+                if(timer%5 == 0) {
+                car->row--;
+                }
+                break;
+             case 1:
+                if(timer%4 == 0) {
+                car->col--;
+
+                }
+
+                if(timer%5 == 0) {
+                car->row--;
+
+                }
+                break;
+            case 2:
+                if(timer%4 == 0) {
+                car->col++;
+
+                }
+                if(timer%3 == 0) {
+                car->row++;
+
+                }
+                break;
+
+
+            case 3:
+                if(timer%4 == 0) {
+                car->col++;
+                }
+                if(timer%5 == 0) {
+                car->row++;
+                }
+                break;
+
         }
 
-        if(timer%6 == 0) {
-            car->row++;
-        }
 
-       timer++;
+
+        timer++;
     } else {
         car->active = 0;
-        car->row = 152;
-        car->col = 60;
 
+            switch(car->direction) {
+                 case 0:
+                car->row = 159;
+                car->col = 20;
+                break;
+                case 1:
+                car->row = 100;
+                car->col = 239;
+                break;
+                case 2:
+                car->row = 10;
+                car->col = 1;
+                break;
+                case 3:
+                car->row = 1;
+                car->col = 10;
+                break;
+        }
+        car->row>>=2;
+        car->col>>=2;
+            if (timer%5 == 0 ) {
+            car->active = 1;
+                if (car->direction == 4) {
+                car->direction = 0;
+                } else {
+                car->direction++;
+                }
+        }
     }
-    if (timer%5 == 0 && !car->active) {
-        car->active = 1;
-    }
+
+
 
 }
 
@@ -586,34 +711,87 @@ void updateAsteroid(ASTEROID *asteroid) {
 
                 }
     }
-    if(asteroid->row > 0 && asteroid->col > 0 && asteroid->active) {
-         if(timer%3 == 0) {
-            asteroid->col++;
+    if((asteroid->row > 0 && asteroid->col > 0) && (asteroid->row < 160 && asteroid->col<240) && asteroid->active) {
+
+        switch(asteroid->direction) {
+
+            case 0:
+                if(timer%4 == 0) {
+                asteroid->col++;
+                }
+                if(timer%5 == 0) {
+                asteroid->row--;
+                }
+                break;
+            case 1:
+                if(timer%4 == 0) {
+                asteroid->col++;
+                }
+                if(timer%5 == 0) {
+                asteroid->row++;
+                }
+                break;
+            case 2:
+                if(timer%4 == 0) {
+                asteroid->col--;
+
+                }
+
+                if(timer%5 == 0) {
+                asteroid->row--;
+
+                }
+                break;
+            case 3:
+                if(timer%4 == 0) {
+                asteroid->col++;
+
+                }
+                if(timer%3 == 0) {
+                asteroid->row++;
+
+                }
+                break;
 
         }
-        if(timer%9 == 0) {
-            asteroid->col--;
 
-        }
-        if(timer%4 == 0) {
-            asteroid->row--;
 
-        }
+
         timer++;
     } else {
         asteroid->active = 0;
-        if (!asteroid->direction) {
-            asteroid->row = 124;
-            asteroid->col = 50;
-        } else {
-            asteroid->row = 50;
-            asteroid->col = 224;
+
+            switch(asteroid->direction) {
+                case 0:
+                asteroid->row = 159;
+                asteroid->col = 20;
+                break;
+                case 1:
+                asteroid->row = 10;
+                asteroid->col = 1;
+                break;
+                case 2:
+                asteroid->row = 100;
+                asteroid->col = 239;
+                break;
+                case 3:
+                asteroid->row = 1;
+                asteroid->col = 10;
+                break;
         }
+        asteroid->row>>=2;
+        asteroid->col>>=2;
 
-
-    }
-    if (timer%5 == 0 && !asteroid->active) {
+        if (timer%5 == 0) {
         asteroid->active = 1;
+        if (asteroid->direction == 4) {
+            asteroid->direction = 0;
+        } else {
+            asteroid->direction++;
+        }
     }
+    }
+
+
 
 }

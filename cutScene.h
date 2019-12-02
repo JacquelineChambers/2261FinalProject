@@ -7,7 +7,8 @@ typedef struct {
 	int col;
 	int width;
     int height;
-    int aniState;
+    int x;
+	int y;
 } NOOT;
 
 typedef struct {
@@ -60,6 +61,7 @@ typedef struct {
 #define BOXSIZE 22
 #define SIDESIZE 2
 #define NUMCORNERS 4
+#define DESCRPLENGTH 6 
 
 extern ALPHABET alphabet;
 extern TEXT text[QUOTELENGTH];
@@ -87,5 +89,40 @@ void initBoxEdgeTop();
 void drawQuoteOne();
 void drawBox();
 void initBoxEdgeBottom();
+void initQuoteTwo_setup();
+void initQuoteTwo_letter();
+void initQuoteThree_setup();
+void initQuoteThree_letter();
 
+/*
+void initAlphabet() {
+    alphabet.a = 0;
+	alphabet.b = 1;
+	alphabet.c = 2;
+    alphabet.d = 3;
+	alphabet.e = 4;
+	alphabet.f = 5;
+    alphabet.g = 6;
+	alphabet.h = 7;
+	alphabet.i = 8;
+    alphabet.j = 9;
+	alphabet.k = 10;
+	alphabet.l = 11;
+    alphabet.m = 12;
+	alphabet.n = 13;
+	alphabet.o = 14;
+    alphabet.p = 15;
+	alphabet.q = 16;
+	alphabet.r = 17;
+    alphabet.s = 18;
+	alphabet.t = 19;
+	alphabet.u = 20;
+    alphabet.v = 21;
+	alphabet.w = 22;
+	alphabet.x = 23;
+    alphabet.y = 24;
+	alphabet.z = 25;  
+    alphabet.space = 27;
+}
+*/
 

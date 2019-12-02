@@ -186,21 +186,22 @@ typedef struct {
 typedef struct {
  int row;
  int col;
- int height;
- int width;
- int frame;
-} LIVECOUNT;
+ int x;
+ int y;
+} LIVES;
 
-
-
-
-
-
-
+typedef struct {
+ int row;
+ int col;
+ int x;
+ int y;
+} SHIELD;
+# 69 "game.h"
 extern PLAYER player;
 extern PRINCESS princess;
-extern LIVECOUNT liveCount[3];
+extern LIVES liveCount[3];
 extern BULLET bullet[5];
+extern SHIELD shield[3];
 extern int livesRemaining;
 extern int timer;
 extern int enemiesKilled;
@@ -225,6 +226,12 @@ void initPrincess();
 void initBullet();
 void initCar();
 void initAsteroids();
+void initLifeCount();
+void initLifeText();
+void initShield();
+void initShieldText();
+void lifeText_setup();
+void shieldText_setup();
 
 void drawGame();
 void drawBullet(BULLET* bullet, int j);
@@ -233,6 +240,8 @@ void drawPrincess();
 void drawAsteroids();
 void drawAlien();
 void drawCars();
+void drawShield();
+void drawLives();
 
 void updateGame();
 void updatePlayer();
@@ -287,6 +296,8 @@ typedef struct {
  int erased;
  int num;
  int carAni;
+ int carShine;
+ int direction;
 } CAR;
 
 typedef struct {
@@ -310,6 +321,7 @@ typedef struct {
 
 
 
+
 extern ALIEN alien[2];
 
 extern ASTEROID asteroid[2];
@@ -317,6 +329,7 @@ extern CAR car[2];
 extern int enemiesRemaining;
 extern int timer;
 extern int timerShine;
+extern int timerShine2;
 
 void initAliens();
 void initCars();
@@ -345,17 +358,114 @@ void rotateRight();
 void slideRight();
 void slideLeft();
 # 5 "game.c" 2
+# 1 "cutScene.h" 1
+
+
+void initCutScene();
+
+typedef struct {
+ int row;
+ int col;
+ int width;
+    int height;
+    int x;
+ int y;
+} NOOT;
+
+typedef struct {
+ int row;
+ int col;
+ int width;
+    int height;
+    int x;
+ int y;
+} BOX;
+
+typedef struct {
+ int a;
+ int b;
+ int c;
+    int d;
+    int e;
+ int f;
+ int g;
+ int h;
+ int i;
+ int j;
+ int k;
+ int l;
+ int m;
+ int n;
+ int o;
+ int p;
+ int q;
+ int r;
+ int s;
+ int t;
+ int u;
+ int v;
+ int w;
+ int x;
+ int y;
+ int z;
+ int space;
+
+} ALPHABET;
+
+typedef struct {
+ int letter;
+ int row;
+ int col;
+} TEXT;
+
+
+
+
+
+
+
+extern ALPHABET alphabet;
+extern TEXT text[22];
+extern BOX boxSide[2];
+extern BOX boxCorner[4];
+extern BOX boxTop[22];
+extern BOX boxBottom[22];
+extern NOOT noot;
+
+void initCharacter();
+void drawCutScene();
+void parallax();
+void drawDialogBox();
+void initDialogBox();
+void initChar();
+void initBoxCorner();
+void drawCharacter();
+void initAlphabet();
+void updateCutScene();
+void initBoxLeftSide();
+void initBoxRightSide();
+void initQuoteOne_letter();
+void initQuoteOne_setup();
+void initBoxEdgeTop();
+void drawQuoteOne();
+void drawBox();
+void initBoxEdgeBottom();
+void initQuoteTwo_setup();
+void initQuoteTwo_letter();
+void initQuoteThree_setup();
+void initQuoteThree_letter();
+# 6 "game.c" 2
 
 # 1 "bg0Space.h" 1
 # 22 "bg0Space.h"
-extern const unsigned short bg0SpaceTiles[1888];
+extern const unsigned short bg0SpaceTiles[3072];
 
 
-extern const unsigned short bg0SpaceMap[2048];
+extern const unsigned short bg0SpaceMap[3072];
 
 
 extern const unsigned short bg0SpacePal[256];
-# 7 "game.c" 2
+# 8 "game.c" 2
 # 1 "bg1Stars.h" 1
 # 22 "bg1Stars.h"
 extern const unsigned short bg1StarsTiles[544];
@@ -365,17 +475,17 @@ extern const unsigned short bg1StarsMap[1024];
 
 
 extern const unsigned short bg1StarsPal[256];
-# 8 "game.c" 2
+# 9 "game.c" 2
 # 1 "sprites.h" 1
 # 21 "sprites.h"
 extern const unsigned short spritesTiles[16384];
 
 
 extern const unsigned short spritesPal[256];
-# 9 "game.c" 2
+# 10 "game.c" 2
 # 1 "sine.h" 1
 extern const int sin_lut_fixed8[];
-# 10 "game.c" 2
+# 11 "game.c" 2
 # 1 "sound.h" 1
 SOUND soundA;
 SOUND soundB;
@@ -390,19 +500,19 @@ void interruptHandler();
 void pauseSound();
 void unpauseSound();
 void stopSound();
-# 11 "game.c" 2
+# 12 "game.c" 2
 # 1 "noot5.h" 1
 # 20 "noot5.h"
 extern const unsigned char noot5[8055];
-# 12 "game.c" 2
+# 13 "game.c" 2
 # 1 "noot7.h" 1
 # 20 "noot7.h"
 extern const unsigned char noot7[16028];
-# 13 "game.c" 2
+# 14 "game.c" 2
 # 1 "fucking-noot-noot.h" 1
 # 20 "fucking-noot-noot.h"
 extern const unsigned char fucking_noot_noot[16064];
-# 14 "game.c" 2
+# 15 "game.c" 2
 
 
 unsigned short hOff;
@@ -412,6 +522,12 @@ int enemiesKilled;
 PLAYER player;
 PRINCESS princess;
 BULLET bullet[5];
+LIVES liveCount[3];
+SHIELD shield[3];
+
+TEXT text3[6];
+TEXT text4[6];
+
 OBJ_ATTR shadowOAM[128];
 OBJ_AFFINE* shadowAffine = (OBJ_AFFINE*)(shadowOAM);
 int shotDirection;
@@ -438,12 +554,21 @@ void initGame() {
      timer = 0;
      initAliens();
      initAsteroids();
+     initCar();
      initPlayer();
      initPrincess();
      initBullet();
+     initLifeCount();
+     initShield();
+     initLifeText();
+     initShieldText();
+     for( int i = 0; i < 6; i++) {
+        lifeText_setup(&text3[i], i);
+     }
+     for( int i = 0; i < 6; i++) {
+        shieldText_setup(&text4[i], i);
+     }
      bullet[0].tetherBullet = 1;
-     initAliens();
-     initCar();
      hideSprites();
 
 }
@@ -453,8 +578,8 @@ void dispBackground() {
     DMANow(3, bg0SpacePal, ((unsigned short *)0x5000000), 256);
 
     (*(volatile unsigned short*)0x400000A) = ((0)<<2) | ((31)<<8) | (0<<14);
-    DMANow(3, bg0SpaceTiles, &((charblock *)0x6000000)[0], 3776/2);
-    DMANow(3, bg0SpaceMap, &((screenblock *)0x6000000)[31], 4096/2);
+    DMANow(3, bg0SpaceTiles, &((charblock *)0x6000000)[0], 6144/2);
+    DMANow(3, bg0SpaceMap, &((screenblock *)0x6000000)[31], 6144/2);
 
     (*(volatile unsigned short*)0x4000008) = ((1)<<2) | ((28)<<8) | (0<<14);
     DMANow(3, bg1StarsTiles, &((charblock *)0x6000000)[1], 1088 / 2);
@@ -468,7 +593,6 @@ void dispBackground() {
 }
 
 void initPlayer() {
-
     livesRemaining = 3;
     player.width = 16;
     player.height = 16;
@@ -480,8 +604,8 @@ void initPlayer() {
     movement = UP;
     prevMovement = movement;
     toggle = L;
-
 }
+
 void initPrincess() {
     princess.hit = 0;
     princess.row = 70 ;
@@ -489,6 +613,7 @@ void initPrincess() {
     princess.width = 32;
     princess.height = 32;
 }
+
 void initBullet() {
     for(int i=0; i < 5; i++){
         bullet[i].col = 0;
@@ -507,6 +632,53 @@ void initBullet() {
 
 }
 
+void initLifeCount() {
+    for (int i = 0; i < 3; i++) {
+        liveCount[i].row = 150 ;
+        liveCount[i].col = 20 + (i * 8);
+        liveCount[i].x = 5;
+        liveCount[i].y = 9;
+    }
+}
+
+void initShield() {
+    for (int i = 0; i < 3; i++) {
+        shield[i].row = 150;
+        shield[i].col = 100 + (i * 8);
+        shield[i].x = 5;
+        shield[i].y = 10;
+    }
+}
+
+void initLifeText() {
+    text3[0].letter = 11;
+    text3[1].letter = 8;
+    text3[2].letter = 21;
+    text3[3].letter = 4;
+    text3[4].letter = 18;
+    text3[5].letter = 27;
+
+}
+void initShieldText() {
+    text4[0].letter = 18;
+    text4[1].letter = 7;
+    text4[2].letter = 8;
+    text4[3].letter = 4;
+    text4[4].letter = 11;
+    text4[5].letter = 3;
+
+}
+
+void lifeText_setup(TEXT* text3, int i) {
+    text3->row = 140;
+    text3->col = 10 + (i * 8);
+}
+
+void shieldText_setup(TEXT* text4, int i) {
+    text4->row = 140;
+    text4->col = 90 + (i * 8);
+}
+
 void updateGame() {
 
     parallax();
@@ -519,6 +691,7 @@ void updateGame() {
         updateBullet(&bullet[i]);
     }
 }
+
 void updateEnemies() {
     for(int i = 0; i< 2; i++){
         updateAlien(&alien[i]);
@@ -527,6 +700,7 @@ void updateEnemies() {
     for(int i = 0; i< 2; i++) {
         updateCar(&car[i]);
     }
+    timerShine2++;
     for(int i = 0; i< 2; i++) {
         updateAsteroid(&asteroid[i]);
     }
@@ -623,12 +797,9 @@ void fireBullet(BULLET* bullet) {
   }
 
 }
+
 void chooseSound() {
-    if(timer%2 == 0) {
-        playSoundB(noot5,8055,11025, 0);
-    } else {
-        playSoundB(noot7,16028,11025, 0);
-    }
+    playSoundB(noot5,8055,11025, 0);
 }
 
 void updatePlayer() {
@@ -651,8 +822,8 @@ void updatePlayer() {
         slideLeft();
     }
     if((!(~(oldButtons)&((1<<1))) && (~buttons & ((1<<1)))) && immunityWait == 0) {
-        immunity = 100;
-        immunityWait += 100;
+        immunity = 800;
+        immunityWait += 800;
     }
     if (immunity == 0) {
         for(int i = 0; i < 2; i++ ){
@@ -687,6 +858,7 @@ void updatePlayer() {
         }
     }
 }
+
 void updatePrincess() {
     if (immunity == 0) {
         for(int i = 0; i < 2; i++ ){
@@ -718,6 +890,7 @@ void updatePrincess() {
         }
     }
 }
+
 void drawGame() {
     int j = 2;
     drawPlayer();
@@ -741,8 +914,67 @@ void drawGame() {
         drawAlien(&alien[i], j);
         j++;
     }
+
     for(int i = 0; i< 2; i++){
         drawAsteroids(&asteroid[i], j);
+        j++;
+    }
+    int x = 0;
+    if (playerHealth >= 3) {
+        drawLives(&liveCount[x], j);
+       x++;
+
+    } else {
+         shadowOAM[j].attr0 = (2<<8);
+    }
+    j++;
+    if (playerHealth >= 2) {
+        drawLives(&liveCount[x], j);
+        x++;
+
+    } else {
+         shadowOAM[j].attr0 = (2<<8);
+    }
+    j++;
+    if (playerHealth >= 1) {
+        drawLives(&liveCount[x], j);
+
+    } else {
+         shadowOAM[j].attr0 = (2<<8);
+    }
+    j++;
+    int i = 0;
+    if (immunity > 600) {
+            drawShield(&shield[i], j);
+
+            i++;
+    } else {
+       shadowOAM[j].attr0 = (2<<8);
+    }
+    j++;
+    if (immunity > 400) {
+            drawShield(&shield[i], j);
+
+            i++;
+    } else {
+        shadowOAM[j].attr0 = (2<<8);
+
+    }
+    j++;
+    if (immunity > 100) {
+            drawShield(&shield[i], j);
+
+    } else {
+        shadowOAM[j].attr0 = (2<<8);
+
+    }
+    j++;
+    for (int i = 0; i< 6; i++) {
+        drawQuoteOne(&text3[i], j);
+        j++;
+    }
+    for (int i = 0; i< 6; i++) {
+        drawQuoteOne(&text4[i], j);
         j++;
     }
     if(hit != 0) {
@@ -806,7 +1038,7 @@ void drawCars(CAR* car, int j) {
     if (car->active) {
         shadowOAM[j].attr0 = (0xFF & car->row) | (0<<13) | (0<<14);
         shadowOAM[j].attr1 = (0x1FF & car->col) | (1<<14);
-        shadowOAM[j].attr2 = ((5)<<12) | ((0)*32+(car->carAni));
+        shadowOAM[j].attr2 = ((5)<<12) | ((car->carShine)*32+(car->carAni));
     }
     else {
         shadowOAM[j].attr0 = (2<<8);
@@ -827,4 +1059,18 @@ void drawAsteroids(ASTEROID* asteroid, int j) {
     else {
         shadowOAM[j].attr0 = (2<<8);
     }
+}
+void drawLives(LIVES* liveCount, int j) {
+
+        shadowOAM[j].attr0 = (0xFF & liveCount->row) | (0<<13) | (0<<14);
+        shadowOAM[j].attr1 = (0x1FF & liveCount->col) | (0<<14);
+        shadowOAM[j].attr2 = ((0)<<12) | ((liveCount->y)*32+(liveCount->x));
+
+}
+void drawShield(SHIELD* shield, int j) {
+
+        shadowOAM[j].attr0 = (0xFF & shield->row) | (0<<13) | (0<<14);
+        shadowOAM[j].attr1 = (0x1FF & shield->col) | (0<<14);
+        shadowOAM[j].attr2 = ((6)<<12) | ((shield->y)*32+(shield->x));
+
 }

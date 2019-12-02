@@ -237,7 +237,7 @@ initWinGame:
 	mov	r2, #10
 	mov	r0, #20
 	ldr	r3, .L28+16
-	add	r1, r3, #264
+	add	r1, r3, #228
 .L23:
 	stmib	r3, {r0, r2}
 	add	r3, r3, #12

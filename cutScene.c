@@ -18,6 +18,8 @@ BOX boxBlack;
 OBJ_ATTR shadowOAM[128];
 ALPHABET alphabet;
 TEXT text[QUOTELENGTH];
+TEXT text2[QUOTELENGTH];
+TEXT text3[QUOTELENGTH];
 
 void initCutScene() {
     playSoundB(grenzlinie,GRENZLINIELEN,GRENZLINIEFREQ, 1);
@@ -28,10 +30,17 @@ void initCutScene() {
     initBoxEdgeTop();
     initBoxEdgeBottom();
     initQuoteOne_letter();
+    initQuoteTwo_letter();
+    initQuoteThree_letter();
     for (int i = 0; i< QUOTELENGTH; i++) {
         initQuoteOne_setup(&text[i], i);
     }
-    //initAlphabet();
+    for (int i = 0; i< QUOTELENGTH; i++) {
+        initQuoteTwo_setup(&text2[i], i);
+    }
+    for (int i = 0; i< QUOTELENGTH; i++) {
+        initQuoteThree_setup(&text3[i], i);
+    }
     initCharacter();
     hideSprites();
 }
@@ -40,39 +49,11 @@ void initCharacter() {
 	noot.col = 50;
 	noot.width = 64;
     noot.height = 64;
-    noot.aniState = 13;
+    noot.x = 13;
+    noot.y = 0;
 }
-/*
-void initAlphabet() {
-    alphabet.a = 0;
-	alphabet.b = 1;
-	alphabet.c = 2;
-    alphabet.d = 3;
-	alphabet.e = 4;
-	alphabet.f = 5;
-    alphabet.g = 6;
-	alphabet.h = 7;
-	alphabet.i = 8;
-    alphabet.j = 9;
-	alphabet.k = 10;
-	alphabet.l = 11;
-    alphabet.m = 12;
-	alphabet.n = 13;
-	alphabet.o = 14;
-    alphabet.p = 15;
-	alphabet.q = 16;
-	alphabet.r = 17;
-    alphabet.s = 18;
-	alphabet.t = 19;
-	alphabet.u = 20;
-    alphabet.v = 21;
-	alphabet.w = 22;
-	alphabet.x = 23;
-    alphabet.y = 24;
-	alphabet.z = 25;  
-    alphabet.space = 27;
-}
-*/
+
+
 void initQuoteOne_letter() {
     text[0].letter = 22;//w
     text[1].letter = 7;//h
@@ -105,9 +86,83 @@ void initQuoteOne_letter() {
     text[20].letter = 14;//o
     text[21].letter = 17;//r
 }
+void initQuoteTwo_letter() {
+    text2[0].letter = 18;//s
+    text2[1].letter = 15;//p
+    text2[2].letter = 0;//a
+    text2[3].letter = 2;//c
+    text2[4].letter = 4;//e
+
+    text2[5].letter = 27;//space
+
+    text2[6].letter = 8;//i
+    text2[7].letter = 18;//s
+
+    text2[8].letter = 27;//space
+
+    text2[9].letter = 18;//s
+    text2[10].letter = 14;//o
+
+    text2[11].letter = 27;//space
+
+    text2[12].letter = 1;//b
+    text2[13].letter = 4;//e
+    text2[14].letter = 0;//a
+    text2[15].letter = 20;//u
+    text2[16].letter = 19;//t
+    text2[17].letter = 8;//i
+    text2[18].letter = 5;//f
+    text2[19].letter = 20;//u
+    text2[20].letter = 11;//l
+
+    text2[21].letter = 27;//space
+}
+void initQuoteThree_letter() {
+    text3[0].letter = 8;//i
+
+    text3[1].letter = 27;//space
+
+    text3[2].letter = 7;//h
+    text3[3].letter = 14;//o
+    text3[4].letter = 15;//p
+    text3[5].letter = 4;//e
+
+    text3[6].letter = 27;//space
+
+    text3[7].letter = 22;//w
+    text3[8].letter = 4;//e
+
+    text3[9].letter = 27;//space
+
+    text3[10].letter = 0;//a
+    text3[11].letter = 17;//r
+    text3[12].letter = 4;//e
+
+    text3[13].letter = 27;//space
+
+    text3[14].letter = 2;//c
+    text3[15].letter = 11;//l
+    text3[16].letter = 14;//o
+    text3[17].letter = 18;//s
+    text3[18].letter = 4;//e
+
+    text3[19].letter = 27;//space
+    text3[20].letter = 27;//space
+    text3[21].letter = 27;//space
+}
 void initQuoteOne_setup(TEXT* text, int i) {
     text->row = 130;
     text->col = 25 + (i * 8);
+}
+
+void initQuoteTwo_setup(TEXT* text2, int i) {
+    text2->row = 130;
+    text2->col = 25 + (i * 8);
+}
+
+void initQuoteThree_setup(TEXT* text3, int i) {
+    text3->row = 130;
+    text3->col = 25 + (i * 8);
 }
 
 void initBoxLeftSide() {
@@ -195,6 +250,17 @@ void drawCutScene() {
     drawPlayer();
     drawPrincess();
     int j = 5;
+    if (timer%2) {
+        noot.x = 13;
+        noot.y = 8;
+    }
+    else if (timer%3) {
+        noot.x = 9;
+        noot.y = 8;
+    } else {
+        noot.x = 13;
+        noot.y = 0;
+    }
     drawCharacter(j);
     j++;
     for(int i = 0; i <SIDESIZE; i++) {
@@ -218,17 +284,29 @@ void drawCutScene() {
         drawBox(&boxCorner[i], j);
         j++;
     }
-    
-    for (int i = 0; i < QUOTELENGTH; i++) {
-        drawQuoteOne(&text[i], j);
-        j++;
+    if (timer%2) {
+        for (int i = 0; i < QUOTELENGTH; i++) {//what am i fighting for
+            drawQuoteOne(&text[i], j);
+            j++;
+        }
+    } 
+    else if (timer%3) {
+        for (int i = 0; i < QUOTELENGTH; i++) {//i hope we are close
+            drawQuoteOne(&text3[i], j);
+            j++;
+        }
+    } 
+    else {
+        for (int i = 0; i < QUOTELENGTH; i++) {//space is so beatiful
+            drawQuoteOne(&text2[i], j);
+            j++;
+        }
     }
-
 }
 void drawCharacter(int j) {
     shadowOAM[j].attr0 = noot.row | ATTR0_4BPP | ATTR0_SQUARE;
 	shadowOAM[j].attr1 = noot.col | ATTR1_MEDIUM;
-    shadowOAM[j].attr2 = ATTR2_PALROW(0) | ATTR2_TILEID(noot.aniState,0);  
+    shadowOAM[j].attr2 = ATTR2_PALROW(0) | ATTR2_TILEID(noot.x,noot.y);  
 }
 
 void drawBox(BOX* side, int j) {

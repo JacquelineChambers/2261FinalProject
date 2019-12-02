@@ -17,7 +17,7 @@ void initLoseGame() {
     initDeadPrincess();
     initLoseQuote();
     initPlayAgainQuote();
-    for (int i = 0; i < QUOTELENGTH; i++) {
+    for (int i = 0; i < QUOTELENGTHLOSE; i++) {
         initLoseQuote_setup(&textLose[i], i);
     }
     for (int i = 0; i < QUOTELENGTHAGAIN; i++) {
