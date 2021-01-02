@@ -1,4 +1,4 @@
-![](Graphics/sprites.png)
+![](2261FinalProject/Graphics/PrincessProtector.png)
 
 SPLASH SCREEN
 - START - goes to instructions
