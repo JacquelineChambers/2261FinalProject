@@ -1,3 +1,5 @@
+![](Graphics/sprites.png)
+
 SPLASH SCREEN
 - START - goes to instructions
 - SELECT - goes straight to game
@@ -17,3 +19,4 @@ PAUSE
 
 WIN/LOSE
 -START - goes back to splash screen
+
